@@ -75,11 +75,13 @@ let commands = {
 						let dir = /(.*)\/.*$/gi.exec(sndPath)
 						shell.mkdir("-p", path.join("cache", dir[1]))
 
-						let writeFile = fs.createWriteStream(filePath)
-						writeFile.on("finish", resolve)
-
 						let request = https.get(repoPath + encodeURI(sndPath), function(response) {
-							response.pipe(writeFile)
+							if (response.statusCode == 200) {
+								let writeFile = fs.createWriteStream(filePath)
+								writeFile.on("finish", resolve)
+
+								response.pipe(writeFile)
+							}
 						})
 					} else {
 						resolve()
@@ -87,7 +89,7 @@ let commands = {
 				}).then(function() {
 					let audio = vc.connection.playFile(filePath, { volume: 0.33 })
 					audio.on("end", function() {
-						vc.leave()
+						// vc.leave()
 					})
 					audio.file = filePath
 				})
