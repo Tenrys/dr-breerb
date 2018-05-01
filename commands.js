@@ -52,7 +52,7 @@ let commands = {
 		callback: function(msg, line, ...args) {
 			if (!soundlistKeys) { return }
 
-			let vc = commands.join(msg)
+			let vc = commands["join"].callback(msg)
 
 			line = line.toLowerCase().trim()
 
