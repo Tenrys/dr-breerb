@@ -1,0 +1,13 @@
+{
+  "name": "dr-breerb",
+  "version": "1.0.0",
+  "description": "Plays chatsounds from the Garry's Mod chatsounds addon by Meta Construct in voice channels.",
+  "main": "index.js",
+  "author": "Tenrys",
+  "license": "GPL",
+  "dependencies": {
+    "discord.js": "^11.3.2",
+    "node-opus": "^0.2.7",
+    "shelljs": "^0.8.1"
+  }
+}
