@@ -57,5 +57,5 @@ client.on("message", function(msg) {
 	}
 })
 
-client.login(fs.readFileSync("token"))
+client.login(fs.readFileSync("token", { encoding: "utf-8" }))
 
