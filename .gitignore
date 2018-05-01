@@ -3,3 +3,4 @@ node_modules
 .vscode
 token
 soundlist.json
+package-lock.json
