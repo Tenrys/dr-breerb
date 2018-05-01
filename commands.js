@@ -62,7 +62,13 @@ let commands = {
 					msg.reply("invalid chatsound.")
 					return
 				}
-				let sndInfo = sndPath.random()
+				let num = line.match("#\d+$")
+				let sndInfo
+				if (num) {
+					sndInfo = sndPath[Math.min(0, Math.max(num - 1, sndPath.length))]
+				} else {
+					sndInfo = sndPath.random()
+				}
 				sndPath = new RegExp("^chatsounds/autoadd/(.*)").exec(sndInfo.path)[1]
 
 				let filePath = path.join("cache", sndPath)
