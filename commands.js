@@ -71,9 +71,9 @@ let commands = {
 					return
 				}
 
-				num = Math.floor(Math.max(0, Math.min(parseInt(num, 10) - 1, sndPath.length - 1)))
 				let sndInfo
-				if (num !== undefined) {
+				if (num !== undefined && num !== null) {
+					num = Math.floor(Math.max(0, Math.min(parseInt(num, 10) - 1, sndPath.length - 1)))
 					sndInfo = sndPath[num]
 				} else {
 					sndInfo = sndPath.random()
