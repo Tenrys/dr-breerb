@@ -29,6 +29,11 @@ let commands = {
 				} else {
 					msg.reply("you aren't in any channel.")
 				}
+			} else {
+				if (!vc.connection) {
+					vc.leave()
+					vc.join()
+				}
 			}
 
 			return vc
@@ -41,7 +46,6 @@ let commands = {
 
 			if (vc) {
 				vc.leave()
-				msg.reply("left channel.")
 			} else {
 				msg.reply("I am not in any channel.")
 			}
@@ -57,15 +61,19 @@ let commands = {
 			line = line.toLowerCase().trim()
 
 			if (vc && vc.connection) {
+				let num = /#(\d+)$/gi.exec(line)[1]
+				line = line.replace(/#\d+$/gi, "")
+
 				let sndPath = soundlistKeys[line]
 				if (!sndPath) {
 					msg.reply("invalid chatsound.")
 					return
 				}
-				let num = line.match("#\d+$")
+
+				num = Math.floor(Math.max(0, Math.min(parseInt(num, 10) - 1, sndPath.length - 1)))
 				let sndInfo
-				if (num) {
-					sndInfo = sndPath[Math.min(0, Math.max(num - 1, sndPath.length))]
+				if (num !== undefined) {
+					sndInfo = sndPath[num]
 				} else {
 					sndInfo = sndPath.random()
 				}
@@ -73,9 +81,6 @@ let commands = {
 
 				let filePath = path.join("cache", sndPath)
 
-				if (vc.connection.dispatcher) {
-					vc.connection.dispatcher.end()
-				}
 				let playFile = new Promise(function(resolve) {
 					if (!fs.existsSync(filePath)) {
 						let dir = /(.*)\/.*$/gi.exec(sndPath)
@@ -100,7 +105,7 @@ let commands = {
 					audio.file = filePath
 				})
 			} else {
-				msg.reply("I am not in any channel.")
+				msg.reply("I am not in any channel?")
 			}
 		},
 		help: "Plays a custom chatsound from the GitHub repository. Does not support chatsounds from games like Half-Life 2, and such."
