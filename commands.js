@@ -12,27 +12,28 @@ let currentFile
 let repoPath = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/chatsounds/autoadd/"
 
 let commands = {
-	"ping": {
+	ping: {
 		callback: function(msg, line, ...args) {
 			msg.reply("hi!")
 		},
 		help: "Pings the bot."
 	},
-	"join": {
-		callback: function(msg, line, ...args) {
+	join: {
+		callback: async function(msg, line, ...args) {
 			let vc = msg.guild.me.voiceChannel
 			if (!vc) {
 				vc = msg.member.voiceChannel
 
 				if (vc) {
-					vc.join()
+					await vc.join()
 				} else {
 					msg.reply("you aren't in any channel.")
 				}
 			} else {
 				if (!vc.connection) {
-					vc.leave()
-					vc.join()
+					console.log("No connection? What.")
+					await vc.leave()
+					await vc.join()
 				}
 			}
 
@@ -40,7 +41,7 @@ let commands = {
 		},
 		help: "Makes the bot join the voice channel you are currently in."
 	},
-	"leave": {
+	leave: {
 		callback: function(msg, line, ...args) {
 			let vc = msg.guild.me.voiceChannel
 
@@ -52,11 +53,11 @@ let commands = {
 		},
 		help: "Makes the bot leave the voice channel it's in."
 	},
-	"play": {
-		callback: function(msg, line, ...args) {
+	play: {
+		callback: async function(msg, line, ...args) {
 			if (!soundlistKeys) { return }
 
-			let vc = commands["join"].callback(msg)
+			let vc = await commands["join"].callback(msg)
 
 			line = line.toLowerCase().trim()
 
@@ -101,7 +102,7 @@ let commands = {
 						resolve()
 					}
 				}).then(function() {
-					let audio = vc.connection.playStream(fs.createReadStream(filePath), { volume: 0.33 })
+					let audio = vc.connection.play(fs.createReadStream(filePath), { volume: 0.33 })
 					audio.on("start", () => console.log(sndPath, ": start"))
 					audio.on("end", () => console.log(sndPath, ": end"))
 				})
@@ -111,7 +112,7 @@ let commands = {
 		},
 		help: "Plays a custom chatsound from the GitHub repository. Does not support chatsounds from games like Half-Life 2, and such."
 	},
-	"stop": {
+	stop: {
 		callback: function(msg, line, ...args) {
 			let vc = msg.guild.me.voiceChannel
 			if (vc && vc.connection && vc.connection.dispatcher) {
@@ -120,7 +121,7 @@ let commands = {
 		},
 		help: "Stops playing a chatsound."
 	},
-	"volume": {
+	volume: {
 		callback: function(msg, line, vol, ...args) {
 			let vc = msg.guild.me.voiceChannel
 
@@ -140,13 +141,13 @@ let commands = {
 		},
 		help: "Changes the volume of the current chatsound. It does not persist through chatsounds!\n\nVolume can be between 0 and 1. Default volume is 0.6."
 	},
-	"commands": {
+	commands: {
 		callback: function(msg, line, ...args) {
 			msg.reply("here are the available commands:\n`" + Object.keys(commands).join(", ") + "`")
 		},
 		help: "Displays the list of available commands."
 	},
-	"help": {
+	help: {
 		callback: function(msg, line, cmd) {
 			cmd = cmd.toLowerCase().trim()
 

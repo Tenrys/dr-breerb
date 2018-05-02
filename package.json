@@ -6,10 +6,10 @@
   "author": "Tenrys",
   "license": "GPL",
   "scripts": {
-	"start": "./start.sh"
+    "start": "./start.sh"
   },
   "dependencies": {
-    "discord.js": "^11.3.2",
+    "discord.js": "github:hydrabolt/discord.js",
     "node-opus": "^0.2.7",
     "shelljs": "^0.8.1"
   }
