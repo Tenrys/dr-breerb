@@ -102,10 +102,6 @@ let commands = {
 					}
 				}).then(function() {
 					let audio = vc.connection.playFile(filePath, { volume: 0.33 })
-					audio.on("end", function() {
-						// vc.leave()
-					})
-					audio.file = filePath
 				})
 			} else {
 				msg.reply("I am not in any channel?")
