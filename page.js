@@ -74,7 +74,7 @@ client.on("message", function(msg) {
 			let _page = page.pages[id];
 			if (_page.switching && msg.author.id == _page.query.author.id) {
 				if (_page.switching.timeout > time()) {
-					if (typeof num !== "number") { msg.reply("invalid page number."); return }
+					if (typeof num !== "number" || isNaN(num)) { msg.reply("invalid page number."); return }
 
 					num = Math.floor(Math.max(1, Math.min(num, _page.lastPage)))
 
