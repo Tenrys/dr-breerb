@@ -10,23 +10,25 @@ Array.prototype.random = function() {
 
 // Load chatsound list from web
 // TODO: Load last downloaded list on fail
-// TODO: Avoid downloading new version if it's very different?
+// TODO: Avoid downloading new version if it's not very old?
 global.soundlist
 global.soundlistKeys = {}
 let loadSoundlist = new Promise(function(resolve) {
-	let request = http.get("http://cs.3kv.in/soundlist.json", function(response) {
-		let stream = fs.createWriteStream("soundlist.json")
-		stream.on("finish", resolve)
+	if (!fs.existsSync("soundlist.json")) {
+		let request = http.get("http://cs.3kv.in/soundlist.json", function(response) {
+			let stream = fs.createWriteStream("soundlist.json")
+			stream.on("finish", resolve)
 
-		response.pipe(stream)
-	})
+			response.pipe(stream)
+		})
+	} else { resolve() }
 }).then(function() {
 	soundlist = JSON.parse(fs.readFileSync("soundlist.json"))
 
-	for (key in soundlist) {
+	for (let key in soundlist) {
 		if (soundlist.hasOwnProperty(key)) {
 			let cat = soundlist[key]
-			for (name in cat) {
+			for (let name in cat) {
 				if (cat.hasOwnProperty(name)) {
 					if (!soundlistKeys[name]) { soundlistKeys[name] = [] }
 
@@ -54,7 +56,12 @@ client.on("message", function(msg) {
 	let match = /^!([^\s.]*)\s?(.*)/gi.exec(msg.content)
 	if (match && match[1]) {
 		let cmd = match[1]
-		let args = parse(match[2])
+		let args = []
+		try {
+			args = parse(match[2])
+		} catch (e) {
+			console.warn(`Argument parsing for command '${cmd}' failed with line '${match[2]}'. Unexpected results may occur.`)
+		}
 
 		let action = commands[cmd]
 		if (action && action.callback) {

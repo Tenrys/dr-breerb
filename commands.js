@@ -6,8 +6,10 @@ const http = require("http")
 const path = require("path")
 const shell = require("shelljs")
 const util = require("util")
+const page = require("./page.js")
 
-let repoPath = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/chatsounds/autoadd/"
+// let repoPath = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/chatsounds/autoadd/"
+let repoPath = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/"
 function truncate(res) {
 	if (res.length > 1970) {
 		return res.substr(0, 1970) + "\n[...] (output truncated)"
@@ -16,11 +18,9 @@ function truncate(res) {
 	}
 }
 
-/* TODO: Page system for chatsound search
- * TODO: Suggest chatsounds instead of saying "invalid"
+/*
  * TODO: Allow overlapping chatsounds on top of another, !stop command stops all (add "sh"?)
  * TODO: Add modifiers somehow
- * TODO: Better sort algorithm for search
  */
 
 let commands = {
@@ -69,7 +69,7 @@ let commands = {
 	},
 	play: {
 		callback: async function(msg, line, ...args) {
-			if (!soundlistKeys) { return }
+			if (!soundlistKeys) { msg.reply("sound list hasn't loaded yet."); return }
 
 			let vc = await commands["join"].callback(msg)
 
@@ -91,7 +91,8 @@ let commands = {
 					// Get the chatsound and its variants
 					snd = soundlistKeys[line]
 					if (!snd) {
-						msg.reply("invalid chatsound.")
+						msg.reply("were you looking for these chatsounds?")
+						commands["search"].callback(msg, line, { displayCount: 5 })
 						return
 					}
 
@@ -104,7 +105,8 @@ let commands = {
 					}
 				}
 
-				let sndPath = new RegExp("^chatsounds/autoadd/(.*)").exec(sndInfo.path)[1]
+				// let sndPath = new RegExp("^chatsounds/autoadd/(.*)").exec(sndInfo.path)[1]
+				let sndPath = sndInfo.path
 				let filePath = path.join("cache", sndPath)
 
 				let playFile = new Promise(function(resolve) {
@@ -130,8 +132,6 @@ let commands = {
 					audio.on("start", () => console.log(sndPath, ": start"))
 					audio.on("end", () => console.log(sndPath, ": end"))
 				})
-			} else {
-				msg.reply("I am not in any channel?")
 			}
 		},
 		guildOnly: true,
@@ -168,8 +168,16 @@ let commands = {
 		guildOnly: true,
 		help: "Changes the volume of the current chatsound. It does not persist through chatsounds!\n\nVolume can be between 0 and 1. Default volume is 0.6."
 	},
-	search: { // TODO: Page system???
-		callback: function(msg, line) {
+	search: {
+		callback: function(msg, line, ...options) {
+			if (options && typeof options[0] == "object") {
+				options = options[0]
+			} else {
+				options = undefined
+			}
+
+			if (!soundlistKeys) { msg.reply("sound list hasn't loaded yet."); return }
+
 			line = line.toLowerCase().trim()
 
 			let results = []
@@ -181,21 +189,34 @@ let commands = {
 				}
 			}
 			results.sort(function(a, b) {
-				return a.length < b.length
+				return 	a.length - b.length || // sort by length, if equal then
+						a.localeCompare(b)     // sort by dictionary order
 			})
 
-			let buf = ""
-			for (let i = 0; i < 10; i++) {
-				if (!results[i]) { break }
-				buf = buf + (i + 1) + `. \`${results[i]}\`\n`
+			let handler = async function(to) {
+				let displayCount = this.displayCount || page.displayCount
+				let buf = ""
+				for (let i = displayCount * (this.page - 1); i < displayCount * this.page; i++) {
+					if (!this.data[i]) { break }
+					buf = buf + (i + 1) + `. \`${this.data[i]}\`\n`
+				}
+
+				let embed = new Discord.MessageEmbed()
+					.setAuthor(msg.author.tag, msg.author.avatarURL())
+					.setTitle("Chatsound search results:")
+					.setDescription(buf)
+					.setFooter(`Page ${this.page}/${this.lastPage} (${this.data.length} entries)`)
+
+				let result = this.message
+				if (!result) {
+					result = await msg.channel.send(embed)
+				} else {
+					await this.message.edit(embed)
+				}
+
+				return result
 			}
-
-			let embed = new Discord.MessageEmbed()
-				.setAuthor(msg.author.tag, msg.author.avatarURL())
-				.setTitle("Chatsound search results:")
-				.setDescription(buf)
-
-			msg.channel.send(embed)
+			return page.init(null, msg, results, handler, options ? options.displayCount : null)
 		},
 		help: "Searches chatsounds by name."
 	},
