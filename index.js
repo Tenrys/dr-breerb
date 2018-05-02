@@ -23,11 +23,13 @@ let loadSoundlist = new Promise(function(resolve) {
 		if (soundlist.hasOwnProperty(key)) {
 			let cat = soundlist[key]
 			for (name in cat) {
-				if (!soundlistKeys[name]) { soundlistKeys[name] = [] }
+				if (cat.hasOwnProperty(name)) {
+					if (!soundlistKeys[name]) { soundlistKeys[name] = [] }
 
-				let sounds = cat[name]
-				for (let i = 0; i < sounds.length; i++) {
-					soundlistKeys[name].push(sounds[i])
+					let sounds = cat[name]
+					for (let i = 0; i < sounds.length; i++) {
+						soundlistKeys[name].push(sounds[i])
+					}
 				}
 			}
 		}
