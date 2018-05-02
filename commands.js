@@ -160,6 +160,37 @@ let commands = {
 		guildOnly: true,
 		help: "Changes the volume of the current chatsound. It does not persist through chatsounds!\n\nVolume can be between 0 and 1. Default volume is 0.6."
 	},
+	search: { // TODO: Page system???
+		callback: function(msg, line) {
+			line = line.toLowerCase().trim()
+
+			let results = []
+			for (key in soundlistKeys) {
+				if (soundlistKeys.hasOwnProperty(key)) {
+					if (key.toLowerCase().trim().indexOf(line) !== -1) {
+						results.push(key)
+					}
+				}
+			}
+			results.sort(function(a, b) {
+				return a.length < b.length && a > b
+			})
+
+			let buf = ""
+			for (let i = 0; i < 10; i++) {
+				if (!results[i]) { break }
+				buf = buf + (i + 1) + `. \`${results[i]}\`\n`
+			}
+
+			let embed = new Discord.MessageEmbed()
+				.setAuthor(msg.author.tag, msg.author.avatarURL())
+				.setTitle("Chatsound search results:")
+				.setDescription(buf)
+
+			msg.channel.send(embed)
+		},
+		help: "Searches chatsounds by name."
+	},
 	commands: {
 		callback: function(msg, line, ...args) {
 			msg.reply("here are the available commands:\n`" + Object.keys(commands).join(", ") + "`")
