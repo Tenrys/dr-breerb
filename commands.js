@@ -4,11 +4,6 @@ const http = require("http")
 const path = require("path")
 const shell = require("shelljs")
 
-if (!fs.existsSync("cache")) {
-	fs.mkdirSync("cache")
-}
-
-let currentFile
 let repoPath = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/chatsounds/autoadd/"
 
 let commands = {
