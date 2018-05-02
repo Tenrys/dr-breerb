@@ -15,6 +15,14 @@ function truncate(res) {
 		return res
 	}
 }
+
+/* TODO: Page system for chatsound search
+ * TODO: Suggest chatsounds instead of saying "invalid"
+ * TODO: Allow overlapping chatsounds on top of another, !stop command stops all (add "sh"?)
+ * TODO: Add modifiers somehow
+ * TODO: Better sort algorithm for search
+ */
+
 let commands = {
 	ping: {
 		callback: function(msg, line, ...args) {
@@ -173,7 +181,7 @@ let commands = {
 				}
 			}
 			results.sort(function(a, b) {
-				return a.length < b.length && a < b
+				return a.length < b.length
 			})
 
 			let buf = ""
