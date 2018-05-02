@@ -51,7 +51,7 @@ function onReaction(reaction, user) {
 			let fwd = emoji == "▶"
 			_page.handle(fwd)
 		} else if (emoji == "⏹") {
-			_page.message.reactions.removeAll()
+			_page.message.delete()
 		} else if (emoji == "🔢") {
 			_page.query.reply("which page do you want to go to?").then(function(msg) {
 				_page.switching = {
