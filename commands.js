@@ -173,7 +173,7 @@ let commands = {
 				}
 			}
 			results.sort(function(a, b) {
-				return a.length < b.length && a > b
+				return a.length < b.length && a < b
 			})
 
 			let buf = ""
