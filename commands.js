@@ -84,7 +84,7 @@ let commands = {
 
 				let playFile = new Promise(function(resolve) {
 					if (!fs.existsSync(filePath)) {
-						console.log("Downloading file", sndPath)
+						console.log(sndPath, ": download")
 
 						let dir = /(.*)\/.*$/gi.exec(sndPath)
 						shell.mkdir("-p", path.join("cache", dir[1]))
@@ -102,6 +102,8 @@ let commands = {
 					}
 				}).then(function() {
 					let audio = vc.connection.playStream(fs.createReadStream(filePath), { volume: 0.33 })
+					audio.on("start", () => console.log(sndPath, ": start"))
+					audio.on("end", () => console.log(sndPath, ": end"))
 				})
 			} else {
 				msg.reply("I am not in any channel?")
