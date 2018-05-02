@@ -4,13 +4,17 @@
   "description": "Plays chatsounds from the Garry's Mod chatsounds addon by Meta Construct in voice channels.",
   "main": "index.js",
   "author": "Tenrys",
-  "license": "GPL",
+  "license": "GPL-3.0-only",
   "scripts": {
     "start": "./start.sh"
   },
   "dependencies": {
     "discord.js": "github:hydrabolt/discord.js",
+    "erlpack": "discordapp/erlpack",
     "node-opus": "^0.2.7",
-    "shelljs": "^0.8.1"
+    "shelljs": "^0.8.1",
+    "sodium": "^2.0.3",
+    "uws": "^9.148.0",
+    "zlib-sync": "^0.1.4"
   }
 }
