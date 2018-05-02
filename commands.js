@@ -84,6 +84,8 @@ let commands = {
 
 				let playFile = new Promise(function(resolve) {
 					if (!fs.existsSync(filePath)) {
+						console.log("Downloading file", sndPath)
+
 						let dir = /(.*)\/.*$/gi.exec(sndPath)
 						shell.mkdir("-p", path.join("cache", dir[1]))
 
