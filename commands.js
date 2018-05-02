@@ -61,7 +61,8 @@ let commands = {
 			line = line.toLowerCase().trim()
 
 			if (vc && vc.connection) {
-				let num = /#(\d+)$/gi.exec(line)[1]
+				let num = /#(\d+)$/gi.exec(line)
+				if (num) { num = num[1] }
 				line = line.replace(/#\d+$/gi, "")
 
 				let sndPath = soundlistKeys[line]
