@@ -19,7 +19,9 @@ function truncate(res) {
 }
 
 /*
- * TODO: Allow overlapping chatsounds on top of another, !stop command stops all (add "sh"?)
+ * TODO: Add support for Valve game sounds (https://github.com/PAC3-Server/chatsounds-valve-games)
+ * TODO: Allow overlapping chatsounds on top of another (https://www.npmjs.com/package/audio-mixer)
+ * TODO: Add "sh" support
  * TODO: Add modifiers somehow
  */
 
