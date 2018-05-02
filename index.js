@@ -19,18 +19,14 @@ let loadSoundlist = new Promise(function(resolve) {
 }).then(function() {
 	soundlist = JSON.parse(fs.readFileSync("soundlist.json"))
 
-	for (key in soundlist) {
-		if (soundlist.hasOwnProperty(key)) {
-			let cat = soundlist[key]
-			for (name in cat) {
-				if (cat.hasOwnProperty(name)) {
-					if (!soundlistKeys[name]) { soundlistKeys[name] = [] }
+	for (key of soundlist) {
+		let cat = soundlist[key]
+		for (name of cat) {
+			if (!soundlistKeys[name]) { soundlistKeys[name] = [] }
 
-					let sounds = cat[name]
-					for (let i = 0; i < sounds.length; i++) {
-						soundlistKeys[name].push(sounds[i])
-					}
-				}
+			let sounds = cat[name]
+			for (let i = 0; i < sounds.length; i++) {
+				soundlistKeys[name].push(sounds[i])
 			}
 		}
 	}
