@@ -1,11 +1,20 @@
+
+const Discord = require("discord.js")
 const fs = require("fs")
 const https = require("https")
 const http = require("http")
 const path = require("path")
 const shell = require("shelljs")
+const util = require("util")
 
 let repoPath = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/chatsounds/autoadd/"
-
+function truncate(res) {
+	if (res.length > 1970) {
+		return res.substr(0, 1970) + "\n[...] (output truncated)"
+	} else {
+		return res
+	}
+}
 let commands = {
 	ping: {
 		callback: function(msg, line, ...args) {
@@ -34,6 +43,7 @@ let commands = {
 
 			return vc
 		},
+		guildOnly: true,
 		help: "Makes the bot join the voice channel you are currently in."
 	},
 	leave: {
@@ -46,6 +56,7 @@ let commands = {
 				msg.reply("I am not in any channel.")
 			}
 		},
+		guildOnly: true,
 		help: "Makes the bot leave the voice channel it's in."
 	},
 	play: {
@@ -105,6 +116,7 @@ let commands = {
 				msg.reply("I am not in any channel?")
 			}
 		},
+		guildOnly: true,
 		help: "Plays a custom chatsound from the GitHub repository. Does not support chatsounds from games like Half-Life 2, and such."
 	},
 	stop: {
@@ -114,6 +126,7 @@ let commands = {
 				vc.connection.dispatcher.end()
 			}
 		},
+		guildOnly: true,
 		help: "Stops playing a chatsound."
 	},
 	volume: {
@@ -134,6 +147,7 @@ let commands = {
 				msg.reply("I am not in any channel.")
 			}
 		},
+		guildOnly: true,
 		help: "Changes the volume of the current chatsound. It does not persist through chatsounds!\n\nVolume can be between 0 and 1. Default volume is 0.6."
 	},
 	commands: {
@@ -153,6 +167,42 @@ let commands = {
 			}
 		},
 		help: "Displays information about a command."
+	},
+	eval: {
+		callback: function(msg, line) {
+			if (msg.author.id === "138685670448168960") {
+				try {
+					let ret = eval(line)
+
+					if (typeof ret !== "string")
+						ret = util.inspect(ret)
+
+					let embed = new Discord.MessageEmbed()
+						.setColor(0xE2D655)
+						.setAuthor(msg.author.tag, msg.author.avatarURL())
+						.setTitle("JavaScript result:")
+						.setDescription(
+`\`\`\`js
+${truncate(ret)}
+\`\`\``)
+
+					msg.channel.send(embed)
+				} catch (err) {
+					let embed = new Discord.MessageEmbed()
+						.setColor(0xE25555)
+						.setAuthor(msg.author.tag, msg.author.avatarURL())
+						.setTitle("JavaScript error:")
+						.setDescription(
+`\`\`\`js
+${truncate(err)}
+\`\`\``)
+
+					msg.channel.send(embed)
+				}
+			}
+		},
+		help: "Executes JavaScript code and returns its value. Owner only."
 	}
 }
 module.exports = commands
+

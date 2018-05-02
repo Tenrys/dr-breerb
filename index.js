@@ -1,5 +1,6 @@
+
 const Discord = require("discord.js")
-const client = new Discord.Client()
+global.client = new Discord.Client()
 const http = require("http")
 const fs = require("fs")
 const parse = require("./parseargs.js")
@@ -7,6 +8,9 @@ Array.prototype.random = function() {
 	return this[Math.floor((Math.random() * this.length))]
 }
 
+// Load chatsound list from web
+// TODO: Load last downloaded list on fail
+// TODO: Avoid downloading new version if it's very different?
 global.soundlist
 global.soundlistKeys = {}
 let loadSoundlist = new Promise(function(resolve) {
@@ -44,8 +48,8 @@ client.on("ready", function() {
 	client.user.setActivity("!commands", { type: "LISTENING" })
 })
 
+// Command handler
 let commands = require("./commands.js")
-
 client.on("message", function(msg) {
 	let match = /^!([^\s.]*)\s?(.*)/gi.exec(msg.content)
 	if (match && match[1]) {
@@ -54,10 +58,15 @@ client.on("message", function(msg) {
 
 		let action = commands[cmd]
 		if (action && action.callback) {
+			if (action.guildOnly && !msg.guild) {
+				msg.reply("This command can only be used while in a guild.")
+				return
+			}
 			action.callback(msg, match[2], ...args)
 		}
 	}
 })
 
+// Let's begin
 client.login(fs.readFileSync("token", { encoding: "utf-8" }).trim())
 
