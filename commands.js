@@ -68,25 +68,35 @@ let commands = {
 			line = line.toLowerCase().trim()
 
 			if (vc && vc.connection) {
-				let num = /#(\d+)$/gi.exec(line)
-				if (num) { num = num[1] }
-				line = line.replace(/#\d+$/gi, "")
+				let snd, sndInfo
 
-				let sndPath = soundlistKeys[line]
-				if (!sndPath) {
-					msg.reply("invalid chatsound.")
-					return
+				// Are we trying to get a random chatsound
+				if (line == "random") {
+					snd = soundlistKeys[Object.keys(soundlistKeys).random()]
+					sndInfo = snd.random()
+				} else { // If not
+					// Check if we want a specific chatsound
+					let num = /#(\d+)$/gi.exec(line)
+					if (num) { num = num[1] }
+					line = line.replace(/#\d+$/gi, "")
+
+					// Get the chatsound and its variants
+					snd = soundlistKeys[line]
+					if (!snd) {
+						msg.reply("invalid chatsound.")
+						return
+					}
+
+					// Determine which variant to play
+					if (num !== undefined && num !== null) {
+						num = Math.floor(Math.max(0, Math.min(parseInt(num, 10) - 1, snd.length - 1)))
+						sndInfo = snd[num]
+					} else {
+						sndInfo = snd.random()
+					}
 				}
 
-				let sndInfo
-				if (num !== undefined && num !== null) {
-					num = Math.floor(Math.max(0, Math.min(parseInt(num, 10) - 1, sndPath.length - 1)))
-					sndInfo = sndPath[num]
-				} else {
-					sndInfo = sndPath.random()
-				}
-				sndPath = new RegExp("^chatsounds/autoadd/(.*)").exec(sndInfo.path)[1]
-
+				let sndPath = new RegExp("^chatsounds/autoadd/(.*)").exec(sndInfo.path)[1]
 				let filePath = path.join("cache", sndPath)
 
 				let playFile = new Promise(function(resolve) {
