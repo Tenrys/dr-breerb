@@ -93,8 +93,7 @@ let commands = {
 					// Get the chatsound and its variants
 					snd = soundlistKeys[line]
 					if (!snd) {
-						msg.reply("were you looking for these chatsounds?")
-						commands["search"].callback(msg, line, { displayCount: 5 })
+						commands["search"].callback(msg, line, { content: "maybe you were looking for these chatsounds?", displayCount: 5 })
 						return
 					}
 
@@ -190,6 +189,10 @@ let commands = {
 					}
 				}
 			}
+			if (results.length <= 0) {
+				msg.reply("couldn't find any chatsound.")
+				return null
+			}
 			results.sort(function(a, b) {
 				return 	a.length - b.length || // sort by length, if equal then
 						a.localeCompare(b)     // sort by dictionary order
@@ -211,7 +214,7 @@ let commands = {
 
 				let result = this.message
 				if (!result) {
-					result = await msg.channel.send(embed)
+					result = await msg.channel.send(options ? options.content : "", embed)
 				} else {
 					await this.message.edit(embed)
 				}
