@@ -90,5 +90,13 @@ category.commands.color = {
 	guildOnly: true
 }
 
+client.on("ready", function() {
+	setInterval(60 * 60 * 1000, function() {
+		cleanColorRoles()
+	})
+
+	cleanColorRoles()
+})
+
 module.exports = category
 
