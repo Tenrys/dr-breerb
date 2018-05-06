@@ -52,7 +52,7 @@ function onReaction(reaction, user) {
 			_page.handle(fwd)
 		} else if (emoji == "⏹") {
 			_page.message.delete()
-		} else if (emoji == "🔢") {
+		} else if (emoji == "🔢" && !_page.switching) {
 			_page.query.reply("which page do you want to go to?").then(function(msg) {
 				_page.switching = {
 					message: msg,
