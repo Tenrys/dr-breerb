@@ -51,6 +51,8 @@ category.commands.color = {
 					r = /^#?([a-fA-F0-9_]+)/.exec(r)
 					if (!r) {
 						throw new Error("Invalid hex color (" + line + ")")
+					} else {
+						r = r[0]
 					}
 
 					color = Color(parseInt(r, 16))
