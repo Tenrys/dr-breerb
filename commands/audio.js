@@ -92,7 +92,7 @@ category.commands.play = {
 				// Get the chatsound and its variants
 				snd = client.soundListKeys[line]
 				if (!snd) {
-					client.getComands().search.callback(msg, line, { content: `<@${msg.author.id}>, maybe you were looking for these chatsounds?`, displayCount: 5 })
+					client.getCommands().search.callback(msg, line, { content: `<@${msg.author.id}>, maybe you were looking for these chatsounds?`, displayCount: 5 })
 					return
 				}
 

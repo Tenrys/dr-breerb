@@ -116,7 +116,7 @@ client.on("message", function(msg) {
 		try {
 			args = parse(line)
 		} catch (e) {
-			console.warn(chalk.bold.yellow(`[command: ${cmd}] `) + chalk.red('argument parsing failed with line "' + line + '". Unexpected results may occur.'))
+			console.warn(chalk.bold.yellow(`[command: ${cmd}] `) + chalk.red('Argument parsing failed with line "' + line + '". Unexpected results may occur.'))
 		}
 
 		let action = client.getCommands()[cmd]
@@ -129,7 +129,7 @@ client.on("message", function(msg) {
 				msg.reply("this command can only be used by the bot's owner.")
 				return
 			}
-			console.log(chalk.bold.yellow(`[command: ${cmd}] `) + 'from ' + msg.author.tag + (line ? ` with args "${line}"` : ""))
+			console.log(chalk.bold.yellow(`[command: ${cmd}] `) + 'From ' + msg.author.tag + (line ? ` ("${line}")` : ""))
 			action.callback(msg, match[2], ...args)
 		}
 	}

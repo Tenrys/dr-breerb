@@ -1,6 +1,8 @@
 
 const Discord = require("discord.js")
 const Color = require("color")
+const ColorThief = require('color-thief-jimp')
+const Jimp = require('jimp');
 
 let category = {
 	commands: {},
@@ -9,21 +11,13 @@ let category = {
 	printName: ":paintbrush: Colors"
 }
 
-// TODO:
-
-function cleanColorRoles(member) {
+async function cleanColorRoles(member) {
 	if (member) {
 		if (member.guild.me.hasPermission("MANAGE_ROLES")) {
-			member.roles.filter(role => role.name.match("^#")).every(role => {
-				member.roles.remove(role).then(() => {
-					if (role.members.array().length < 1) {
-						role.delete()
-					}
-				})
-			})
+			await member.roles.filter(role => role.name.match("^#")).every(role => member.roles.remove(role))
 		}
 	} else {
-		client.guilds.filter(guild => guild.me.hasPermission("MANAGE_ROLES")).every(guild => {
+		await client.guilds.filter(guild => guild.me.hasPermission("MANAGE_ROLES")).every(guild => {
 			guild.roles.filter(role => role.name.match("^#") && role.members.array().length < 1).every(role => role.delete())
 		})
 	}
@@ -34,35 +28,47 @@ category.commands.color = {
 
 		if (!msg.member) { msg.reply("webhooks are unsupported."); return } // Could also be trying to use userbot as bot, that shit doesn't work for some reason lol
 
+		line = line.toLowerCase().trim()
+		r = r || line
+
 		let color
-		try {
-			if (r !== undefined && g !== undefined && b !== undefined) {
-				r = parseInt(r, 10)
-				g = parseInt(g, 10)
-				b = parseInt(b, 10)
-				if (isNaN(r) || isNaN(g) || isNaN(b)) {
-					throw new Error("RGB value is NaN")
+		if (line == "avatar") {
+			let img = await Jimp.read(msg.author.avatarURL({ format: "png" }))
+			let dominant = ColorThief.getColor(img)
+			color = Color({ r: dominant[0], g: dominant[1], b: dominant[2] })
+		} else {
+			try {
+				if (r !== undefined && g !== undefined && b !== undefined) {
+					r = parseInt(r, 10)
+					g = parseInt(g, 10)
+					b = parseInt(b, 10)
+					if (isNaN(r) || isNaN(g) || isNaN(b)) {
+						throw new Error("RGB value is NaN")
+					}
+
+					color = Color.rgb(r, g, b)
+				} else if (r !== undefined && (g === undefined || b === undefined)) {
+					r = /^#?([a-fA-F0-9_]+)/.exec(r)
+					if (!r) {
+						throw new Error("Invalid hex color (" + line + ")")
+					}
+
+					color = Color(parseInt(r, 16))
+				} else {
+					await cleanColorRoles(msg.member)
+					msg.reply("I reset your color roles.")
+					return
 				}
-
-				color = Color.rgb(r, g, b)
-			} else if (r !== undefined && (g === undefined || b === undefined)) {
-				r = /^#?([a-fA-F0-9_]+)/.exec(r)[1]
-
-				color = Color(parseInt(r, 16))
-			} else {
-				cleanColorRoles(msg.member)
-				msg.reply("I reset your color roles.")
+			} catch (e) {
+				console.warn("Color parsing error: ", e)
+				msg.reply("invalid color.")
 				return
 			}
-		} catch (e) {
-			console.log("Color parsing error: ", e)
-			msg.reply("invalid color.")
-			return
 		}
 
 		if (!color) { msg.reply("invalid color."); return }
 
-		cleanColorRoles(msg.member)
+		await cleanColorRoles(msg.member)
 
 		let role = msg.guild.roles.find(role => role.name.match("^" + color.hex()))
 
@@ -71,10 +77,13 @@ category.commands.color = {
 				data: {
 					name: color.hex(),
 					color: color.hex(),
-					hoist: false,
-					position: msg.guild.me.roles.highest.position
-				},
-				reason: "created by " + msg.guild.me.user.tag
+					permissions: [],
+					hoist: false
+				}
+			}).then(role => {
+				let lowest = msg.guild.me.roles.filter(role => role.name !== "@everyone").sort((a, b) => b.position < a.position).array()[0].position
+				role.setPosition(lowest - 1)
+				return role
 			})
 		}
 
@@ -86,7 +95,7 @@ category.commands.color = {
 
 		msg.channel.send(embed)
 	},
-	help: "Set your username color using a role. Supported color formats are Hexadecimal and RGB. Call without arguments to reset your color.",
+	help: "Set your username color using a role. Supported color formats are Hexadecimal and RGB. Call without arguments to reset your color.\nYou can also use your avatar's dominant color by passing `avatar` as the argument.",
 	guildOnly: true
 }
 
