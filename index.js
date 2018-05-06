@@ -108,14 +108,15 @@ client.on("message", function(msg) {
 	if (client.ignoreList[msg.author.id]) { return }
 	if (client.ownerOnly && msg.author.id !== client.ownerId) { return }
 
-	let match = new RegExp(`^${prefix}([^\\s.]*)\\s?(.*)`, "gi").exec(msg.content)
+	let match = new RegExp(`^${prefix}([^\\s.]*)\\s?(.*)`, "gim").exec(msg.content)
 	if (match && match[1]) {
 		let cmd = match[1].toLowerCase()
+		let line = match[2]
 		let args = []
 		try {
-			args = parse(match[2])
+			args = parse(line)
 		} catch (e) {
-			console.warn(chalk.bold.yellow(`[command: ${cmd}] `) + chalk.red('argument parsing failed with line "' + match[2] + '". Unexpected results may occur.'))
+			console.warn(chalk.bold.yellow(`[command: ${cmd}] `) + chalk.red('argument parsing failed with line "' + line + '". Unexpected results may occur.'))
 		}
 
 		let action = client.getCommands()[cmd]
@@ -128,7 +129,7 @@ client.on("message", function(msg) {
 				msg.reply("this command can only be used by the bot's owner.")
 				return
 			}
-			console.log(chalk.bold.yellow(`[command: ${cmd}] `) + 'from ' + msg.author.tag + (match[2] ? ` with args "${match[2]}"` : ""))
+			console.log(chalk.bold.yellow(`[command: ${cmd}] `) + 'from ' + msg.author.tag + (line ? ` with args "${line}"` : ""))
 			action.callback(msg, match[2], ...args)
 		}
 	}

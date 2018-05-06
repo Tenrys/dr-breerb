@@ -68,37 +68,32 @@ category.commands.help = {
 }
 category.commands.eval = {
 	callback: function(msg, line) {
+		let embed = new Discord.MessageEmbed()
+			.setAuthor(msg.author.tag, msg.author.avatarURL())
+
+		let res
+
 		try {
-			let ret = eval(line)
+			res = eval(line)
 
-			if (typeof ret !== "string")
-				ret = util.inspect(ret)
+			if (typeof res !== "string")
+				res = util.inspect(ret)
 
-			let embed = new Discord.MessageEmbed()
-				.setColor(0xE2D655)
-				.setAuthor(msg.author.tag, msg.author.avatarURL())
+			embed.setColor(0xE2D655)
 				.setTitle("JavaScript result")
-				.setDescription(
-`\`\`\`js
-${truncate(ret)}
-\`\`\``)
-
-			msg.channel.send(embed)
 		} catch (err) {
-			let embed = new Discord.MessageEmbed()
-				.setColor(0xE25555)
-				.setAuthor(msg.author.tag, msg.author.avatarURL())
-				.setTitle("JavaScript error")
-				.setDescription(
-`\`\`\`js
-${truncate(err)}
-\`\`\``)
+			res = err
 
-			msg.channel.send(embed)
+			embed.setColor(0xE25555)
+				.setTitle("JavaScript error")
 		}
+
+		embed.setDescription(`\`\`\`js\n${truncate(res)}\n\`\`\``)
+
+		msg.channel.send(embed)
 	},
 	ownerOnly: true,
-	help: "Executes JavaScript code and returns its value."
+	help: "Executes JavaScript code and displays its result."
 }
 category.commands.ignore = {
 	callback: function(msg, line) {
