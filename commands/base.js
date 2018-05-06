@@ -77,7 +77,7 @@ category.commands.eval = {
 			res = eval(line)
 
 			if (typeof res !== "string")
-				res = util.inspect(ret)
+				res = util.inspect(res)
 
 			embed.setColor(0xE2D655)
 				.setTitle("JavaScript result")
