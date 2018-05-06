@@ -91,9 +91,9 @@ category.commands.color = {
 }
 
 client.on("ready", function() {
-	setInterval(60 * 60 * 1000, function() {
+	setInterval(function() {
 		cleanColorRoles()
-	})
+	}, 60 * 60 * 1000)
 
 	cleanColorRoles()
 })
