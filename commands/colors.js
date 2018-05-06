@@ -52,7 +52,7 @@ category.commands.color = {
 					if (!r) {
 						throw new Error("Invalid hex color (" + line + ")")
 					} else {
-						r = r[0]
+						r = r[1] || r[0]
 					}
 
 					color = Color(parseInt(r, 16))
