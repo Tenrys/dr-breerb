@@ -48,6 +48,7 @@ let loadSoundlist = new Promise(function(resolve) {
 					for (let i = 0; i < sounds.length; i++) {
 						client.soundListKeys[name].push(sounds[i])
 					}
+					client.soundListKeys[name].sort()
 				}
 			}
 		}
