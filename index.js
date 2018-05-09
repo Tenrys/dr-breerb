@@ -1,4 +1,30 @@
 
+// TODO: Make client variable be a cached export of this file instead of polluting global scope
+/*
+	20:50 - ⊰ ｘａｏｔｉｃ ⊱: https://hastebin.com/rizekabudu.js
+	20:50 - Kotori Habane: ah well
+	20:50 - Kotori Habane: yeah i do it this way
+	20:50 - Kotori Habane: well
+	20:50 - Kotori Habane: i could experiment i suppose
+	20:50 - ⊰ ｘａｏｔｉｃ ⊱: yup yup
+	20:51 - Kotori Habane: im just wondering
+	20:51 - Kotori Habane: requiring that file
+	20:51 - Kotori Habane: is going to be creating a new client every tie
+	20:51 - Kotori Habane: time
+	20:51 - ⊰ ｘａｏｔｉｃ ⊱: no
+	20:51 - ⊰ ｘａｏｔｉｃ ⊱: as ive said
+	20:51 - ⊰ ｘａｏｔｉｃ ⊱: its being cached
+	20:51 - Kotori Habane: mm ok
+	20:51 - Kotori Habane: so its not like include in lua
+	20:51 - Kotori Habane: glua*
+	20:51 - ⊰ ｘａｏｔｉｃ ⊱: include is not require
+	20:52 - ⊰ ｘａｏｔｉｃ ⊱: include is putting the whole script above the script
+	20:52 - ⊰ ｘａｏｔｉｃ ⊱: require is importing exported resources
+	20:52 - Kotori Habane: gotcha
+*/
+
+// TODO: Make forin a reusable module instead of polluting global scope
+
 const Discord = require("discord.js")
 global.client = new Discord.Client()
 const http = require("http")
@@ -25,7 +51,7 @@ client.ownerId = "138685670448168960"
 // TODO: Load last downloaded list on fail
 // TODO: Avoid downloading new version if it's not very old?
 client.soundListKeys = {}
-let loadSoundlist = new Promise(function(resolve) {
+new Promise(function(resolve) {
 	if (!fs.existsSync("soundlist.json")) {
 		let request = http.get("http://cs.3kv.in/soundlist.json", function(response) {
 			let stream = fs.createWriteStream("soundlist.json")
