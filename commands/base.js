@@ -139,9 +139,6 @@ category.commands.pick = { // This is stupidly easy but Kabus wanted it
 		if (!str) { return }
 		if (str.length < 1) { return }
 
-		// TODO: Make this apply to all commands somehow
-		str.filter(x => x.match("@everyone")).map(x => x.replace("@everyone", "@\u200Beveryone"))
-
 		msg.reply(str.random())
 	},
 	help: "Picks a random argument from the ones you provide."
