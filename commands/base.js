@@ -129,7 +129,7 @@ category.commands.lockdown = {
 	},
 	ownerOnly: true
 }
-category.commands.lockdown = { // This is stupidly easy but Kabus wanted it
+category.commands.pick = { // This is stupidly easy but Kabus wanted it
 	callback: function(msg, line, ...str) {
 		if (!str) { return }
 		msg.reply(str.random())
