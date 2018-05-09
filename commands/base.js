@@ -129,5 +129,11 @@ category.commands.lockdown = {
 	},
 	ownerOnly: true
 }
+category.commands.lockdown = {
+	callback: function(msg, line, ...str) {
+		msg.reply(str.random())
+	},
+	help: "Picks a random argument from the ones you provide."
+}
 
 module.exports = category
