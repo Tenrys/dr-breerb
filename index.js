@@ -109,7 +109,7 @@ client.on("message", function(msg) {
 	if (client.ignoreList[msg.author.id]) { return }
 	if (client.ownerOnly && msg.author.id !== client.ownerId) { return }
 
-	let match = new RegExp(`^${prefix}([^\\s.]*)\\s?(.*)`, "gim").exec(msg.content)
+	let match = new RegExp(`^${prefix}([^\\s.]*)\\s?([\\s\\S]*)`, "gmi").exec(msg.content)
 	if (match && match[1]) {
 		let cmd = match[1].toLowerCase()
 		let line = match[2]
