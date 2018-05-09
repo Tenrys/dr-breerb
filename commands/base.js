@@ -68,6 +68,11 @@ category.commands.help = {
 }
 category.commands.eval = {
 	callback: function(msg, line) {
+		let code = /^`+(.*)`*$/gi.exec(line.trim())
+		if (code && code[1]) {
+			line = code[1]
+		}
+
 		let embed = new Discord.MessageEmbed()
 			.setAuthor(msg.author.tag, msg.author.avatarURL())
 
@@ -132,6 +137,11 @@ category.commands.lockdown = {
 category.commands.pick = { // This is stupidly easy but Kabus wanted it
 	callback: function(msg, line, ...str) {
 		if (!str) { return }
+		if (str.length < 1) { return }
+
+		// TODO: Make this apply to all commands somehow
+		str.filter(x => x.match("@everyone")).map(x => x.replace("@everyone", "@\u200Beveryone"))
+
 		msg.reply(str.random())
 	},
 	help: "Picks a random argument from the ones you provide."
