@@ -129,8 +129,9 @@ category.commands.lockdown = {
 	},
 	ownerOnly: true
 }
-category.commands.lockdown = {
+category.commands.lockdown = { // This is stupidly easy but Kabus wanted it
 	callback: function(msg, line, ...str) {
+		if (!str) { return }
 		msg.reply(str.random())
 	},
 	help: "Picks a random argument from the ones you provide."
