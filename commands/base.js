@@ -68,9 +68,13 @@ category.commands.help = {
 }
 category.commands.eval = {
 	callback: function(msg, line) {
-		let code = /^```[^\s.]*\s?([\s\S]*)```$/gim.exec(line.trim())
+		let code = /^```\w*\n([\s\S]*)```$/gim.exec(line.trim()) // Test if we put a language after the code blocks first
 		if (code && code[1]) {
 			line = code[1]
+		} else {
+			code = /^```([\s\S]*)```$/gim.exec(line.trim()) // If not then treat everything inside as code
+			if (code && code[1])
+				line = code[1]
 		}
 
 		let embed = new Discord.MessageEmbed()
