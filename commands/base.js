@@ -68,7 +68,7 @@ category.commands.help = {
 }
 category.commands.eval = {
 	callback: function(msg, line) {
-		let code = /^`+(.*)`*$/gi.exec(line.trim())
+		let code = /^```[^\s.]*\s?([\s\S]*)```$/gim.exec(line.trim())
 		if (code && code[1]) {
 			line = code[1]
 		}
