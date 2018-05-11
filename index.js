@@ -1,36 +1,15 @@
 
-// TODO: Make client variable be a cached export of this file instead of polluting global scope
-/*
-	20:50 - ⊰ ｘａｏｔｉｃ ⊱: https://hastebin.com/rizekabudu.js
-	20:50 - Kotori Habane: ah well
-	20:50 - Kotori Habane: yeah i do it this way
-	20:50 - Kotori Habane: well
-	20:50 - Kotori Habane: i could experiment i suppose
-	20:50 - ⊰ ｘａｏｔｉｃ ⊱: yup yup
-	20:51 - Kotori Habane: im just wondering
-	20:51 - Kotori Habane: requiring that file
-	20:51 - Kotori Habane: is going to be creating a new client every tie
-	20:51 - Kotori Habane: time
-	20:51 - ⊰ ｘａｏｔｉｃ ⊱: no
-	20:51 - ⊰ ｘａｏｔｉｃ ⊱: as ive said
-	20:51 - ⊰ ｘａｏｔｉｃ ⊱: its being cached
-	20:51 - Kotori Habane: mm ok
-	20:51 - Kotori Habane: so its not like include in lua
-	20:51 - Kotori Habane: glua*
-	20:51 - ⊰ ｘａｏｔｉｃ ⊱: include is not require
-	20:52 - ⊰ ｘａｏｔｉｃ ⊱: include is putting the whole script above the script
-	20:52 - ⊰ ｘａｏｔｉｃ ⊱: require is importing exported resources
-	20:52 - Kotori Habane: gotcha
-*/
+// TODO: Make forin a reusable module instead of polluting global scope..maybe
 
-// TODO: Make forin a reusable module instead of polluting global scope
-
+// Load libraries
 const Discord = require("discord.js")
-global.client = new Discord.Client()
+const client = new Discord.Client()
+module.exports = client
+
 const http = require("http")
 const fs = require("fs")
-const parse = require("./parseargs.js")
-const chalk = require("chalk")
+
+// Custom fancy stuff
 Array.prototype.random = function() {
 	return this[Math.floor((Math.random() * this.length))]
 }
@@ -43,7 +22,11 @@ global.forin = function(obj, callback) { // I can't be fucked writing this over 
 	}
 }
 
+// Load our own stuff
+const commands = require("./commands.js")
+
 // Refer to https://github.com/Re-Dream/dreambot_mk2/projects/1 for other todos, basically
+// TODO: Proper logging
 // Also, future parity with DreamBot: need translate, Steam info and MyAnimeList support
 client.ownerId = "138685670448168960"
 
@@ -84,85 +67,10 @@ new Promise(function(resolve) {
 	console.log("Soundlist loaded!")
 })
 
-// Command handler
-client.ignoreList = {} // This isn't really well implemented.
-client.ownerOnly = false
-
-client.commands = require("./commands.js")
-client.getCommands = function(category) {
-	if (this.commands[category]) {
-		let commands = {}
-		forin(this.commands[category].commands, (name, data) => {
-			data.category = category
-			data.name = name
-			commands[name] = data
-			if (data.aliases) {
-				data.aliases.forEach(name => {
-					commands[name] = data
-				})
-			}
-		})
-		return commands
-	} else {
-		let commands = {}
-		forin(this.commands, (category, data) => {
-			forin(data.commands, (name, data) => {
-				data.category = category
-				data.name = name
-				commands[name] = data
-				if (data.aliases) {
-					data.aliases.forEach(name => {
-						commands[name] = data
-					})
-				}
-			})
-		})
-		return commands
-	}
-}
-
-// Ready up
-// TODO: Per guild prefix
-let prefix = "!"
-
 client.on("ready", function() {
 	console.log(`Logged in as ${client.user.tag}!`)
-
-	client.user.setActivity(`${prefix}help`, { type: "LISTENING" })
 })
 
-// TODO: Proper logging
-client.on("message", function(msg) {
-	if (client.ignoreList[msg.author.id]) { return }
-	if (client.ownerOnly && msg.author.id !== client.ownerId) { return }
-
-	let match = new RegExp(`^${prefix}([^\\s.]*)\\s?([\\s\\S]*)`, "gmi").exec(msg.content)
-	if (match && match[1]) {
-		let cmd = match[1].toLowerCase()
-		let line = match[2]
-		let args = []
-		try {
-			args = parse(line)
-		} catch (e) {
-			console.warn(chalk.bold.yellow(`[command: ${cmd}] `) + chalk.red('Argument parsing failed with line "' + line + '". Unexpected results may occur.'))
-		}
-
-		let action = client.getCommands()[cmd]
-		if (action && action.callback) {
-			if (action.guildOnly && !msg.guild) {
-				msg.reply("this command can only be used while in a guild.")
-				return
-			}
-			if (action.ownerOnly && msg.author.id !== client.ownerId) {
-				msg.reply("this command can only be used by the bot's owner.")
-				return
-			}
-			console.log(chalk.bold.yellow(`[command: ${cmd}] `) + 'From ' + msg.author.tag + (line ? ` ("${line}")` : ""))
-			action.callback(msg, match[2], ...args)
-		}
-	}
-})
-
-// Let's begin
+// Begin
 client.login(fs.readFileSync("token", { encoding: "utf-8" }).trim())
 

@@ -1,9 +1,10 @@
 
+const client = require("./index.js")
+
 let page = {}
 
 page.pages = {}
 
-// TODO: Add number button (pick page num in chat)
 page.displayCount = 15
 page.init = async function(message, query, data, handler, displayCount) {
 	let _page = {
