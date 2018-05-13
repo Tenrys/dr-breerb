@@ -5,6 +5,7 @@ const ColorThief = require("color-thief-jimp")
 const Jimp = require("jimp")
 
 const client = require("../index.js")
+
 const { CommandCategory } = require("../commands.js")
 
 let category = new CommandCategory("colors", ":paintbrush: Colors", "Color roles for everyone!")
@@ -99,6 +100,8 @@ category.addCommand("color", async function(msg, line, r, g, b) {
 })
 
 client.on("ready", function() {
+	if (!client.user.bot) { return }
+
 	setInterval(function() {
 		cleanColorRoles()
 	}, 60 * 60 * 1000)

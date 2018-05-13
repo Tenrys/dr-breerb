@@ -33,7 +33,6 @@ client.ownerId = "138685670448168960"
 // Load chatsound list from web
 // TODO: Load last downloaded list on fail
 // TODO: Avoid downloading new version if it's not very old?
-// TODO: Command to reload soundlist
 client.soundListKeys = {}
 new Promise(function(resolve) {
 	if (!fs.existsSync("soundlist.json")) {
