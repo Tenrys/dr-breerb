@@ -4,6 +4,7 @@ const Color = require("color")
 const ColorThief = require("color-thief-jimp")
 const Jimp = require("jimp")
 
+const logger = require("../logging.js")
 const client = require("../index.js")
 
 const { CommandCategory } = require("../commands.js")
@@ -100,7 +101,10 @@ category.addCommand("color", async function(msg, line, r, g, b) {
 })
 
 client.on("ready", function() {
-	if (!client.user.bot) { return }
+	if (!client.user.bot) {
+		logger.warn("discord-color-roles", "Would have cleaned all roles, jesus fuck")
+		return
+	}
 
 	setInterval(function() {
 		cleanColorRoles()

@@ -7,6 +7,7 @@ const path = require("path")
 const shell = require("shelljs")
 const util = require("util")
 
+const logger = require("../logging.js")
 const page = require("../page.js")
 const client = require("../index.js")
 const { CommandCategory } = require("../commands.js")
@@ -19,10 +20,59 @@ let category = new CommandCategory("audio", ":speaker: Audio", "Voice channel st
  * TODO: Play chatsounds one after another, try using the same folder for them (prioritize long chatsounds over short ones) (queueing)
  * TODO: Allow assigning channel to play anything said as a chatsound if it exists (#chatsounds)
  * TODO: Add modifiers somehow (manually use ffmpeg for this shite?)
- * TODO: Add command to refresh soundlist
  * TODO: Make volume command persist through voice channel connection
  * TODO: Allow to search chatsounds by their residing folder / category
  */
+
+// Load chatsound list from web
+client.soundListKeys = {}
+client.loadSoundlist = function(err) {
+	try {
+		client.soundList = JSON.parse(fs.readFileSync("soundlist.json"))
+
+		for (let key in client.soundList) {
+			if (client.soundList.hasOwnProperty(key)) {
+				let cat = client.soundList[key]
+				for (let name in cat) {
+					if (cat.hasOwnProperty(name)) {
+						if (!client.soundListKeys[name]) { client.soundListKeys[name] = [] }
+
+						let sounds = cat[name]
+						for (let i = 0; i < sounds.length; i++) {
+							client.soundListKeys[name].push(sounds[i])
+						}
+						client.soundListKeys[name].sort()
+					}
+				}
+			}
+		}
+
+		logger.log("soundlist", "Loaded!")
+	} catch (err2) {
+		logger.error("soundlist", "Loading failed:")
+		logger.error(err || err2)
+	}
+}
+client.downloadSoundlist = function() {
+	return new Promise(function(resolve, reject) {
+		let stats, outdated
+		try {
+			stats = fs.statSync("soundlist.json")
+			outdated = new Date().getTime() > stats.mtime.getTime() + (86400 * 7)
+		} catch {}
+		if (!fs.existsSync("soundlist.json") || outdated) {
+			let request = http.get("http://cs.3kv.in/soundlist.json", function(response) {
+				let stream = fs.createWriteStream("soundlist.json")
+				stream.on("finish", resolve)
+
+				response.pipe(stream)
+			}).on("error", (err) => {
+				reject(err)
+			})
+		} else { resolve() }
+	})
+}
+client.downloadSoundlist().then(client.loadSoundlist, client.loadSoundlist)
 
 category.addCommand("join", async function(msg, line, ...args) {
 	if (!msg.member) { msg.reply("webhooks unsupported."); return }
@@ -39,7 +89,7 @@ category.addCommand("join", async function(msg, line, ...args) {
 		}
 	} else {
 		if (!vc.connection) {
-			console.log("No connection? What.")
+			logger.warn("discord-voice", "No connection? What.")
 			await vc.leave()
 			await vc.join()
 		}
@@ -105,7 +155,7 @@ category.addCommand("play", async function(msg, line) {
 
 		let playFile = new Promise(function(resolve) {
 			if (!fs.existsSync(filePath)) {
-				console.log(sndPath, ": download")
+				logger.log("sound", sndPath + ": download")
 
 				let dir = /(.*)\/.*$/gi.exec(sndPath)
 				shell.mkdir("-p", path.join("cache", dir[1]))
@@ -217,6 +267,13 @@ category.addCommand("search", function(msg, line, ...options) {
 }, {
 	aliases: ["find"],
 	help: "Searches chatsounds by name."
+})
+
+category.addCommand("reloadsnds", function(msg, line) {
+	fs.unlink(path.join(__dirname, "..", "soundlist.json"), client.downloadSoundlist().then(client.loadSoundlist))
+}, {
+	help: "Reloads the chatsound list.",
+	ownerOnly: true
 })
 
 module.exports = category
