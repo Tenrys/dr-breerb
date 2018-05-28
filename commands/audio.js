@@ -270,7 +270,12 @@ category.addCommand("search", function(msg, line, ...options) {
 })
 
 category.addCommand("reloadsnds", function(msg, line) {
-	fs.unlink(path.join(__dirname, "..", "soundlist.json"), client.downloadSoundlist().then(client.loadSoundlist))
+	fs.unlink(path.join(__dirname, "..", "soundlist.json"), function() {
+		client.downloadSoundlist().then(function() {
+			client.loadSoundlist()
+			msg.reply("chatsounds list refreshed.")
+		})
+	})
 }, {
 	help: "Reloads the chatsound list.",
 	ownerOnly: true
