@@ -155,7 +155,7 @@ category.addCommand("unignore", function(msg, line) {
 	ownerOnly: true
 })
 
-client.ownerOnly = false
+client.ownerOnly = true
 category.addCommand("lockdown", function(msg, line) {
 	client.ownerOnly = !client.ownerOnly
 	msg.reply("toggled lockdown " + (client.ownerOnly ? "on" : "off") + ".")

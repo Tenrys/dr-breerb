@@ -67,10 +67,13 @@ let categories = {
 	get: function(category) {
 		if (this[category] && this[category] instanceof CommandCategory) {
 			return this[category]
-		} else if (this.all[category] && this.all[category] instanceof Command) {
-			return this.all[category]
 		} else {
-			return this.all
+			let cmd = this.all.commands.get(category)
+			if (cmd && cmd instanceof Command) {
+				return cmd
+			} else {
+				return this.all
+			}
 		}
 	},
 	all: new CommandCategory("all", ":star: All commands", "Every command available.")

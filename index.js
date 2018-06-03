@@ -41,7 +41,7 @@ global.prettifyError = function(err) {
 
 const repl = require("repl")
 client.on("ready", function() {
-	logger.log("discord", `Logged in as ${client.user.tag}!`)
+	logger.success("discord", `Logged in as ${client.user.tag}`)
 
 	let replServer = repl.start("")
 	replServer.context.Discord = Discord
@@ -49,7 +49,7 @@ client.on("ready", function() {
 	replServer.on("exit", () => {
 		process.exit()
 	})
-	logger.log("repl", "Ready")
+	logger.success("repl", "Ready")
 })
 
 // Load our own stuff
@@ -76,3 +76,5 @@ process.on("uncaughtException", (err) => {
 	logger.error("critical", "Quitting to avoid unforeseen consequences")
 	process.exit()
 })
+
+logger.success("status", "Started")
