@@ -2,9 +2,11 @@
 const Discord = require("discord.js")
 const fs = require("fs")
 const util = require("util")
+const child_process = require("child_process")
 
 const client = require("../index.js")
 const { CommandCategory } = require("../commands.js")
+const logger = require("../logging.js")
 
 function truncate(res) {
 	if (res.length > 1970) {
@@ -46,7 +48,7 @@ category.addCommand("help", function(msg, line) { // Okay this is messy
 		forin(client.commands, (_, category) => {
 			if (category instanceof CommandCategory) {
 				if ((showAll && category.name === "all") || (!showAll && category.name !== "all")) {
-					embed.addField(category.printName, category.description + "\n\n" + "`" + category.commands.map(command => command.name).join(", ") + "`")
+					embed.addField(category.printName, category.description + "\n" + "```" + category.commands.map(command => command.name).join(", ") + "```")
 				}
 			}
 		})
@@ -70,18 +72,19 @@ category.addCommand("eval", function(msg, line) {
 
 	let res
 	try {
+		let print = msg.print
 		res = eval(line)
 
 		if (typeof res !== "string")
 			res = util.inspect(res)
 
 		embed.setColor(0xE2D655)
-			.setTitle("JavaScript result")
+			.setTitle(":ballot_box_with_check: JavaScript result")
 	} catch (err) {
-		res = err
+		res = prettifyError(err)
 
 		embed.setColor(0xE25555)
-			.setTitle("JavaScript error")
+			.setTitle(":interrobang: JavaScript error")
 	}
 
 	embed.setDescription(`\`\`\`js\n${truncate(res)}\n\`\`\``)
@@ -90,6 +93,37 @@ category.addCommand("eval", function(msg, line) {
 }, {
 	help: "Executes JavaScript code and displays its result.",
 	ownerOnly: true
+})
+
+let runCommand = function(msg, cmd) {
+	return new Promise((resolve, reject) => {
+		let proc = child_process.spawn(cmd, [], { shell: true })
+
+		proc.stdout.on("data", msg.print)
+		proc.stderr.on("data", msg.print)
+		proc.on("close", () => {
+			resolve()
+		})
+		proc.on("error", (err) => {
+			reject(err)
+		})
+	})
+}
+category.addCommand("exec", async function(msg, line) {
+	await runCommand(msg, line)
+}, {
+	help: "Executes a command from the shell.",
+	ownerOnly: true
+})
+category.addCommand("update", async function(msg, line) {
+	msg.reply("updating...\n")
+	await runCommand(msg, "git pull origin master")
+}, {
+	help: "Updates the bot to the latest revision from its GitHub repository and quits it.",
+	ownerOnly: true,
+	postRun: function() {
+		process.exit() // Restarting is handled by start.sh
+	}
 })
 
 client.ignoreList = {}

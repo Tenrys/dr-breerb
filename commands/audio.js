@@ -47,10 +47,9 @@ client.loadSoundlist = function(err) {
 			}
 		}
 
-		logger.log("soundlist", "Loaded!")
+		logger.log("soundlist", "Loaded")
 	} catch (err2) {
-		logger.error("soundlist", "Loading failed:")
-		logger.error(err || err2)
+		logger.error("soundlist", "Loading failed: " + (err || err2))
 	}
 }
 client.downloadSoundlist = function() {
@@ -59,7 +58,10 @@ client.downloadSoundlist = function() {
 		try {
 			stats = fs.statSync("soundlist.json")
 			outdated = new Date().getTime() > stats.mtime.getTime() + (86400 * 7)
-		} catch {}
+		} catch {
+
+		}
+
 		if (!fs.existsSync("soundlist.json") || outdated) {
 			let request = http.get("http://cs.3kv.in/soundlist.json", function(response) {
 				let stream = fs.createWriteStream("soundlist.json")
@@ -69,7 +71,9 @@ client.downloadSoundlist = function() {
 			}).on("error", (err) => {
 				reject(err)
 			})
-		} else { resolve() }
+		} else {
+			resolve()
+		}
 	})
 }
 client.downloadSoundlist().then(client.loadSoundlist, client.loadSoundlist)
@@ -117,7 +121,7 @@ let repoPath = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsound
 category.addCommand("play", async function(msg, line) {
 	if (!client.soundListKeys) { msg.reply("sound list hasn't loaded yet."); return }
 
-	let vc = await client.commands.get().commands.get("join").callback(msg)
+	let vc = await client.commands.get("join").callback(msg)
 
 	line = line.toLowerCase()
 
@@ -137,7 +141,7 @@ category.addCommand("play", async function(msg, line) {
 			// Get the chatsound and its variants
 			snd = client.soundListKeys[line]
 			if (!snd) {
-				client.commands.get().commands.get("search").callback(msg, line, { content: `<@${msg.author.id}>, maybe you were looking for these chatsounds?`, displayCount: 5 })
+				client.commands.get("search").callback(msg, line, { content: `<@${msg.author.id}>, maybe you were looking for these chatsounds?`, displayCount: 5 })
 				return
 			}
 
@@ -153,7 +157,7 @@ category.addCommand("play", async function(msg, line) {
 		let sndPath = sndInfo.path
 		let filePath = path.join("cache", sndPath)
 
-		let playFile = new Promise(function(resolve) {
+		let playFile = new Promise((resolve) => {
 			if (!fs.existsSync(filePath)) {
 				logger.log("sound", sndPath + ": download")
 

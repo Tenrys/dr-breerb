@@ -1,4 +1,5 @@
 
+const Discord = require("discord.js")
 const fs = require("fs")
 
 const logger = require("./logging.js")
@@ -24,6 +25,7 @@ class Command {
 		this.guildOnly = options.guildOnly || false
 		this.ownerOnly = options.ownerOnly || false
 		this.aliases = options.aliases || []
+		this.postRun = options.postRun
 	}
 }
 
@@ -65,6 +67,8 @@ let categories = {
 	get: function(category) {
 		if (this[category] && this[category] instanceof CommandCategory) {
 			return this[category]
+		} else if (this.all[category] && this.all[category] instanceof Command) {
+			return this.all[category]
 		} else {
 			return this.all
 		}
@@ -100,7 +104,7 @@ module.exports.categories = categories
 // TODO: Per guild prefix
 client.commands = categories
 let prefix = "!"
-client.on("message", function(msg) {
+client.on("message", async function(msg) {
 	if (this.ignoreList && this.ignoreList[msg.author.id]) { return }
 	if (this.ownerOnly && msg.author.id !== this.ownerId) { return }
 
@@ -111,8 +115,8 @@ client.on("message", function(msg) {
 		let args = []
 		try {
 			args = parse(line)
-		} catch (e) {
-			logger.error(`command-${cmd}`, 'Argument parsing failed with line "' + line + '". Unexpected results may occur: ' + e)
+		} catch (err) {
+			// logger.error(`command-${cmd}`, 'Argument parsing failed with line "' + line + '". Unexpected results may occur: ' + err)
 		}
 
 		let action = this.commands.get().commands.get(cmd)
@@ -121,12 +125,39 @@ client.on("message", function(msg) {
 				msg.reply("this command can only be used while in a guild.")
 				return
 			}
+			let logDetails = `(channel: ${msg.channel.id}, user: ${msg.author.id}` + (line ? `, line: '${line}'` : "") + ")"
 			if (action.ownerOnly && msg.author.id !== this.ownerId) {
 				msg.reply("this command can only be used by the bot's owner.")
+				logger.error(`command-${cmd}`, "Invalid permissions from '" + msg.author.tag + "' " + logDetails)
 				return
 			}
-			logger.log(`command-${cmd}`, 'From ' + msg.author.tag + (line ? ` ("${line}")` : ""))
-			action.callback(msg, match[2], ...args)
+
+			logger.log(`command-${cmd}`, "Ran by '" + msg.author.tag + "' " + logDetails)
+			try {
+				msg.printBuffer = ""
+				msg.print = function(...args) {
+					args.forEach((val) => {
+						msg.printBuffer = msg.printBuffer + val.toString() + "\n"
+					})
+				}
+
+				await action.callback(msg, match[2], ...args)
+
+				if (msg.printBuffer) {
+					await msg.channel.send(`\`\`\`\n${msg.printBuffer}\n\`\`\``)
+				}
+				if (action.postRun) {
+					action.postRun(msg)
+				}
+			} catch (err) {
+				let embed = new Discord.MessageEmbed()
+					.setColor(0xE25555)
+					.setTitle(`:interrobang: JavaScript error: from command '${cmd}'`)
+					.setDescription(prettifyError(err))
+
+				logger.error(`command-${cmd}`, `Error: ${err.stack || err}`)
+				msg.channel.send(embed)
+			}
 		}
 	}
 })
