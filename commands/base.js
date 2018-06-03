@@ -154,8 +154,6 @@ category.addCommand("unignore", function(msg, line) {
 	help: "Removes a Discord user from the list of people that the bot won't react to, using their user ID.",
 	ownerOnly: true
 })
-
-client.ownerOnly = !client.user.bot // Only allow owner to use the bot if the bot is a user, otherwise allow everyone
 category.addCommand("lockdown", function(msg, line) {
 	client.ownerOnly = !client.ownerOnly
 	msg.reply("toggled lockdown " + (client.ownerOnly ? "on" : "off") + ".")
@@ -170,5 +168,9 @@ category.addCommand("pick", function(msg, line, ...str) { // This is stupidly ea
 
 	msg.reply(str.random())
 }, { help: "Picks a random argument from the ones you provide." })
+
+client.on("ready", function() {
+	client.ownerOnly = !client.user.bot // Only allow owner to use the bot if the bot is a user, otherwise allow everyone
+})
 
 module.exports = category
