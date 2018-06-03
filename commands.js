@@ -124,6 +124,8 @@ client.on("message", async function(msg) {
 
 		let action = this.commands.get().commands.get(cmd)
 		if (action && action.callback) {
+			msg.channel.startTyping()
+
 			if (action.guildOnly && !msg.guild) {
 				msg.reply("this command can only be used while in a guild.")
 				return
@@ -161,6 +163,8 @@ client.on("message", async function(msg) {
 				logger.error(`command-${cmd}`, `Error: ${err.stack || err}`)
 				msg.channel.send(embed)
 			}
+
+			msg.channel.stopTyping(true)
 		}
 	}
 })
