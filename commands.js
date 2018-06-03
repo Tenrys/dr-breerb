@@ -8,7 +8,7 @@ const client = require("./index.js")
 class InvalidArgumentException extends Error {
 	constructor(name, type) {
 		this.name = "InvalidArgumentException"
-		this.message = `${name} needs to be a ${type}`
+		this.message = `'${name}' needs to be of type '${type}'`
 	}
 }
 
