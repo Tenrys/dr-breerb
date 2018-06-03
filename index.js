@@ -60,7 +60,7 @@ const commands = require("./commands.js")
 client.login(fs.readFileSync("token", { encoding: "utf-8" }).trim())
 
 process.on("uncaughtException", (err) => {
-	logger.error(`critical`, `JavaScript unhandled exception: ${err.stack || err}`)
+	logger.error("critical", `JavaScript unhandled exception: ${err.stack || err}`)
 
 	try {
 		let embed = new Discord.MessageEmbed()
