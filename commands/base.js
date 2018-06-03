@@ -155,7 +155,7 @@ category.addCommand("unignore", function(msg, line) {
 	ownerOnly: true
 })
 
-client.ownerOnly = true
+client.ownerOnly = !client.user.bot // Only allow owner to use the bot if the bot is a user, otherwise allow everyone
 category.addCommand("lockdown", function(msg, line) {
 	client.ownerOnly = !client.ownerOnly
 	msg.reply("toggled lockdown " + (client.ownerOnly ? "on" : "off") + ".")
