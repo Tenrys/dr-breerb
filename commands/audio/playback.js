@@ -1,6 +1,7 @@
 const logger = require("../../logging.js")
 
 const fs = require("fs")
+const https = require("https")
 const path = require("path")
 const shell = require("shelljs")
 
