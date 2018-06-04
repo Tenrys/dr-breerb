@@ -22,8 +22,8 @@ category.addCommand("ping", function(msg, line, ...args) {
 }, { help: "Pings the bot" })
 
 /*
- * TODO: Add "Usage" and/or "Example" fields to help
- * TODO: Add paging if I go over the number of possible fields (25)
+ * TODO: Add "Usage" and/or "Example" fields to help (low priority)
+ * TODO: Add paging if I go over the number of possible fields (25), though unlikely
  */
 category.addCommand("help", function(msg, line) { // Okay this is messy
 	let embed = new Discord.MessageEmbed()

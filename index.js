@@ -6,11 +6,11 @@ const Discord = require("discord.js")
 const client = new Discord.Client()
 module.exports = client
 
+const logger = require("./logging.js")
+logger.log("status", "Starting...")
+
 const fs = require("fs")
 const path = require("path")
-
-const logger = require("./logging.js")
-logger.log("status", "Starting")
 
 // Custom fancy stuff
 Object.defineProperty(Array.prototype, "random", {
@@ -37,11 +37,12 @@ global.prettifyError = function(err) {
 }
 
 // TODO: Refer to https://github.com/Re-Dream/dreambot_mk2/projects/1 for other todos, basically
+// TODO: Add more JSDoc stuff around the code
 // TODO: Future parity with Dream Bot Mark II: need translate, Steam info and MyAnimeList support
 
 const repl = require("repl")
 client.on("ready", function() {
-	logger.success("discord", `Logged in as ${client.user.tag}`)
+	logger.success("discord", `Logged in as ${client.user.tag}.`)
 
 	let replServer = repl.start("")
 	replServer.context.Discord = Discord
@@ -49,7 +50,7 @@ client.on("ready", function() {
 	replServer.on("exit", () => {
 		process.exit()
 	})
-	logger.success("repl", "Ready")
+	logger.success("repl", "Ready.")
 })
 
 // Load our own stuff
@@ -70,11 +71,11 @@ process.on("uncaughtException", (err) => {
 
 		client.users.get(client.ownerId).send(embed)
 	} catch (err) {
-		logger.error("critical", `holy fuck is this wrong: Discord.js is also broken!!!\n${err}`)
+		logger.error("critical", `Holy fuck is this wrong: Discord.js is also broken!!!\n${err}`)
 	}
 
-	logger.error("critical", "Quitting to avoid unforeseen consequences")
+	logger.error("critical", "Quitting to avoid unforeseen consequences.")
 	process.exit()
 })
 
-logger.success("status", "Started")
+logger.success("status", "Started.")

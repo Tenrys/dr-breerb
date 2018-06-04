@@ -47,7 +47,7 @@ client.loadSoundlist = function(err) {
 			}
 		}
 
-		logger.success("soundlist", "Loaded")
+		logger.success("soundlist", "Loaded.")
 	} catch (err2) {
 		logger.error("soundlist", "Loading failed: " + (err || err2))
 	}

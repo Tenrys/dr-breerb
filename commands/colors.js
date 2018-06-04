@@ -102,7 +102,7 @@ category.addCommand("color", async function(msg, line, r, g, b) {
 
 client.on("ready", function() {
 	if (!client.user.bot) {
-		logger.warn("discord-color-roles", "Would have cleaned all roles, jesus fuck")
+		logger.warn("discord-color-roles", "User bot: with enough permissions, all color roles would have been cleaned.")
 		return
 	}
 

@@ -1,8 +1,13 @@
 
+
+const chalk = require("chalk")
+const logger = require("./logging.js")
+logger.log("commands", "Loading...")
+
+
 const Discord = require("discord.js")
 const fs = require("fs")
 
-const logger = require("./logging.js")
 const parse = require("./parseargs.js")
 const client = require("./index.js")
 
@@ -124,20 +129,27 @@ client.on("message", async function(msg) {
 
 		let action = this.commands.get().commands.get(cmd)
 		if (action && action.callback) {
+			let logDetails = `(${msg.author.id}, ch: ${msg.channel.id})`
+
 			msg.channel.startTyping()
 
 			if (action.guildOnly && !msg.guild) {
 				msg.reply("this command can only be used while in a guild.")
 				return
 			}
-			let logDetails = `(channel: ${msg.channel.id}, user: ${msg.author.id}` + (line ? `, line: '${line}'` : "") + ")"
 			if (action.ownerOnly && msg.author.id !== this.ownerId) {
 				msg.reply("this command can only be used by the bot's owner.")
-				logger.error(`command-${cmd}`, "Invalid permissions from '" + msg.author.tag + "' " + logDetails)
+				logger.error(`command-${cmd}`, "Invalid permissions from '" + msg.author.tag + "' " + logDetails + ".")
 				return
 			}
 
 			logger.log(`command-${cmd}`, "Ran by '" + msg.author.tag + "' " + logDetails)
+			if (args.length > 0) {
+				logger.log(` ${chalk.magentaBright('*')} passed args: ${chalk.rgb(255, 255, 192)(args.join(', '))}`)
+			} else {
+				logger.log(` ${chalk.magentaBright('*')} passed line: ${chalk.rgb(255, 255, 192)(line.replace('\n', '\\n'))}`)
+			}
+
 			try {
 				msg.printBuffer = ""
 				msg.print = function(...args) {
@@ -168,6 +180,9 @@ client.on("message", async function(msg) {
 		}
 	}
 })
+
+let commandAmt = categories.all.commands.length
+logger.success("commands", `Loaded ${commandAmt} command${commandAmt == 1 ? '' : 's'}.`)
 
 client.on("ready", function() {
 	this.user.setActivity(`${prefix}help`, { type: "LISTENING" })
