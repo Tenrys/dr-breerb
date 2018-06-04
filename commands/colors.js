@@ -1,28 +1,32 @@
+const logger = require("../logging.js")
+
+const bot = require("../index.js")
+const { CommandCategory } = require("../commands.js")
 
 const Discord = require("discord.js")
 const Color = require("color")
 const ColorThief = require("color-thief-jimp")
 const Jimp = require("jimp")
 
-const logger = require("../logging.js")
-const client = require("../index.js")
+let colors = new CommandCategory("colors", ":paintbrush: Colors", "Color roles for everyone!")
 
-const { CommandCategory } = require("../commands.js")
-
-let category = new CommandCategory("colors", ":paintbrush: Colors", "Color roles for everyone!")
-
+/**
+ * If provided a member, will clean that member's roles with name starting with "#".
+ * Otherwise, will clean every guild's roles with name starting with "#" if they have no members.
+ * @param {Discord.Member} [member]
+ */
 async function cleanColorRoles(member) {
 	if (member) {
 		if (member.guild.me.hasPermission("MANAGE_ROLES")) {
 			await member.roles.filter(role => role.name.match("^#")).every(role => member.roles.remove(role))
 		}
 	} else {
-		await client.guilds.filter(guild => guild.me.hasPermission("MANAGE_ROLES")).every(guild => {
+		await bot.client.guilds.filter(guild => guild.me.hasPermission("MANAGE_ROLES")).every(guild => {
 			guild.roles.filter(role => role.name.match("^#") && role.members.array().length < 1).every(role => role.delete())
 		})
 	}
 }
-category.addCommand("color", async function(msg, line, r, g, b) {
+colors.addCommand("color", async function(msg, line, r, g, b) {
 	if (!msg.guild.me.hasPermission("MANAGE_ROLES")) { msg.reply("I am not allowed to manage roles."); return }
 
 	if (!msg.member) { msg.reply("webhooks are unsupported."); return } // Could also be trying to use userbot as bot, that shit doesn't work for some reason lol
@@ -100,8 +104,10 @@ category.addCommand("color", async function(msg, line, r, g, b) {
 	guildOnly: true
 })
 
-client.on("ready", function() {
-	if (!client.user.bot) {
+module.exports = colors
+
+bot.client.on("ready", function() {
+	if (!this.user.bot) {
 		logger.warn("discord-color-roles", "User bot: with enough permissions, all color roles would have been cleaned.")
 		return
 	}
@@ -112,6 +118,4 @@ client.on("ready", function() {
 
 	cleanColorRoles()
 })
-
-module.exports = category
 

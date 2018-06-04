@@ -1,3 +1,8 @@
+const logger = require("../logging.js")
+
+const bot = require("../index.js")
+const { CommandCategory } = require("../commands.js")
+const pages = require("../pages.js")
 
 const Discord = require("discord.js")
 const fs = require("fs")
@@ -6,13 +11,6 @@ const http = require("http")
 const path = require("path")
 const shell = require("shelljs")
 const util = require("util")
-
-const logger = require("../logging.js")
-const page = require("../page.js")
-const client = require("../index.js")
-const { CommandCategory } = require("../commands.js")
-
-let category = new CommandCategory("audio", ":speaker: Audio", "Voice channel stuff.")
 
 /*
  * TODO: Add support for Valve game sounds (https://github.com/PAC3-Server/chatsounds-valve-games, msgpack lib)
@@ -25,34 +23,29 @@ let category = new CommandCategory("audio", ":speaker: Audio", "Voice channel st
  */
 
 // Load chatsound list from web
-client.soundListKeys = {}
-client.loadSoundlist = function(err) {
+bot.soundListKeys = {}
+bot.loadSoundlist = function(err) {
 	try {
-		client.soundList = JSON.parse(fs.readFileSync("soundlist.json"))
+		this.soundList = JSON.parse(fs.readFileSync("soundlist.json"))
 
-		for (let key in client.soundList) {
-			if (client.soundList.hasOwnProperty(key)) {
-				let cat = client.soundList[key]
-				for (let name in cat) {
-					if (cat.hasOwnProperty(name)) {
-						if (!client.soundListKeys[name]) { client.soundListKeys[name] = [] }
+		forin(this.soundList, (cat, snds) => {
+			forin(snds, (name, _) => {
+				if (!bot.soundListKeys[name]) { bot.soundListKeys[name] = [] }
 
-						let sounds = cat[name]
-						for (let i = 0; i < sounds.length; i++) {
-							client.soundListKeys[name].push(sounds[i])
-						}
-						client.soundListKeys[name].sort()
-					}
+				let variants = snds[name]
+				for (let i = 0; i < variants.length; i++) {
+					bot.soundListKeys[name].push(variants[i])
 				}
-			}
-		}
+				bot.soundListKeys[name].sort()
+			})
+		})
 
 		logger.success("soundlist", "Loaded.")
 	} catch (err2) {
-		logger.error("soundlist", "Loading failed: " + (err || err2))
+		logger.error("soundlist", "Loading failed: " + ((err ? err.stack : err) || (err2 ? err2.stack : err2)))
 	}
 }
-client.downloadSoundlist = function() {
+bot.downloadSoundlist = function() {
 	return new Promise(function(resolve, reject) {
 		let stats, outdated
 		try {
@@ -68,7 +61,7 @@ client.downloadSoundlist = function() {
 				stream.on("finish", resolve)
 
 				response.pipe(stream)
-			}).on("error", (err) => {
+			}).on("error", err => {
 				reject(err)
 			})
 		} else {
@@ -76,9 +69,11 @@ client.downloadSoundlist = function() {
 		}
 	})
 }
-client.downloadSoundlist().then(client.loadSoundlist, client.loadSoundlist)
+bot.downloadSoundlist().then(bot.loadSoundlist, bot.loadSoundlist)
 
-category.addCommand("join", async function(msg, line, ...args) {
+let audio = new CommandCategory("audio", ":speaker: Audio", "Voice channel stuff.")
+
+audio.addCommand("join", async function(msg, line, ...args) {
 	if (!msg.member) { msg.reply("webhooks unsupported."); return }
 
 	let vc = msg.guild.me.voiceChannel
@@ -104,7 +99,7 @@ category.addCommand("join", async function(msg, line, ...args) {
 	guildOnly: true,
 	help: "Makes the bot join the voice channel you are currently in."
 })
-category.addCommand("leave", function(msg, line) {
+audio.addCommand("leave", function(msg, line) {
 	let vc = msg.guild.me.voiceChannel
 
 	if (vc) {
@@ -117,20 +112,20 @@ category.addCommand("leave", function(msg, line) {
 	help: "Makes the bot leave the voice channel it's in."
 })
 
-let repoPath = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/"
-category.addCommand("play", async function(msg, line) {
-	if (!client.soundListKeys) { msg.reply("sound list hasn't loaded yet."); return }
-
-	let vc = await client.commands.get("join").callback(msg)
+let chatsndsRepositoryURL = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/"
+audio.addCommand("play", async function(msg, line) {
+	if (!bot.soundListKeys) { msg.reply("sound list hasn't loaded yet."); return }
 
 	line = line.toLowerCase()
+
+	let vc = await bot.commands.get("join").callback(msg)
 
 	if (vc && vc.connection) {
 		let snd, sndInfo
 
 		// Are we trying to get a random chatsound
 		if (line == "random") {
-			snd = client.soundListKeys[Object.keys(client.soundListKeys).random()]
+			snd = bot.soundListKeys[Object.keys(bot.soundListKeys).random()]
 			sndInfo = snd.random()
 		} else { // If not
 			// Check if we want a specific chatsound
@@ -139,9 +134,9 @@ category.addCommand("play", async function(msg, line) {
 			line = line.replace(/#\d+$/gi, "")
 
 			// Get the chatsound and its variants
-			snd = client.soundListKeys[line]
+			snd = bot.soundListKeys[line]
 			if (!snd) {
-				client.commands.get("search").callback(msg, line, { content: `<@${msg.author.id}>, maybe you were looking for these chatsounds?`, displayCount: 5 })
+				bot.commands.get("search").callback(msg, line, { content: `<@${msg.author.id}>, maybe you were looking for these chatsounds?`, displayCount: 5 })
 				return
 			}
 
@@ -157,19 +152,19 @@ category.addCommand("play", async function(msg, line) {
 		let sndPath = sndInfo.path
 		let filePath = path.join("cache", sndPath)
 
-		let playFile = new Promise((resolve) => {
+		let playFile = new Promise(resolve => {
 			if (!fs.existsSync(filePath)) {
 				logger.log("sound", sndPath + ": download")
 
 				let dir = /(.*)\/.*$/gi.exec(sndPath)
 				shell.mkdir("-p", path.join("cache", dir[1]))
 
-				let request = https.get(repoPath + encodeURI(sndPath), function(response) {
-					if (response.statusCode == 200) {
+				let req = https.get(chatsndsRepositoryURL + encodeURI(sndPath), function(res) {
+					if (res.statusCode == 200) {
 						let writeFile = fs.createWriteStream(filePath)
 						writeFile.on("finish", resolve)
 
-						response.pipe(writeFile)
+						res.pipe(writeFile)
 					}
 				})
 			} else {
@@ -177,15 +172,15 @@ category.addCommand("play", async function(msg, line) {
 			}
 		}).then(function() {
 			let audio = vc.connection.play(fs.createReadStream(filePath), { volume: 0.66 })
-			audio.on("start", () => console.log(sndPath, ": start"))
-			audio.on("end", () => console.log(sndPath, ": end"))
+			audio.on("start", () => logger.log("chatsound", sndPath + ": start"))
+			audio.on("end", () => logger.log("chatsound", sndPath + ": end"))
 		})
 	}
 }, {
 	guildOnly: true,
 	help: "Plays a custom chatsound from the GitHub repository. Does not support chatsounds from games like Half-Life 2, and such."
 })
-category.addCommand("stop", function(msg, line) {
+audio.addCommand("stop", function(msg, line) {
 	let vc = msg.guild.me.voiceChannel
 	if (vc && vc.connection && vc.connection.dispatcher) {
 		vc.connection.dispatcher.end()
@@ -196,7 +191,7 @@ category.addCommand("stop", function(msg, line) {
 	help: "Stops playing a chatsound."
 })
 
-category.addCommand("volume", function(msg, line, vol) {
+audio.addCommand("volume", function(msg, line, vol) {
 	let vc = msg.guild.me.voiceChannel
 
 	if (vc && vc.connection && vc.connection.dispatcher) {
@@ -218,34 +213,34 @@ category.addCommand("volume", function(msg, line, vol) {
 	help: "Changes the volume of the chatsound that's currently playing.\n\nVolume can be between 0 and 1."
 })
 
-category.addCommand("search", function(msg, line, ...options) {
+audio.addCommand("search", function(msg, line, ...options) {
 	if (options && typeof options[0] == "object") {
 		options = options[0]
 	} else {
 		options = undefined
 	}
 
-	if (!client.soundListKeys) { msg.reply("sound list hasn't loaded yet."); return }
+	if (!bot.soundListKeys) { msg.reply("sound list hasn't loaded yet."); return }
 
 	line = line.toLowerCase()
 
-	let results = []
-	forin(client.soundListKeys, (name) => {
+	let res = []
+	forin(bot.soundListKeys, name => {
 		if (name.toLowerCase().trim().includes(line)) {
-			results.push(name)
+			res.push(name)
 		}
 	})
-	if (results.length <= 0) {
+	if (res.length <= 0) {
 		msg.reply("couldn't find any chatsound.")
 		return null
 	}
-	results.sort(function(a, b) {
+	res.sort(function(a, b) {
 		return 	a.length - b.length || // sort by length, if equal then
 				a.localeCompare(b)     // sort by dictionary order
 	})
 
 	let handler = async function(to) {
-		let displayCount = this.displayCount || page.displayCount
+		let displayCount = this.displayCount || Page.displayCount
 		let buf = ""
 		for (let i = displayCount * (this.page - 1); i < displayCount * this.page; i++) {
 			if (!this.data[i]) { break }
@@ -258,31 +253,32 @@ category.addCommand("search", function(msg, line, ...options) {
 			.setDescription(buf)
 			.setFooter(`Page ${this.page}/${this.lastPage} (${this.data.length} entries)`)
 
-		let result = this.message
-		if (!result) {
-			result = await msg.channel.send(options ? options.content : "", embed)
+		let res = this.message
+		if (!res) {
+			res = await msg.channel.send(options ? options.content : "", embed)
 		} else {
 			await this.message.edit(embed)
 		}
 
-		return result
+		return res
 	}
-	return page.init(null, msg, results, handler, options ? options.displayCount : null)
+	return pages.add(null, msg, res, handler, options ? options.displayCount : null)
 }, {
 	aliases: ["find"],
 	help: "Searches chatsounds by name."
 })
 
-category.addCommand("reloadsnds", function(msg, line) {
+audio.addCommand("reloadsnds", function(msg, line) {
 	fs.unlink(path.join(__dirname, "..", "soundlist.json"), function() {
-		client.downloadSoundlist().then(function() {
-			client.loadSoundlist()
-			msg.reply("chatsounds list refreshed.")
-		})
+		bot.downloadSoundlist()
+			.then(() => {
+				bot.loadSoundlist()
+				msg.reply("chatsounds list refreshed.")
+			})
 	})
 }, {
 	help: "Reloads the chatsound list.",
 	ownerOnly: true
 })
 
-module.exports = category
+module.exports = audio

@@ -78,4 +78,3 @@ Logger.error = makeLogger("error")
 Logger.success = makeLogger("success")
 Logger.working = makeLogger("working")
 module.exports = Logger
-
