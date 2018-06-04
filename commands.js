@@ -229,7 +229,7 @@ bot.client.on("message", async function(msg) {
 				msg.channel.send(embed)
 			}
 
-			// msg.channel.stopTyping(true)
+			msg.channel.stopTyping(true)
 		}
 	}
 })
