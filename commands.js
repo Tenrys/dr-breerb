@@ -161,6 +161,11 @@ fs.readdirSync("./commands").forEach(file => {
 })
 
 // Command handler
+
+function logDetail(name, details) {
+	logger.log(` ${chalk.magentaBright('*')} ${name}: ${details}`)
+}
+
 // TODO: Per guild prefix
 let prefix = "!"
 bot.commands = categories
@@ -179,8 +184,6 @@ bot.client.on("message", async function(msg) {
 
 		let action = bot.commands.get().commands.get(cmd)
 		if (action && action.callback) {
-			let logDetails = `(${msg.author.id}, ch: ${msg.channel.id})`
-
 			msg.channel.startTyping()
 
 			if (action.guildOnly && !msg.guild) {
@@ -189,16 +192,20 @@ bot.client.on("message", async function(msg) {
 			}
 			if (action.ownerOnly && msg.author.id !== bot.ownerId) {
 				msg.reply("this command can only be used by the bot's owner.")
-				logger.error(`command-${cmd}`, `Invalid permissions from '${msg.author.tag}' ${logDetails}.`)
+				logger.error(`command-${cmd}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}).`)
 				return
 			}
 
-			logger.log(`command-${cmd}`, "Ran by '" + msg.author.tag + "' " + logDetails)
-			if (args.length > 0) {
-				logger.log(` ${chalk.magentaBright('*')} passed args: ${chalk.yellowBright(args.join(', '))}`)
-			} else if (line) {
-				logger.log(` ${chalk.magentaBright('*')} passed line: ${chalk.yellowBright(line.replace('\n', '\\n'))}`)
-			}
+			logger.log(`command-${cmd}`, `Ran by '${msg.author.tag}' (${msg.author.id})`)
+				logDetail("in channel", `${msg.channel.name} (${msg.channel.id})`)
+				if (msg.guild) {
+					logDetail("in guild", `${msg.guild.name} (${msg.guild.id})`)
+				}
+				if (args.length > 0) {
+					logDetail("passed args", `${chalk.yellowBright(args.join(', '))}`)
+				} else if (line) {
+					logDetail("passed line", `${chalk.yellowBright(line.replace('\n', '\\n'))}`)
+				}
 
 			try {
 				msg.printBuffer = ""
@@ -226,7 +233,7 @@ bot.client.on("message", async function(msg) {
 				msg.channel.send(embed)
 			}
 
-			msg.channel.stopTyping(true)
+			// msg.channel.stopTyping(true)
 		}
 	}
 })
