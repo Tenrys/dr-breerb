@@ -201,11 +201,7 @@ bot.client.on("message", async function(msg) {
 				if (msg.guild) {
 					logDetail("in guild", `${msg.guild.name} (${msg.guild.id})`)
 				}
-				if (args.length > 0) {
-					logDetail("passed args", `${chalk.yellowBright(args.join(', '))}`)
-				} else if (line) {
-					logDetail("passed line", `${chalk.yellowBright(line.replace('\n', '\\n'))}`)
-				}
+				logDetail("passed line", `${chalk.yellowBright(line.replace('\n', '\\n'))}`)
 
 			try {
 				msg.printBuffer = ""
