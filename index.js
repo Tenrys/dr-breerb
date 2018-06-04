@@ -78,4 +78,20 @@ process.on("uncaughtException", (err) => {
 	process.exit()
 })
 
+client.on("warn", (ev) => {
+	logger.warn("discord", "Websocket warning: " + ev.message)
+})
+client.on("error", (ev) => {
+	logger.error("discord", "Websocket error: " + ev.message)
+})
+client.on("reconnecting", () => {
+	logger.warn("discord", "Websocket reconnecting...")
+})
+client.on("resumed", (count) => {
+	logger.log("discord", `Websocket resumed. (${count} events replayed)`)
+})
+client.on("disconnect", (ev) => {
+	logger.error("discord", "Websocket disconnected: " + ev.reason)
+})
+
 logger.success("status", "Started.")

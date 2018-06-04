@@ -4,7 +4,6 @@ const chalk = require("chalk")
 const logger = require("./logging.js")
 logger.log("commands", "Loading...")
 
-
 const Discord = require("discord.js")
 const fs = require("fs")
 
@@ -145,9 +144,9 @@ client.on("message", async function(msg) {
 
 			logger.log(`command-${cmd}`, "Ran by '" + msg.author.tag + "' " + logDetails)
 			if (args.length > 0) {
-				logger.log(` ${chalk.magentaBright('*')} passed args: ${chalk.rgb(255, 255, 192)(args.join(', '))}`)
+				logger.log(` ${chalk.magentaBright('*')} passed args: ${chalk.yellowBright(args.join(', '))}`)
 			} else {
-				logger.log(` ${chalk.magentaBright('*')} passed line: ${chalk.rgb(255, 255, 192)(line.replace('\n', '\\n'))}`)
+				logger.log(` ${chalk.magentaBright('*')} passed line: ${chalk.yellowBright(line.replace('\n', '\\n'))}`)
 			}
 
 			try {

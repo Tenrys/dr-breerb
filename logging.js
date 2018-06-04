@@ -28,22 +28,22 @@ const chalk = require("chalk")
 let loggers = {
 	log: {
 		callback: console.log,
-		color1: chalk.bold.cyan,
+		color1: chalk.cyan,
 		color2: chalk.white
 	},
 	warn: {
 		callback: console.warn,
-		color1: chalk.bold.yellow,
+		color1: chalk.yellow,
 		color2: chalk.white
 	},
 	error: {
 		callback: console.error,
-		color1: chalk.bold.red,
+		color1: chalk.red,
 		color2: chalk.white
 	},
 	success: {
 		callback: console.log,
-		color1: chalk.bold.green,
+		color1: chalk.green,
 		color2: chalk.white
 	}
 }
