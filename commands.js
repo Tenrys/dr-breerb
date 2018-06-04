@@ -99,6 +99,7 @@ const parse = require("./parseargs.js")
 const chalk = require("chalk")
 const Discord = require("discord.js")
 const fs = require("fs")
+const path = require("path")
 
 /**
  * The object containing all CommandCategories for the bot.
@@ -146,8 +147,17 @@ Object.defineProperty(categories.all, "_commands", { // Quite the hack...
 })
 
 fs.readdirSync("./commands").forEach(file => {
-	let category = require("./commands/" + file)
-	categories[category.name] = category
+	let dirPath = "./commands/" + file
+	if (fs.statSync(dirPath).isDirectory()) {
+		let category = require(dirPath)
+		fs.readdirSync(dirPath).forEach(file => {
+			let filePath = path.join(dirPath, file)
+			if (fs.statSync(filePath).isFile() && file !== "index.js") {
+				require("./" + filePath)(category, bot)
+			}
+		})
+		categories[category.name] = category
+	}
 })
 
 // Command handler

@@ -1,5 +1,10 @@
 const bot = require("./index.js")
 
+let backEmoji = "\u25C0"
+let nextEmoji = "\u25B6"
+let numbersEmoji = "\uD83D\uDD22"
+let stopEmoji = "\u23F9"
+
 let pages = {
 	list: {},
 	displayCount: 15,
@@ -28,10 +33,10 @@ let pages = {
 
 		this.list[msg.id] = page
 
-		await msg.react("◀")
-		await msg.react("▶")
-		await msg.react("🔢")
-		await msg.react("⏹")
+		await msg.react(backEmoji)
+		await msg.react(nextEmoji)
+		await msg.react(numbersEmoji)
+		await msg.react(stopEmoji)
 
 		return page
 	}
@@ -52,12 +57,12 @@ function onReaction(reaction, user) {
 		if (user.id != page.query.author.id) { return }
 
 		let emoji = reaction.emoji.name
-		if (emoji == "◀" || emoji == "▶") {
-			let fwd = emoji == "▶"
+		if (emoji == backEmoji || emoji == nextEmoji) {
+			let fwd = emoji == nextEmoji
 			page.handle(fwd)
-		} else if (emoji == "⏹") {
+		} else if (emoji == stopEmoji) {
 			page.message.delete()
-		} else if (emoji == "🔢" && !page.switching) {
+		} else if (emoji == numbersEmoji && !page.switching) {
 			page.query.reply("which page do you want to go to?")
 				.then(msg => {
 					page.switching = {

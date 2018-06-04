@@ -1,7 +1,6 @@
 // TODO: Refer to https://github.com/Re-Dream/dreambot_mk2/projects/1 for other todos, basically
 // TODO: Add more JSDoc stuff around the code
 // TODO: Separate code into more files for clarity's sake
-// TODO: Separate each command into its own file in its category (e.g: "./commands/audio/join.js")
 // TODO: Future parity with Dream Bot Mark II: need translate, Steam info and MyAnimeList support
 // TODO: Make forin a reusable module instead of polluting global scope..maybe
 // TODO: Create a bot class / object containing the client to put stuff in instead of just this file's scope
@@ -137,7 +136,7 @@ process.on("uncaughtException", err => {
 			.setTitle(`:interrobang: JavaScript unhandled exception`)
 			.setDescription(bot.formatErrorToDiscord(err))
 
-		bot.client.users.get(client.ownerId).send(embed)
+		bot.client.users.get(bot.client.ownerId).send(embed)
 	} catch (err) {
 		logger.error("critical", `Couldn't send message to bot owner: ${err.stack || err}`)
 	}
