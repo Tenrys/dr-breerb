@@ -211,7 +211,7 @@ bot.client.on("message", async function(msg) {
 				await action.callback(msg, match[2], ...args)
 
 				if (msg.printBuffer) {
-					await msg.channel.send(`\`\`\`\n${msg.printBuffer}\n\`\`\``)
+					await msg.channel.send(`\`\`\`\n${bot.truncate(msg.printBuffer)}\n\`\`\``)
 				}
 				if (action.postRun) {
 					action.postRun(msg)
