@@ -45,6 +45,11 @@ let loggers = {
 		callback: console.log,
 		color1: chalk.green,
 		color2: chalk.white
+	},
+	working: {
+		callback: console.log,
+		color1: chalk.magenta,
+		color2: chalk.white
 	}
 }
 
@@ -56,9 +61,9 @@ function makeLogger(name) { // TODO: Actually log to files?
 		let logger = loggers[name]
 		if (logger && logger.callback && logger.color1 && logger.color2) {
 			if (msg) {
-				logger.callback(getCurrentTime(), logger.color1(`[${cat}]:`), logger.color2(msg), ...args)
+				return logger.callback(getCurrentTime(), logger.color1(`[${cat}]:`), logger.color2(msg), ...args)
 			} else {
-				logger.callback(getCurrentTime(), logger.color2(cat))
+				return logger.callback(getCurrentTime(), logger.color2(cat))
 			}
 		} else {
 			throw new Error("invalid logger")
@@ -71,5 +76,6 @@ Logger.log = makeLogger("log")
 Logger.warn = makeLogger("warn")
 Logger.error = makeLogger("error")
 Logger.success = makeLogger("success")
+Logger.working = makeLogger("working")
 module.exports = Logger
 

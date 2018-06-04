@@ -2,7 +2,7 @@
 
 const chalk = require("chalk")
 const logger = require("./logging.js")
-logger.log("commands", "Loading...")
+logger.working("commands", "Loading...")
 
 const Discord = require("discord.js")
 const fs = require("fs")
@@ -138,14 +138,14 @@ client.on("message", async function(msg) {
 			}
 			if (action.ownerOnly && msg.author.id !== this.ownerId) {
 				msg.reply("this command can only be used by the bot's owner.")
-				logger.error(`command-${cmd}`, "Invalid permissions from '" + msg.author.tag + "' " + logDetails + ".")
+				logger.error(`command-${cmd}`, `Invalid permissions from '${msg.author.tag}' ${logDetails}.`)
 				return
 			}
 
 			logger.log(`command-${cmd}`, "Ran by '" + msg.author.tag + "' " + logDetails)
 			if (args.length > 0) {
 				logger.log(` ${chalk.magentaBright('*')} passed args: ${chalk.yellowBright(args.join(', '))}`)
-			} else {
+			} else if (line) {
 				logger.log(` ${chalk.magentaBright('*')} passed line: ${chalk.yellowBright(line.replace('\n', '\\n'))}`)
 			}
 

@@ -1,4 +1,6 @@
-
+// TODO: Refer to https://github.com/Re-Dream/dreambot_mk2/projects/1 for other todos, basically
+// TODO: Add more JSDoc stuff around the code
+// TODO: Future parity with Dream Bot Mark II: need translate, Steam info and MyAnimeList support
 // TODO: Make forin a reusable module instead of polluting global scope..maybe
 
 // Load libraries
@@ -7,12 +9,12 @@ const client = new Discord.Client()
 module.exports = client
 
 const logger = require("./logging.js")
-logger.log("status", "Starting...")
+logger.working("status", "Starting...")
 
 const fs = require("fs")
 const path = require("path")
 
-// Custom fancy stuff
+// Convenience functions
 Object.defineProperty(Array.prototype, "random", {
 	value: function() {
 		return this[Math.floor(Math.random() * this.length)]
@@ -26,6 +28,8 @@ global.forin = function(obj, callback) { // I can't be fucked writing this over 
 		}
 	}
 }
+
+// General error handling and formatting
 let github = JSON.parse(fs.readFileSync("./package.json")).repository + "/tree/master"
 global.prettifyError = function(err) {
 	if (err.stack) {
@@ -35,15 +39,42 @@ global.prettifyError = function(err) {
 		return trace
 	} else { return err }
 }
+process.on("uncaughtException", (err) => {
+	logger.error("critical", `JavaScript unhandled exception: ${err.stack || err}`)
 
-// TODO: Refer to https://github.com/Re-Dream/dreambot_mk2/projects/1 for other todos, basically
-// TODO: Add more JSDoc stuff around the code
-// TODO: Future parity with Dream Bot Mark II: need translate, Steam info and MyAnimeList support
+	try {
+		let embed = new Discord.MessageEmbed()
+			.setColor(0xE25555)
+			.setTitle(`:interrobang: JavaScript unhandled exception`)
+			.setDescription(prettifyError(err))
 
+		client.users.get(client.ownerId).send(embed)
+	} catch (err) {
+		logger.error("critical", `Couldn't send message to owner: ${err.stack || err}`)
+	}
+
+	logger.error("critical", "Quitting to avoid unforeseen consequences.")
+	process.exit()
+})
+
+client.on("error", (ev) => {
+	logger.error("discord", "Websocket error: " + ev.message)
+})
+client.on("warn", (ev) => {
+	logger.warn("discord", "Websocket warning: " + ev.message)
+})
+client.on("reconnecting", () => {
+	logger.warn("discord", "Websocket reconnecting...")
+})
+client.on("resumed", (count) => {
+	logger.log("discord", `Websocket resumed. (${count} events replayed)`)
+})
+client.on("disconnect", (ev) => {
+	logger.error("discord", `Websocket disconnected: ${ev.reason} (code ${ev.code})`)
+	login()
+})
 const repl = require("repl")
 client.on("ready", function() {
-	logger.success("discord", `Logged in as ${client.user.tag}.`)
-
 	let replServer = repl.start("")
 	replServer.context.Discord = Discord
 	replServer.context.client = client
@@ -58,40 +89,35 @@ client.ownerId = "138685670448168960"
 const commands = require("./commands.js")
 
 // Begin
-client.login(fs.readFileSync("token", { encoding: "utf-8" }).trim())
+async function login() {
+	let connecting = false,
+		failed = false,
+		connected = false
+	while (!connected) {
+		if ((client.status === null || client.status == 5) && !connecting) {
+			connecting = true
+			if (!failed) {
+				logger.working("discord", "Logging in...")
+			} else {
+				logger.working("discord", "Retrying...")
+			}
 
-process.on("uncaughtException", (err) => {
-	logger.error("critical", `JavaScript unhandled exception: ${err.stack || err}`)
-
-	try {
-		let embed = new Discord.MessageEmbed()
-			.setColor(0xE25555)
-			.setTitle(`:interrobang: JavaScript unhandled exception`)
-			.setDescription(prettifyError(err))
-
-		client.users.get(client.ownerId).send(embed)
-	} catch (err) {
-		logger.error("critical", `Holy fuck is this wrong: Discord.js is also broken!!!\n${err}`)
+			await client.login(fs.readFileSync("token", { encoding: "utf-8" }).trim())
+				.then(() => {
+					logger.success("discord", `Logged in as ${client.user.tag}.`)
+					connecting = false
+					failed = false
+					connected = true
+				})
+				.catch((err) => {
+					logger.error("discord", "Connection error: " + err.message)
+					connecting = false
+					failed = true
+					connected = false
+				})
+		}
 	}
-
-	logger.error("critical", "Quitting to avoid unforeseen consequences.")
-	process.exit()
-})
-
-client.on("warn", (ev) => {
-	logger.warn("discord", "Websocket warning: " + ev.message)
-})
-client.on("error", (ev) => {
-	logger.error("discord", "Websocket error: " + ev.message)
-})
-client.on("reconnecting", () => {
-	logger.warn("discord", "Websocket reconnecting...")
-})
-client.on("resumed", (count) => {
-	logger.log("discord", `Websocket resumed. (${count} events replayed)`)
-})
-client.on("disconnect", (ev) => {
-	logger.error("discord", "Websocket disconnected: " + ev.reason)
-})
+}
+login()
 
 logger.success("status", "Started.")
