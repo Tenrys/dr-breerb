@@ -44,11 +44,11 @@ module.exports = (category, bot) => {
                 .setDescription(buf)
                 .setFooter(`Page ${this.page}/${this.lastPage} (${this.data.length} entries)`)
 
-            let res = this.message
+            let res = this.msg
             if (!res) {
                 res = await msg.channel.send(options ? options.content : "", embed)
             } else {
-                await this.message.edit(embed)
+                await this.msg.edit(embed)
             }
 
             return res

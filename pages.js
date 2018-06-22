@@ -15,7 +15,6 @@ let pages = {
 			data: data,
 			handle(to) {
 				let displayCount = this.displayCount || pages.displayCount
-				console.log(displayCount, this.data.length)
 				this.lastPage = Math.ceil(this.data.length / displayCount)
 				if (typeof to == "boolean") {
 					this.page = Math.max(1, Math.min(this.page + (to && 1 || -1), this.lastPage))
@@ -62,12 +61,12 @@ function onReaction(reaction, user) {
 			let fwd = emoji == nextEmoji
 			page.handle(fwd)
 		} else if (emoji == stopEmoji) {
-			page.message.delete()
+			page.msg.delete()
 		} else if (emoji == numbersEmoji && !page.switching) {
 			page.query.reply("which page do you want to go to?")
 				.then(msg => {
 					page.switching = {
-						message: msg,
+						msg: msg,
 						timeout: time() + 30
 					}
 				})
@@ -88,7 +87,7 @@ bot.client.on("message", function(msg) {
 
 				num = Math.floor(Math.max(1, Math.min(num, page.lastPage)))
 
-				page.switching.message.delete()
+				page.switching.msg.delete()
 				msg.delete()
 
 				page.handle(num)
