@@ -31,7 +31,7 @@ module.exports = (category, bot) => {
         })
 
         let handler = async function(to) {
-            let displayCount = this.displayCount || Page.displayCount
+            let displayCount = this.displayCount || pages.displayCount
             let buf = ""
             for (let i = displayCount * (this.page - 1); i < displayCount * this.page; i++) {
                 if (!this.data[i]) { break }
