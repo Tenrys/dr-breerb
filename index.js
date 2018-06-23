@@ -1,9 +1,5 @@
 // TODO: Refer to https://github.com/Re-Dream/dreambot_mk2/projects/1 for other todos, basically
-// TODO: Add more JSDoc stuff around the code
-// TODO: Separate code into more files for clarity's sake
-// TODO: Future parity with Dream Bot Mark II: need translate, Steam info and MyAnimeList support
 // TODO: Make forin a reusable module instead of polluting global scope..maybe
-// TODO: Create a bot class / object containing the client to put stuff in instead of just this file's scope
 
 const logger = require("./logging.js")
 logger.working("status", "Starting...")
