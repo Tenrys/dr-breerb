@@ -11,6 +11,19 @@ module.exports = (category, bot) => {
 
             if (vc) {
                 await vc.join()
+
+                let chan = msg.channel
+                vc.emptyTimeout = setInterval(function() {
+                    if (vc && vc.members && (vc.members.array().length - 1) < 1) {
+                        vc.leave()
+                        if (chan) {
+                            chan.send(`Left voice channel \`${vc.name}\` due to inactivity.`)
+                        }
+                        clearInterval(this)
+                    } else if (!vc) {
+                        clearInterval(this)
+                    }
+                }, 60 * 3 * 1000)
             } else {
                 msg.reply("you aren't in any channel.")
             }
