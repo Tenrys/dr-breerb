@@ -9,8 +9,6 @@ class InvalidArgumentException extends Error {
 	}
 }
 
-// TODO: Make the Command and CommandCategory options their own class
-
 /**
  * A chat command to be used by a Discord user.
  */
@@ -166,7 +164,6 @@ function logDetail(name, details) {
 	logger.log(` ${chalk.magentaBright('*')} ${name}: ${details}`)
 }
 
-// TODO: Per guild prefix
 let prefix = "!"
 bot.commands = categories
 bot.client.on("message", async function(msg) {

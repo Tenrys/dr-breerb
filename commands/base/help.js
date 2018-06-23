@@ -2,10 +2,6 @@ const Discord = require("discord.js")
 const { Command, CommandCategory } = require("../../commands.js")
 
 module.exports = (category, bot) => {
-    /*
-    * TODO: Add "Usage" and/or "Example" fields to help (low priority)
-    * TODO: Add paging if I go over the number of possible fields (25), though unlikely
-    */
    category.addCommand("help", function(msg, line) {
         line = line.toLowerCase()
         let res = bot.commands.get(line)

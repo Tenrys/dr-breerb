@@ -56,7 +56,7 @@ let loggers = {
 /**
  * Returns a function that will use options from a named logger, if it exists, to log data.
  */
-function makeLogger(name) { // TODO: Actually log to files?
+function makeLogger(name) {
 	return function(cat, msg, ...args) {
 		let logger = loggers[name]
 		if (logger && logger.callback && logger.color1 && logger.color2) {
