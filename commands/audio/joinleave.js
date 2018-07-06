@@ -14,7 +14,7 @@ module.exports = (category, bot) => {
 
                 let chan = msg.channel
                 vc.emptyTimeout = setInterval(function() {
-                    if (vc && vc.members && (vc.members.array().length - 1) < 1) {
+                    if (vc && vc.members && (vc.members.filter(member => !member.user.bot).array().length) < 1) {
                         vc.leave()
                         if (chan) {
                             chan.send(`Left voice channel \`${vc.name}\` due to inactivity.`)
