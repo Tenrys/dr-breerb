@@ -12,8 +12,11 @@ module.exports = (category, bot) => {
             if (vc) {
                 await vc.join()
 
+                let guild = msg.guild
                 let chan = msg.channel
                 vc.emptyTimeout = setInterval(function() {
+                    let vc = guild.me.voiceChannel
+
                     if (vc && vc.members && (vc.members.filter(member => !member.user.bot).array().length) < 1) {
                         vc.leave()
                         if (chan) {
