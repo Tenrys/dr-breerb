@@ -46,7 +46,7 @@ class Bot {
 	formatErrorToDiscord(err) {
 		if (err.stack) {
 			let trace = err.stack
-			let regex = new RegExp(path.join(process.cwd(), "/").replace(/\\/g, "\\\\") + "(.*):(\\d*):(\\d*)", "gi")
+			let regex = new RegExp(path.join(process.cwd(), "/").replace(/\\/g, "\\\\") + "(.*\.js):(\\d*):(\\d*)", "gi")
 			trace = trace.replace(regex, `[$1\\:$2\\:$3](${this.repositoryURL}/$1#L$2)`)
 			return trace
 		} else { return err }
