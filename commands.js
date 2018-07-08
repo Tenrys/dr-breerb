@@ -192,7 +192,7 @@ bot.client.on("message", async function(msg) {
 			}
 
 			logger.log(`command-${cmd}`, `Ran by '${msg.author.tag}' (${msg.author.id})`)
-				logDetail("in channel", `${msg.channel.name} (${msg.channel.id})`)
+				logDetail("in channel", `${msg.channel.name || msg.channel.recipient.tag + "'s DMs"} (${msg.channel.id})`)
 				if (msg.guild) {
 					logDetail("in guild", `${msg.guild.name} (${msg.guild.id})`)
 				}
