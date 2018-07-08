@@ -14,7 +14,7 @@ module.exports = (category, bot) => {
 
                 let guild = msg.guild
                 let chan = msg.channel
-                vc.emptyTimeout = setInterval(function() {
+                vc.emptyTimeout = msg.client.setInterval(function() {
                     let vc = guild.me.voiceChannel
 
                     if (vc && vc.members && (vc.members.filter(member => !member.user.bot).array().length) < 1) {

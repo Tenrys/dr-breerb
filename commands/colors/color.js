@@ -107,7 +107,7 @@ module.exports = (category, bot) => {
             return
         }
 
-        setInterval(function() {
+        this.setInterval(function() {
             cleanColorRoles()
         }, 60 * 60 * 1000)
 
