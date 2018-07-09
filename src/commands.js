@@ -30,6 +30,7 @@ class Command {
 		this.ownerOnly = options.ownerOnly || false
 		this.aliases = options.aliases || []
 		this.postRun = options.postRun
+		this.permissons = options.permissions
 	}
 }
 
@@ -144,14 +145,14 @@ Object.defineProperty(categories.all, "_commands", { // Quite the hack...
 	}
 })
 
-fs.readdirSync("./commands").forEach(file => {
-	let dirPath = "./commands/" + file
+fs.readdirSync(path.join(__dirname, "commands")).forEach(file => {
+	let dirPath = path.join(__dirname, "commands", file)
 	if (fs.statSync(dirPath).isDirectory()) {
 		let category = require(dirPath)
 		fs.readdirSync(dirPath).forEach(file => {
 			let filePath = path.join(dirPath, file)
 			if (fs.statSync(filePath).isFile() && file !== "index.js") {
-				require("./" + filePath)(category, bot)
+				require(filePath)(category, bot)
 			}
 		})
 		categories[category.name] = category
@@ -177,7 +178,7 @@ bot.client.on("message", async function(msg) {
 		let args = []
 		try {
 			args = parse(line)
-		} catch {}
+		} catch (err) {}
 
 		let action = bot.commands.get().commands.get(cmd)
 		if (action && action.callback) {
@@ -189,6 +190,26 @@ bot.client.on("message", async function(msg) {
 				msg.reply("this command can only be used by the bot's owner.")
 				logger.error(`command-${cmd}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}).`)
 				return
+			}
+			if (action.permissions) {
+				if (action.permissions.bot) {
+					for (const permission of action.permissions.bot) {
+						if (!msg.guild.me.hasPermission(permission)) {
+							msg.reply(`I do not have the permission to \`${permission}\`.`)
+							logger.error(`command-${cmd}`, `Invalid permissions for bot from'${msg.author.tag}' (${msg.author.id}) (${permission}).`)
+							return
+						}
+					}
+				}
+				if (action.permissions.user) {
+					for (const permission of action.permissions.user) {
+						if (!msg.member.hasPermission(permission)) {
+							msg.reply(`you do not have the permission to \`${permission}\`.`)
+							logger.error(`command-${cmd}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}) (${permission}).`)
+							return
+						}
+					}
+				}
 			}
 
 			logger.log(`command-${cmd}`, `Ran by '${msg.author.tag}' (${msg.author.id})`)

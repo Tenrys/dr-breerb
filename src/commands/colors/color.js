@@ -24,8 +24,6 @@ module.exports = (category, bot) => {
     }
 
     category.addCommand("color", async function(msg, line, r, g, b) {
-        if (!msg.guild.me.hasPermission("MANAGE_ROLES")) { msg.reply("I am not allowed to manage roles."); return }
-
         if (!msg.member) { msg.reply("webhooks are unsupported."); return } // Could also be trying to use userbot as bot, that shit doesn't work for some reason lol
 
         line = line.toLowerCase()
@@ -98,6 +96,9 @@ module.exports = (category, bot) => {
         msg.channel.send(embed)
     }, {
         help: "Set your username color using a role. Supported color formats are Hexadecimal and RGB. Call without arguments to reset your color.\nYou can also use your avatar's dominant color by passing `avatar` as the argument.",
+        permissions: {
+            bot: [ "MANAGE_ROLES" ]
+        },
         guildOnly: true
     })
 

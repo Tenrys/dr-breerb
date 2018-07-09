@@ -33,7 +33,7 @@ module.exports = (category, bot) => {
             try {
                 stats = fs.statSync("soundlist.json")
                 outdated = new Date().getTime() > stats.mtime.getTime() + (86400 * 7)
-            } catch {
+            } catch (err) {
 
             }
 
