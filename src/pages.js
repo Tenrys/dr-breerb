@@ -50,7 +50,7 @@ function time() {
 }
 
 function onReaction(reaction, user) {
-    if (user.id == this.user.id) { return }
+    if (user.id == bot.client.user.id) { return }
 
     let page = bot.pages.list[reaction.message.id]
     if (page) {
@@ -76,7 +76,7 @@ function onReaction(reaction, user) {
 bot.client.on("messageReactionAdd", onReaction)
 bot.client.on("messageReactionRemove", onReaction)
 bot.client.on("message", msg => {
-    if (msg.author.id == this.user.id) { return }
+    if (msg.author.id == bot.client.user.id) { return }
 
     let num = parseInt(msg.content.toLowerCase().trim(), 10)
 
