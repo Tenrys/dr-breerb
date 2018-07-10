@@ -26,7 +26,7 @@ module.exports = (category, bot) => {
                     }
                 }, 60 * 3 * 1000)
             } else {
-                msg.reply("you aren't in any channel.")
+                msg.error("You aren't in any channel.")
             }
         } else {
             if (!vc.connection) {
@@ -48,7 +48,7 @@ module.exports = (category, bot) => {
         if (vc) {
             vc.leave()
         } else {
-            msg.reply("I am not in any channel.")
+            msg.error("I am not in any channel.")
         }
     }, {
         guildOnly: true,

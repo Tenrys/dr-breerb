@@ -183,11 +183,11 @@ bot.client.on("message", async function(msg) {
 		if (cmd && cmd.callback) {
 			// Verify
 			if (cmd.guildOnly && !msg.guild) {
-				msg.reply("this command can only be used while in a guild.")
+				msg.error("This command can only be used while in a guild.")
 				return
 			}
 			if (cmd.ownerOnly && msg.author.id !== bot.ownerId) {
-				msg.reply("this command can only be used by the bot's owner.")
+				msg.error("This command can only be used by the bot's owner.")
 				bot.logger.error(`command-${name}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}).`)
 				return
 			}
@@ -195,7 +195,7 @@ bot.client.on("message", async function(msg) {
 				if (cmd.permissions.bot) {
 					for (const permission of cmd.permissions.bot) {
 						if (!msg.guild.me.hasPermission(permission)) {
-							msg.reply(`I do not have the permission to \`${permission}\`.`)
+							msg.error(`I do not have the permission to \`${permission}\`.`)
 							bot.logger.error(`command-${name}`, `Invalid permissions for bot from'${msg.author.tag}' (${msg.author.id}) (${permission}).`)
 							return
 						}
@@ -204,7 +204,7 @@ bot.client.on("message", async function(msg) {
 				if (cmd.permissions.user) {
 					for (const permission of cmd.permissions.user) {
 						if (!msg.member.hasPermission(permission)) {
-							msg.reply(`you do not have the permission to \`${permission}\`.`)
+							msg.error(`you do not have the permission to \`${permission}\`.`)
 							bot.logger.error(`command-${name}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}) (${permission}).`)
 							return
 						}
@@ -216,7 +216,7 @@ bot.client.on("message", async function(msg) {
 			bot.logger.log(`command-${name}`, `Ran by '${msg.author.tag}' (${msg.author.id})`)
 				logDetail("in channel", `${msg.channel.name || msg.channel.recipient.tag + "'s DMs"} (${msg.channel.id})`)
 				if (msg.guild) logDetail("in guild", `${msg.guild.name} (${msg.guild.id})`)
-				logDetail("passed line", `${chalk.yellowBright(line.replace('\n', '\\n'))}`)
+				if (line) logDetail("passed line", `${chalk.yellowBright(line.replace('\n', '\\n'))}`)
 
 			// Run
 			try {
@@ -232,13 +232,8 @@ bot.client.on("message", async function(msg) {
 				if (msg.printBuffer) await msg.channel.send(`\`\`\`\n${bot.truncate(msg.printBuffer)}\n\`\`\``)
 				if (cmd.postRun) cmd.postRun(msg)
 			} catch (err) {
-				let embed = new Discord.MessageEmbed()
-					.setColor(bot.colors.red)
-					.setTitle(`:interrobang: JavaScript error: from command '${name}'`)
-					.setDescription(bot.formatErrorToDiscord(err))
-
+				msg.error(bot.formatErrorToDiscord(err), `JavaScript error: from command '${name}'`)
 				bot.logger.error(`command-${name}`, `Error: ${err.stack || err}`)
-				msg.channel.send(embed)
 			}
 		}
 	}

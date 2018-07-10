@@ -56,7 +56,7 @@ module.exports = (category, bot) => {
             bot.downloadSoundlist()
                 .then(() => {
                     bot.loadSoundlist()
-                    msg.reply("chatsounds list refreshed.")
+                    msg.success("Chatsounds list refreshed.")
                 })
         })
     }, {

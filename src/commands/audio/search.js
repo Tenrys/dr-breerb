@@ -52,7 +52,7 @@ module.exports = (category, bot) => {
         }
         return bot.pages.add(null, msg, res, handler, options ? options.displayCount : null)
     }, {
-        aliases: ["find"],
+        aliases: [ "find" ],
         help: "Searches chatsounds by name."
     })
 }

@@ -13,30 +13,19 @@ module.exports = (category, bot) => {
                 line = code[1]
         }
 
-        let embed = new Discord.MessageEmbed()
-            .setAuthor(msg.author.tag, msg.author.avatarURL())
-
         let res
         try {
             let print = msg.print
             res = eval(line)
 
-            if (typeof res !== "string")
-                res = util.inspect(res)
+            if (typeof res !== "string") res = util.inspect(res)
 
-            embed.setColor(bot.colors.yellow)
-                .setTitle(":ballot_box_with_check: JavaScript result")
-                .setDescription(`\`\`\`js\n${bot.truncate(res)}\n\`\`\``)
+            msg.error(`\`\`\`js\n${bot.truncate(res)}\n\`\`\``, "JavaScript result", bot.colors.yellow)
         } catch (err) {
             res = bot.formatErrorToDiscord(err)
 
-            embed.setColor(bot.colors.red)
-                .setTitle(":interrobang: JavaScript error")
-                .setDescription(`${bot.truncate(res)}`)
+            msg.error(`${bot.truncate(res)}`, "JavaScript error")
         }
-
-
-        msg.channel.send(embed)
     }, {
         help: "Executes JavaScript code and displays its result.",
         ownerOnly: true
@@ -69,7 +58,7 @@ module.exports = (category, bot) => {
         ownerOnly: true
     })
     category.addCommand("update", async function(msg, line) {
-        msg.reply("updating...\n")
+        msg.result("Updating...\n")
         await runCommand(msg, "git pull origin master")
     }, {
         help: "Updates the bot to the latest revision from its GitHub repository and quits it.",

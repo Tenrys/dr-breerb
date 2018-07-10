@@ -7,13 +7,13 @@ module.exports = (category, bot) => {
             let playing = vc.connection.dispatcher
 
             if (!vol) {
-                msg.reply("volume: " + playing.volume * 100 + "%.")
+                msg.result("Volume: " + playing.volume * 100 + "%.")
             } else {
                 playing.setVolume(volume)
-                msg.reply("changed playing chatsound's volume to " + playing.volume * 100 + "%.")
+                msg.success("Changed playing chatsound's volume to " + playing.volume * 100 + "%.")
             }
         } else {
-            msg.reply("I am not in any channel.")
+            msg.error("I am not in any channel.")
         }
     }, {
         aliases: [ "vol" ],

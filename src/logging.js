@@ -25,56 +25,26 @@ function getCurrentTime() {
 }
 
 const chalk = require("chalk")
-let loggers = {
-	log: {
-		callback: console.log,
-		color1: chalk.cyan,
-		color2: chalk.white
-	},
-	warn: {
-		callback: console.warn,
-		color1: chalk.yellow,
-		color2: chalk.white
-	},
-	error: {
-		callback: console.error,
-		color1: chalk.red,
-		color2: chalk.white
-	},
-	success: {
-		callback: console.log,
-		color1: chalk.green,
-		color2: chalk.white
-	},
-	working: {
-		callback: console.log,
-		color1: chalk.magenta,
-		color2: chalk.white
-	}
-}
 
-/**
- * Returns a function that will use options from a named logger, if it exists, to log data.
- */
-function makeLogger(name) {
-	return function(cat, msg, ...args) {
-		let logger = loggers[name]
-		if (logger && logger.callback && logger.color1 && logger.color2) {
-			if (msg) {
-				return logger.callback(getCurrentTime(), logger.color1(`[${cat}]:`), logger.color2(msg), ...args)
-			} else {
-				return logger.callback(getCurrentTime(), logger.color2(cat))
-			}
+// The following code is stupid, I'm sorry.
+
+class Logger {}
+
+function logMethod(name, callback, color1, color2) {
+	if (!color2) color2 = chalk.white
+	Logger[name] = function(cat, msg, ...args) {
+		if (msg) {
+			return callback(getCurrentTime(), color1(`[${cat}]:`), color2(msg), ...args)
 		} else {
-			throw new Error("invalid logger")
+			return callback(getCurrentTime(), color2(cat))
 		}
 	}
 }
 
-class Logger {} // Lol this is stupid
-Logger.log = makeLogger("log")
-Logger.warn = makeLogger("warn")
-Logger.error = makeLogger("error")
-Logger.success = makeLogger("success")
-Logger.working = makeLogger("working")
+logMethod("log", console.log, chalk.cyan)
+logMethod("warn", console.warn, chalk.yellow)
+logMethod("error", console.error, chalk.red)
+logMethod("success", console.log, chalk.green)
+logMethod("working", console.log, chalk.magenta)
+
 module.exports = Logger
