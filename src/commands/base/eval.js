@@ -3,7 +3,7 @@ const child_process = require("child_process")
 const util = require("util")
 
 module.exports = (category, bot) => {
-    category.addCommand("eval", function(msg, line) {
+    category.addCommand("eval", (msg, line) => {
         let code = /^```\w*\n([\s\S]*)```$/gim.exec(line) // Test if we put a language after the code blocks first
         if (code && code[1]) {
             line = code[1]
@@ -51,13 +51,13 @@ module.exports = (category, bot) => {
         })
     }
 
-    category.addCommand("exec", async function(msg, line) {
+    category.addCommand("exec", async (msg, line) => {
         await runCommand(msg, line)
     }, {
         help: "Executes a command from the shell.",
         ownerOnly: true
     })
-    category.addCommand("update", async function(msg, line) {
+    category.addCommand("update", async (msg, line) => {
         msg.result("Updating...\n")
         await runCommand(msg, "git pull origin master")
     }, {

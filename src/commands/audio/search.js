@@ -1,7 +1,7 @@
 const Discord = require("discord.js")
 
 module.exports = (category, bot) => {
-    category.addCommand("search", function(msg, line, ...options) {
+    category.addCommand("search", (msg, line, ...options) => {
         if (options && typeof options[0] === "object") {
             options = options[0]
         } else {
@@ -22,7 +22,7 @@ module.exports = (category, bot) => {
             msg.reply("couldn't find any chatsound.")
             return null
         }
-        res.sort(function(a, b) {
+        res.sort((a, b) => {
             return 	a.length - b.length || // sort by length, if equal then
                     a.localeCompare(b)     // sort by dictionary order
         })

@@ -7,17 +7,15 @@ module.exports = (category, bot) => {
         let req = request(feed.url)
         let feedparser = new FeedParser()
 
-        req.on("response", function(res) {
-            let stream = this
-
+        req.on("response", res => {
             if (res.statusCode !== 200) {
-                this.emit("error", new Error("Bad status code"))
+                req.emit("error", new Error("Bad status code"))
             }
             else {
-                stream.pipe(feedparser)
+                req.pipe(feedparser)
             }
         })
-        req.on("error", function(err) {
+        req.on("error", err => {
             console.error(err)
             if (err.code === "ENOTFOUND") {
                 feed.destroy().then(() => {
@@ -27,11 +25,10 @@ module.exports = (category, bot) => {
             }
         })
 
-        feedparser.on("readable", function() {
-            let stream = this
-            let meta = this.meta
+        feedparser.on("readable", () => {
+            let meta = req.meta
 
-            while (item = stream.read()) {
+            while (item = req.read()) {
                 if (item.pubdate.getTime() > feed.lastFeedDate.getTime()) {
                     let embed = new Discord.MessageEmbed()
                     if (item.author) embed.setAuthor(item.author)
@@ -51,7 +48,7 @@ module.exports = (category, bot) => {
                 } else break
             }
         })
-        feedparser.on("error", function(err) {
+        feedparser.on("error", err => {
             if (err.message === "Not a feed") {
                 feed.destroy().then(() => {
                     let channel = bot.client.channels.get(feed.channel)
@@ -84,13 +81,8 @@ module.exports = (category, bot) => {
             })
         })
     }
-    bot.client.on("ready", function() {
-        checkRSSFeeds()
 
-        bot.rssInterval = this.setInterval(checkRSSFeeds, 60 * 5 * 1000)
-    })
-
-    category.addCommand("feed", function(msg, line, action, ...str) {
+    category.addCommand("feed", (msg, line, action, ...str) => {
         action = (action || "").toLowerCase()
 
         switch (action) {
@@ -155,7 +147,7 @@ module.exports = (category, bot) => {
                             let url = feed.url
                             feed.destroy().then(() => {
                                 msg.success(`This channel is no longer listening \`${url}\`.`, category.printName)
-                            }).catch((err) => {
+                            }).catch(err => {
                                 msg.error(err, category.printName)
                             })
                         } else {
@@ -177,5 +169,11 @@ module.exports = (category, bot) => {
             user: [ "MANAGE_GUILD" ]
         },
         guildOnly: true,
+    })
+
+    bot.client.on("ready", () => {
+        checkRSSFeeds()
+
+        bot.rssInterval = bot.client.setInterval(checkRSSFeeds, 60 * 5 * 1000)
     })
 }

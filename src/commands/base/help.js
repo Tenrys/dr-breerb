@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 const { Command, CommandCategory } = require("../../commands.js")
 
 module.exports = (category, bot) => {
-   category.addCommand("help", function(msg, line) {
+   category.addCommand("help", (msg, line) => {
         line = line.toLowerCase()
         let res = bot.commands.get(line)
 

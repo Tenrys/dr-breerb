@@ -13,7 +13,7 @@ Object.defineProperty(Array.prototype, "random", {
 /**
  * Function equivalent of the standard for in loop... Because it takes too much time to write.
  */
-global.forin = function(obj, callback) { // I can't be fucked writing this over and over
+global.forin = (obj, callback) => { // I can't be fucked writing this over and over
     for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
             const value = obj[key]

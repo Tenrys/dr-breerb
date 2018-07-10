@@ -75,7 +75,7 @@ function onReaction(reaction, user) {
 }
 bot.client.on("messageReactionAdd", onReaction)
 bot.client.on("messageReactionRemove", onReaction)
-bot.client.on("message", function(msg) {
+bot.client.on("message", msg => {
     if (msg.author.id == this.user.id) { return }
 
     let num = parseInt(msg.content.toLowerCase().trim(), 10)

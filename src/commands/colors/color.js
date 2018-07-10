@@ -21,7 +21,7 @@ module.exports = (category, bot) => {
         }
     }
 
-    category.addCommand("color", async function(msg, line, r, g, b) {
+    category.addCommand("color", async (msg, line, r, g, b) => {
         if (!msg.member) { msg.error("Webhooks are unsupported."); return } // Could also be trying to use userbot as bot, that shit doesn't work for some reason lol
 
         line = line.toLowerCase()
@@ -96,15 +96,15 @@ module.exports = (category, bot) => {
         guildOnly: true
     })
 
-    bot.client.on("ready", function() {
-        if (!this.user.bot) {
+    bot.client.on("ready", () => {
+        if (!bot.client.user.bot) {
             bot.logger.warn("discord-color-roles", "User bot: with enough permissions, all color roles would have been cleaned.")
             return
         }
 
         cleanColorRoles()
 
-        this.setInterval(function() {
+        bot.client.setInterval(() => {
             cleanColorRoles()
         }, 60 * 60 * 1000)
     })

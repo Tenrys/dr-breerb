@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 
 module.exports = (category, bot) => {
     bot.ignoreList = {}
-    category.addCommand("ignore", function(msg, line) {
+    category.addCommand("ignore", (msg, line) => {
         line = line.toLowerCase()
         id = parseInt(line, 10)
         if (typeof id !== "number" || isNaN(id)) {
@@ -16,7 +16,7 @@ module.exports = (category, bot) => {
         help: "Adds a Discord user to the list of people that the bot won't react to, using their user ID.",
         ownerOnly: true
     })
-    category.addCommand("unignore", function(msg, line) {
+    category.addCommand("unignore", (msg, line) => {
         line = line.toLowerCase()
         if (!bot.ignoreList[line]) {
             msg.error(`\`${line}\` not in ignore list.`)
@@ -30,7 +30,7 @@ module.exports = (category, bot) => {
         ownerOnly: true
     })
 
-    category.addCommand("lockdown", function(msg, line) {
+    category.addCommand("lockdown", (msg, line) => {
         bot.ownerOnly = !bot.ownerOnly
         msg.success(`Toggled lockdown ${bot.ownerOnly ? 'on' : 'off'}.`)
     }, {
@@ -38,7 +38,7 @@ module.exports = (category, bot) => {
         ownerOnly: true
     })
 
-    bot.client.on("ready", function() {
-        bot.ownerOnly = !this.user.bot // Only allow owner to use the bot if the bot is a user, otherwise allow everyone
+    bot.client.on("ready", () => {
+        bot.ownerOnly = !bot.client.user.bot // Only allow owner to use the bot if the bot is a user, otherwise allow everyone
     })
 }

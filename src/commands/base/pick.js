@@ -1,5 +1,5 @@
 module.exports = (category, bot) => {
-    category.addCommand("pick", function(msg, line, ...str) { // This is stupidly easy but Kabus wanted it
+    category.addCommand("pick", (msg, line, ...str) => { // This is stupidly easy but Kabus wanted it
         if (!str) { return }
         if (str.length < 1) { return }
 

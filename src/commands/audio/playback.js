@@ -6,7 +6,7 @@ const shell = require("shelljs")
 module.exports = (category, bot) => {
     const chatsndsRepositoryURL = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/"
 
-    category.addCommand("play", async function(msg, line) {
+    category.addCommand("play", async (msg, line) => {
         if (!bot.soundListKeys) { msg.reply("sound list hasn't loaded yet."); return }
 
         line = line.toLowerCase()
@@ -52,7 +52,7 @@ module.exports = (category, bot) => {
                     let dir = /(.*)\/.*$/gi.exec(sndPath)
                     shell.mkdir("-p", path.join("cache", dir[1]))
 
-                    let req = https.get(chatsndsRepositoryURL + encodeURI(sndPath), function(res) {
+                    let req = https.get(chatsndsRepositoryURL + encodeURI(sndPath), res => {
                         if (res.statusCode == 200) {
                             let writeFile = fs.createWriteStream(filePath)
                             writeFile.on("finish", resolve)
@@ -63,7 +63,7 @@ module.exports = (category, bot) => {
                 } else {
                     resolve()
                 }
-            }).then(function() {
+            }).then(() => {
                 let audio = vc.connection.play(fs.createReadStream(filePath), { volume: 0.66 })
                 audio.on("start", () => bot.logger.log("chatsound", sndPath + ": start"))
                 audio.on("end", () => bot.logger.log("chatsound", sndPath + ": end"))
@@ -74,7 +74,7 @@ module.exports = (category, bot) => {
         help: "Plays a custom chatsound from the GitHub repository. Does not support chatsounds from games like Half-Life 2, and such."
     })
 
-    category.addCommand("stop", function(msg, line) {
+    category.addCommand("stop", (msg, line) => {
         let vc = msg.guild.me.voiceChannel
         if (vc && vc.connection && vc.connection.dispatcher) {
             vc.connection.dispatcher.end()

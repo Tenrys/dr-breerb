@@ -1,5 +1,5 @@
 module.exports = (category, bot) => {
-    category.addCommand("volume", function(msg, line, vol) {
+    category.addCommand("volume", (msg, line, vol) => {
         let vc = msg.guild.me.voiceChannel
 
         if (vc && vc.connection && vc.connection.dispatcher) {

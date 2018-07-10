@@ -68,7 +68,7 @@ class CommandCategory {
      */
     get commands() {
         let commands = this._commands
-        commands.__proto__.get = function(name) {
+        commands.__proto__.get = name => {
             if (name === undefined) {
                 return commands
             }
@@ -166,7 +166,7 @@ function logDetail(name, details) {
 
 let prefix = "!"
 bot.commands = categories
-bot.client.on("message", async function(msg) {
+bot.client.on("message", async msg => {
     if (bot.ignoreList && bot.ignoreList[msg.author.id]) { return }
     if (bot.ownerOnly && msg.author.id !== bot.ownerId) { return }
 
@@ -221,7 +221,7 @@ bot.client.on("message", async function(msg) {
             // Run
             try {
                 msg.printBuffer = ""
-                msg.print = function(...args) {
+                msg.print = (...args) => {
                     args.forEach(val => {
                         msg.printBuffer = msg.printBuffer + val.toString() + "\n"
                     })
@@ -242,6 +242,6 @@ bot.client.on("message", async function(msg) {
 let commandAmt = categories.all.commands.length
 bot.logger.success("commands", `Loaded ${commandAmt} command${commandAmt == 1 ? '' : 's'}.`)
 
-bot.client.on("ready", function() {
-    this.user.setActivity(`${prefix}help`, { type: "LISTENING" })
+bot.client.on("ready", () => {
+    bot.client.user.setActivity(`${prefix}help`, { type: "LISTENING" })
 })

@@ -1,5 +1,5 @@
 module.exports = (category, bot) => {
-    category.addCommand("join", async function(msg, line, ...args) {
+    category.addCommand("join", async (msg, line, ...args) => {
         if (!msg.member) { msg.error("Webhooks are unsupported."); return }
 
         let vc = msg.guild.me.voiceChannel
@@ -12,7 +12,7 @@ module.exports = (category, bot) => {
 
                 let guild = msg.guild
                 let channel = msg.channel
-                vc.emptyTimeout = msg.client.setInterval(function() {
+                vc.emptyTimeout = msg.client.setInterval(() => {
                     let vc = guild.me.voiceChannel
 
                     if (vc && vc.members && (vc.members.filter(member => !member.user.bot).array().length) < 1) {
@@ -20,9 +20,11 @@ module.exports = (category, bot) => {
                         if (channel) {
                             channel.send(`Left voice channel \`${vc.name}\` due to inactivity.`)
                         }
-                        clearInterval(this)
+                        clearInterval(vc.emptyTimeout)
+                        vc.emptyTimeout = undefined
                     } else if (!vc) {
-                        clearInterval(this)
+                        clearInterval(vc.emptyTimeout)
+                        vc.emptyTimeout = undefined
                     }
                 }, 60 * 3 * 1000)
             } else {
@@ -42,7 +44,7 @@ module.exports = (category, bot) => {
         help: "Makes the bot join the voice channel you are currently in."
     })
 
-    category.addCommand("leave", function(msg, line) {
+    category.addCommand("leave", (msg, line) => {
         let vc = msg.guild.me.voiceChannel
 
         if (vc) {
