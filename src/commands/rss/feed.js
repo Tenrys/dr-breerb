@@ -1,7 +1,95 @@
 const Discord = require("discord.js")
-// const sequelize = require("sequelize")
+const FeedParser = require("feedparser")
+const request = require("request")
 
 module.exports = (category, bot) => {
+    function checkRSSFeed(feed) {
+        let req = request(feed.url)
+        let feedparser = new FeedParser()
+
+        req.on("response", function(res) {
+            let stream = this
+
+            if (res.statusCode !== 200) {
+                this.emit("error", new Error("Bad status code"))
+            }
+            else {
+                stream.pipe(feedparser)
+            }
+        })
+        req.on("error", function(err) {
+            console.error(err)
+            if (err.code === "ENOTFOUND") {
+                feed.destroy().then(() => {
+                    let channel = bot.client.channels.get(feed.channel)
+                    channel.error(`Feed with URL \`${feed.url}\` could not be checked. It has been removed.\nError: \`${err.code}\``, category.printName)
+                })
+            }
+        })
+
+        feedparser.on("readable", function() {
+            let stream = this
+            let meta = this.meta
+
+            while (item = stream.read()) {
+                if (item.pubdate.getTime() > feed.lastFeedDate.getTime()) {
+                    let embed = new Discord.MessageEmbed()
+                    if (item.author) embed.setAuthor(item.author)
+                    else if (item["a10:author"]) embed.setAuthor(item["a10:author"]["a10:name"]["#"]) // gay
+                    if (item.title) embed.setTitle(item.title)
+                    if (item.link) embed.setURL(item.link)
+                    if (item.description) embed.setDescription(item.description)
+                    if (meta.description || meta.title) embed.setFooter(meta.description || meta.title, meta.favicon)
+                    if (meta.image && meta.image.url) embed.setThumbnail(meta.image.url)
+                    embed.setTimestamp(item.pubdate)
+
+                    let channel = bot.client.channels.get(feed.channel)
+                    channel.send(embed)
+
+                    feed.lastFeedDate = item.pubdate
+                    feed.save()
+                } else break
+            }
+        })
+        feedparser.on("error", function(err) {
+            if (err.message === "Not a feed") {
+                feed.destroy().then(() => {
+                    let channel = bot.client.channels.get(feed.channel)
+                    channel.error(`URL \`${feed.url}\` is not a valid RSS feed. It has been removed.`, category.printName)
+                })
+            }
+        })
+    }
+    function checkRSSFeeds(msg) {
+        bot.db.RSSFeed.sync().then(() => {
+            let promise
+            if (msg) {
+                promise = bot.db.RSSFeed.findAll({
+                    where: {
+                        channel: msg.channel.id
+                    }
+                })
+            } else {
+                promise = bot.db.RSSFeed.findAll()
+            }
+            promise.then(feeds => {
+                if (feeds.length > 0) {
+                    // Promisify this shit so we can send a message after all the work's been done
+                    for (let i = 0; i < feeds.length; i++) {
+                        checkRSSFeed(feeds[i])
+                    }
+                } else if (msg) {
+                    msg.error("No feeds to check for this channel!", category.printName)
+                }
+            })
+        })
+    }
+    bot.client.on("ready", function() {
+        checkRSSFeeds()
+
+        bot.rssInterval = this.setInterval(checkRSSFeeds, 60 * 5 * 1000)
+    })
+
     category.addCommand("feed", function(msg, line, action, ...str) {
         action = (action || "").toLowerCase()
 
@@ -19,15 +107,14 @@ module.exports = (category, bot) => {
                             url,
                             server: msg.guild.id,
                             channel: msg.channel.id
-                        },
-                        defaults: {
-                            lastFeedDate: new Date()
                         }
                     }).spread((feed, created) => {
                         if (created) {
-                            msg.success(`This channel is now listening to the RSS feed with URL \`${url}\`.`, category.printName)
+                            msg.success(`This channel is now listening to \`${url}\`.`, category.printName)
+
+                            checkRSSFeed(feed)
                         } else {
-                            msg.error(`This channel is already listening to the RSS feed with URL \`${url}\`!`, category.printName)
+                            msg.error(`This channel is already listening to \`${url}\`!`, category.printName)
                         }
                     })
                 })
@@ -43,7 +130,7 @@ module.exports = (category, bot) => {
                         let buf = ""
                         for (let i = 0; i < feeds.length; i++) {
                             let feed = feeds[i]
-                            buf += `${i + 1}. \`${feed.get("url")}\`\n`
+                            buf += `${i + 1}. \`${feed.url}\`\n`
                         }
                         msg.result(buf || "None for this channel.", category.printName)
                     })
@@ -65,24 +152,27 @@ module.exports = (category, bot) => {
                     }).then(feeds => {
                         let feed = feeds[choice]
                         if (feed) {
-                            let url = feed.get("url")
+                            let url = feed.url
                             feed.destroy().then(() => {
-                                msg.success(`This channel is no longer listening to feed with URL \`${url}\`.`, category.printName)
+                                msg.success(`This channel is no longer listening \`${url}\`.`, category.printName)
                             }).catch((err) => {
                                 msg.error(err, category.printName)
                             })
                         } else {
-                            msg.error("Invalid choice.", category.printName)
+                            msg.error("Invalid choice. Use `list` to see all feeds and their ID for this channel.", category.printName)
                         }
                     })
                 })
                 break
+            case "check":
+                checkRSSFeeds(msg)
+                break
             default:
-                msg.error("Invalid action. Possible actions are `add, remove, list`.", category.printName)
+                msg.error("Invalid action.", category.printName)
                 break
         }
     }, {
-        help: "Perform actions related to RSS feeds.",
+        help: "Perform actions related to RSS feeds.\nAvailable actions are `add, remove, list, check`.",
         permissions: {
             user: [ "MANAGE_GUILD" ]
         },

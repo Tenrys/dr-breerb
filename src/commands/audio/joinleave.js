@@ -11,14 +11,14 @@ module.exports = (category, bot) => {
                 await vc.join()
 
                 let guild = msg.guild
-                let chan = msg.channel
+                let channel = msg.channel
                 vc.emptyTimeout = msg.client.setInterval(function() {
                     let vc = guild.me.voiceChannel
 
                     if (vc && vc.members && (vc.members.filter(member => !member.user.bot).array().length) < 1) {
                         vc.leave()
-                        if (chan) {
-                            chan.send(`Left voice channel \`${vc.name}\` due to inactivity.`)
+                        if (channel) {
+                            channel.send(`Left voice channel \`${vc.name}\` due to inactivity.`)
                         }
                         clearInterval(this)
                     } else if (!vc) {

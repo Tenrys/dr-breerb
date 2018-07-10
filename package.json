@@ -17,12 +17,13 @@
     "discord.js": "github:hydrabolt/discord.js",
     "erlpack": "discordapp/erlpack",
     "feed-parser": "^1.0.19",
+    "feedparser": "^2.2.9",
     "jimp": "^0.2.28",
     "node-opus": "^0.2.9",
+    "request": "^2.87.0",
     "sequelize": "^4.38.0",
     "shelljs": "^0.8.1",
     "sqlite3": "^4.0.1",
-    "sqlite3-entities": "^1.2.1",
     "uws": "^9.148.0",
     "zlib-sync": "^0.1.4"
   }

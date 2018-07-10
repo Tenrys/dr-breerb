@@ -16,9 +16,9 @@ bot.pages = {
 			handle(to) {
 				let displayCount = this.displayCount || pages.displayCount
 				this.lastPage = Math.ceil(this.data.length / displayCount)
-				if (typeof to == "boolean") {
+				if (typeof to === "boolean") {
 					this.page = Math.max(1, Math.min(this.page + (to && 1 || -1), this.lastPage))
-				} else if (typeof to == "number") {
+				} else if (typeof to === "number") {
 					this.page = to
 				}
 

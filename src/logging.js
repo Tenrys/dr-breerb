@@ -30,8 +30,7 @@ const chalk = require("chalk")
 
 class Logger {}
 
-function logMethod(name, callback, color1, color2) {
-	if (!color2) color2 = chalk.white
+function logMethod(name, callback, color1, color2=chalk.white) {
 	Logger[name] = function(cat, msg, ...args) {
 		if (msg) {
 			return callback(getCurrentTime(), color1(`[${cat}]:`), color2(msg), ...args)

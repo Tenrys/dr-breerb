@@ -28,7 +28,7 @@ module.exports = (category, bot) => {
         r = r || line
 
         let color
-        if (line == "avatar") {
+        if (line === "avatar") {
             let img = await Jimp.read(msg.author.avatarURL({ format: "png" }))
             let dominant = ColorThief.getColor(img)
             color = Color({ r: dominant[0], g: dominant[1], b: dominant[2] })
@@ -102,10 +102,10 @@ module.exports = (category, bot) => {
             return
         }
 
+        cleanColorRoles()
+
         this.setInterval(function() {
             cleanColorRoles()
         }, 60 * 60 * 1000)
-
-        cleanColorRoles()
     })
 }

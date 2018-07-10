@@ -2,7 +2,7 @@ const Discord = require("discord.js")
 
 module.exports = (category, bot) => {
     category.addCommand("search", function(msg, line, ...options) {
-        if (options && typeof options[0] == "object") {
+        if (options && typeof options[0] === "object") {
             options = options[0]
         } else {
             options = undefined
