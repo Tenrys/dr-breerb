@@ -1,5 +1,3 @@
-const logger = require("../../logging.js")
-
 const fs = require("fs")
 const http = require("http")
 const path = require("path")
@@ -22,9 +20,9 @@ module.exports = (category, bot) => {
                 })
             })
 
-            logger.success("soundlist", "Loaded.")
+            bot.logger.success("soundlist", "Loaded.")
         } catch (err2) {
-            logger.error("soundlist", "Loading failed: " + ((err ? err.stack : err) || (err2 ? err2.stack : err2)))
+            bot.logger.error("soundlist", "Loading failed: " + ((err ? err.stack : err) || (err2 ? err2.stack : err2)))
         }
     }
     bot.downloadSoundlist = function() {

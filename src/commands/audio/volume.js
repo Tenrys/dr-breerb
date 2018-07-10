@@ -16,7 +16,7 @@ module.exports = (category, bot) => {
             msg.reply("I am not in any channel.")
         }
     }, {
-        aliases: ["vol"],
+        aliases: [ "vol" ],
         guildOnly: true,
         help: "Changes the volume of the chatsound that's currently playing.\n\nVolume can be between 0 and 1."
     })

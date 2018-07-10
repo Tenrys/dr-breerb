@@ -1,6 +1,3 @@
-const logger = require("../../logging.js")
-const pages = require("../../pages.js")
-
 const Discord = require("discord.js")
 
 module.exports = (category, bot) => {
@@ -31,7 +28,7 @@ module.exports = (category, bot) => {
         })
 
         let handler = async function(to) {
-            let displayCount = this.displayCount || pages.displayCount
+            let displayCount = this.displayCount || bot.pages.displayCount
             let buf = ""
             for (let i = displayCount * (this.page - 1); i < displayCount * this.page; i++) {
                 if (!this.data[i]) { break }
@@ -53,7 +50,7 @@ module.exports = (category, bot) => {
 
             return res
         }
-        return pages.add(null, msg, res, handler, options ? options.displayCount : null)
+        return bot.pages.add(null, msg, res, handler, options ? options.displayCount : null)
     }, {
         aliases: ["find"],
         help: "Searches chatsounds by name."

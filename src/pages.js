@@ -5,7 +5,7 @@ let nextEmoji = "\u25B6"
 let numbersEmoji = "\uD83D\uDD22"
 let stopEmoji = "\u23F9"
 
-let pages = {
+bot.pages = {
 	list: {},
 	displayCount: 15,
 	async add(msg, query, data, handler, displayCount) {
@@ -99,5 +99,3 @@ bot.client.on("message", function(msg) {
 		}
 	})
 })
-
-module.exports = pages

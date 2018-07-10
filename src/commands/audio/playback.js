@@ -1,5 +1,3 @@
-const logger = require("../../logging.js")
-
 const fs = require("fs")
 const https = require("https")
 const path = require("path")
@@ -49,7 +47,7 @@ module.exports = (category, bot) => {
 
             let playFile = new Promise(resolve => {
                 if (!fs.existsSync(filePath)) {
-                    logger.log("sound", sndPath + ": download")
+                    bot.logger.log("sound", sndPath + ": download")
 
                     let dir = /(.*)\/.*$/gi.exec(sndPath)
                     shell.mkdir("-p", path.join("cache", dir[1]))
@@ -67,8 +65,8 @@ module.exports = (category, bot) => {
                 }
             }).then(function() {
                 let audio = vc.connection.play(fs.createReadStream(filePath), { volume: 0.66 })
-                audio.on("start", () => logger.log("chatsound", sndPath + ": start"))
-                audio.on("end", () => logger.log("chatsound", sndPath + ": end"))
+                audio.on("start", () => bot.logger.log("chatsound", sndPath + ": start"))
+                audio.on("end", () => bot.logger.log("chatsound", sndPath + ": end"))
             })
         }
     }, {
@@ -82,7 +80,7 @@ module.exports = (category, bot) => {
             vc.connection.dispatcher.end()
         }
     }, {
-        aliases: ["sh"],
+        aliases: [ "sh" ],
         guildOnly: true,
         help: "Stops playing a chatsound."
     })

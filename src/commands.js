@@ -90,10 +90,9 @@ module.exports = {
 	CommandCategory
 }
 
-const logger = require("./logging.js")
-logger.working("commands", "Loading...")
-
 const bot = require("./index.js")
+bot.logger.working("commands", "Loading...")
+
 const parse = require("./parseargs.js")
 const chalk = require("chalk")
 const Discord = require("discord.js")
@@ -145,8 +144,8 @@ Object.defineProperty(categories.all, "_commands", { // Quite the hack...
 	}
 })
 
-fs.readdirSync(path.join(__dirname, "commands")).forEach(file => {
-	let dirPath = path.join(__dirname, "commands", file)
+fs.readdirSync(path.join(__dirname, "commands")).forEach(dir => {
+	let dirPath = path.join(__dirname, "commands", dir)
 	if (fs.statSync(dirPath).isDirectory()) {
 		let category = require(dirPath)
 		fs.readdirSync(dirPath).forEach(file => {
@@ -162,7 +161,7 @@ fs.readdirSync(path.join(__dirname, "commands")).forEach(file => {
 // Command handler
 
 function logDetail(name, details) {
-	logger.log(` ${chalk.magentaBright('*')} ${name}: ${details}`)
+	bot.logger.log(` ${chalk.magentaBright('*')} ${name}: ${details}`)
 }
 
 let prefix = "!"
@@ -173,52 +172,53 @@ bot.client.on("message", async function(msg) {
 
 	let match = new RegExp(`^${prefix}([^\\s.]*)\\s?([\\s\\S]*)`, "gmi").exec(msg.content)
 	if (match && match[1]) {
-		let cmd = match[1].toLowerCase()
+		let name = match[1].toLowerCase()
 		let line = match[2].trim()
 		let args = []
 		try {
 			args = parse(line)
 		} catch (err) {}
 
-		let action = bot.commands.get().commands.get(cmd)
-		if (action && action.callback) {
-			if (action.guildOnly && !msg.guild) {
+		let cmd = bot.commands.get().commands.get(name)
+		if (cmd && cmd.callback) {
+			// Verify
+			if (cmd.guildOnly && !msg.guild) {
 				msg.reply("this command can only be used while in a guild.")
 				return
 			}
-			if (action.ownerOnly && msg.author.id !== bot.ownerId) {
+			if (cmd.ownerOnly && msg.author.id !== bot.ownerId) {
 				msg.reply("this command can only be used by the bot's owner.")
-				logger.error(`command-${cmd}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}).`)
+				bot.logger.error(`command-${name}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}).`)
 				return
 			}
-			if (action.permissions) {
-				if (action.permissions.bot) {
-					for (const permission of action.permissions.bot) {
+			if (cmd.permissions) {
+				if (cmd.permissions.bot) {
+					for (const permission of cmd.permissions.bot) {
 						if (!msg.guild.me.hasPermission(permission)) {
 							msg.reply(`I do not have the permission to \`${permission}\`.`)
-							logger.error(`command-${cmd}`, `Invalid permissions for bot from'${msg.author.tag}' (${msg.author.id}) (${permission}).`)
+							bot.logger.error(`command-${name}`, `Invalid permissions for bot from'${msg.author.tag}' (${msg.author.id}) (${permission}).`)
 							return
 						}
 					}
 				}
-				if (action.permissions.user) {
-					for (const permission of action.permissions.user) {
+				if (cmd.permissions.user) {
+					for (const permission of cmd.permissions.user) {
 						if (!msg.member.hasPermission(permission)) {
 							msg.reply(`you do not have the permission to \`${permission}\`.`)
-							logger.error(`command-${cmd}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}) (${permission}).`)
+							bot.logger.error(`command-${name}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}) (${permission}).`)
 							return
 						}
 					}
 				}
 			}
 
-			logger.log(`command-${cmd}`, `Ran by '${msg.author.tag}' (${msg.author.id})`)
+			// Log
+			bot.logger.log(`command-${name}`, `Ran by '${msg.author.tag}' (${msg.author.id})`)
 				logDetail("in channel", `${msg.channel.name || msg.channel.recipient.tag + "'s DMs"} (${msg.channel.id})`)
-				if (msg.guild) {
-					logDetail("in guild", `${msg.guild.name} (${msg.guild.id})`)
-				}
+				if (msg.guild) logDetail("in guild", `${msg.guild.name} (${msg.guild.id})`)
 				logDetail("passed line", `${chalk.yellowBright(line.replace('\n', '\\n'))}`)
 
+			// Run
 			try {
 				msg.printBuffer = ""
 				msg.print = function(...args) {
@@ -227,29 +227,24 @@ bot.client.on("message", async function(msg) {
 					})
 				}
 
-				await action.callback(msg, line, ...args)
+				await cmd.callback(msg, line, ...args)
 
-				if (msg.printBuffer) {
-					await msg.channel.send(`\`\`\`\n${bot.truncate(msg.printBuffer)}\n\`\`\``)
-				}
-				if (action.postRun) {
-					action.postRun(msg)
-				}
+				if (msg.printBuffer) await msg.channel.send(`\`\`\`\n${bot.truncate(msg.printBuffer)}\n\`\`\``)
+				if (cmd.postRun) cmd.postRun(msg)
 			} catch (err) {
 				let embed = new Discord.MessageEmbed()
-					.setColor(0xE25555)
-					.setTitle(`:interrobang: JavaScript error: from command '${cmd}'`)
+					.setColor(bot.colors.red)
+					.setTitle(`:interrobang: JavaScript error: from command '${name}'`)
 					.setDescription(bot.formatErrorToDiscord(err))
 
-				logger.error(`command-${cmd}`, `Error: ${err.stack || err}`)
+				bot.logger.error(`command-${name}`, `Error: ${err.stack || err}`)
 				msg.channel.send(embed)
 			}
 		}
 	}
 })
 
-let commandAmt = categories.all.commands.length
-logger.success("commands", `Loaded ${commandAmt} command${commandAmt == 1 ? '' : 's'}.`)
+bot.logger.success("commands", `Loaded ${categories.all.commands.length} command${commandAmt == 1 ? '' : 's'}.`)
 
 bot.client.on("ready", function() {
 	this.user.setActivity(`${prefix}help`, { type: "LISTENING" })

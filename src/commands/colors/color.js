@@ -1,5 +1,3 @@
-const logger = require("../../logging.js")
-
 const Discord = require("discord.js")
 const Color = require("color")
 const ColorThief = require("color-thief-jimp")
@@ -104,7 +102,7 @@ module.exports = (category, bot) => {
 
     bot.client.on("ready", function() {
         if (!this.user.bot) {
-            logger.warn("discord-color-roles", "User bot: with enough permissions, all color roles would have been cleaned.")
+            bot.logger.warn("discord-color-roles", "User bot: with enough permissions, all color roles would have been cleaned.")
             return
         }
 

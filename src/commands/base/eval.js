@@ -24,13 +24,13 @@ module.exports = (category, bot) => {
             if (typeof res !== "string")
                 res = util.inspect(res)
 
-            embed.setColor(0xE2D655)
+            embed.setColor(bot.colors.yellow)
                 .setTitle(":ballot_box_with_check: JavaScript result")
                 .setDescription(`\`\`\`js\n${bot.truncate(res)}\n\`\`\``)
         } catch (err) {
             res = bot.formatErrorToDiscord(err)
 
-            embed.setColor(0xE25555)
+            embed.setColor(bot.colors.red)
                 .setTitle(":interrobang: JavaScript error")
                 .setDescription(`${bot.truncate(res)}`)
         }

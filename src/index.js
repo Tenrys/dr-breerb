@@ -121,29 +121,20 @@ class Bot {
 }
 
 let bot = new Bot(fs.readFileSync("token", { encoding: "utf-8" }).trim())
-
+bot.colors = {
+	green = 0x73D437,
+	red = 0xE25555,
+	yellow = 0xE2D655,
+	blue = 0x5ABEBC,
+}
+bot.logger = logger
 module.exports = bot
 
-process.on("uncaughtException", err => {
-	logger.error("critical", `JavaScript unhandled exception: ${err.stack || err}`)
-
-	try {
-		let embed = new Discord.MessageEmbed()
-			.setColor(0xE25555)
-			.setTitle(`:interrobang: JavaScript unhandled exception`)
-			.setDescription(bot.formatErrorToDiscord(err))
-
-		bot.client.users.get(bot.client.ownerId).send(embed)
-	} catch (err) {
-		logger.error("critical", `Couldn't send message to bot owner: ${err.stack || err}`)
-	}
-
-	logger.error("critical", "Quitting to avoid unforeseen consequences.")
-	process.exit()
-})
-
+require("./error_handling.js")
 require("./sqlite.js")
+require("./pages.js")
 require("./commands.js")
+
 bot.login()
 
-logger.success("status", "Started.")
+bot.logger.success("status", "Started.")

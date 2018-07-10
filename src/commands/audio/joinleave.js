@@ -1,5 +1,3 @@
-const logger = require("../../logging.js")
-
 module.exports = (category, bot) => {
     category.addCommand("join", async function(msg, line, ...args) {
         if (!msg.member) { msg.reply("webhooks unsupported."); return }
@@ -32,7 +30,7 @@ module.exports = (category, bot) => {
             }
         } else {
             if (!vc.connection) {
-                logger.warn("discord-voice", "No connection? What.")
+                bot.logger.warn("discord-voice", "No connection? What.")
                 await vc.leave()
                 await vc.join()
             }

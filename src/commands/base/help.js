@@ -7,11 +7,12 @@ module.exports = (category, bot) => {
         let res = bot.commands.get(line)
 
         let embed = new Discord.MessageEmbed()
-            .setColor(0x5ABEBC)
+            .setColor(bot.colors.blue)
             .setAuthor(msg.author.tag, msg.author.avatarURL())
 
         if (res instanceof Command) {
-            embed.setTitle(`:information_source: Command help: \`${res.name}\``)
+            embed
+                .setTitle(`:information_source: Command help: \`${res.name}\``)
                 .setDescription(res.help)
         } else if (res instanceof CommandCategory) {
             let showAll = line === "all"
