@@ -244,7 +244,8 @@ bot.client.on("message", async function(msg) {
 	}
 })
 
-bot.logger.success("commands", `Loaded ${categories.all.commands.length} command${commandAmt == 1 ? '' : 's'}.`)
+let commandAmt = categories.all.commands.length
+bot.logger.success("commands", `Loaded ${commandAmt} command${commandAmt == 1 ? '' : 's'}.`)
 
 bot.client.on("ready", function() {
 	this.user.setActivity(`${prefix}help`, { type: "LISTENING" })

@@ -52,7 +52,7 @@ function time() {
 function onReaction(reaction, user) {
 	if (user.id == this.user.id) { return }
 
-	let page = pages.list[reaction.message.id]
+	let page = bot.pages.list[reaction.message.id]
 	if (page) {
 		if (user.id != page.query.author.id) { return }
 
@@ -80,7 +80,7 @@ bot.client.on("message", function(msg) {
 
 	let num = parseInt(msg.content.toLowerCase().trim(), 10)
 
-	forin(pages.list, (id, page) => {
+	forin(bot.pages.list, (id, page) => {
 		if (page.switching && msg.author.id == page.query.author.id) {
 			if (page.switching.timeout > time()) {
 				if (isNaN(num)) { msg.reply("invalid page number."); return false }
