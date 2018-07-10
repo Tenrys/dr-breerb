@@ -1,6 +1,6 @@
 module.exports = (category, bot) => {
     category.addCommand("join", async function(msg, line, ...args) {
-        if (!msg.member) { msg.reply("webhooks unsupported."); return }
+        if (!msg.member) { msg.error("Webhooks are unsupported."); return }
 
         let vc = msg.guild.me.voiceChannel
 
