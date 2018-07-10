@@ -16,7 +16,7 @@ module.exports = (category, bot) => {
             }
         })
         req.on("error", err => {
-            console.error(err)
+            bot.logger.error("rss-feeds", err.stack || err)
             if (err.code === "ENOTFOUND") {
                 feed.destroy().then(() => {
                     let channel = bot.client.channels.get(feed.channel)
@@ -26,9 +26,9 @@ module.exports = (category, bot) => {
         })
 
         feedparser.on("readable", () => {
-            let meta = req.meta
+            let meta = feedparser.meta
 
-            while (item = req.read()) {
+            while (item = feedparser.read()) {
                 if (item.pubdate.getTime() > feed.lastFeedDate.getTime()) {
                     let embed = new Discord.MessageEmbed()
                     if (item.author) embed.setAuthor(item.author)
@@ -49,6 +49,7 @@ module.exports = (category, bot) => {
             }
         })
         feedparser.on("error", err => {
+            bot.logger.error("rss-feeds", err.stack || err)
             if (err.message === "Not a feed") {
                 feed.destroy().then(() => {
                     let channel = bot.client.channels.get(feed.channel)
