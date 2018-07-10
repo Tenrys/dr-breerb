@@ -122,10 +122,10 @@ class Bot {
 
 let bot = new Bot(fs.readFileSync("token", { encoding: "utf-8" }).trim())
 bot.colors = {
-	green = 0x73D437,
-	red = 0xE25555,
-	yellow = 0xE2D655,
-	blue = 0x5ABEBC,
+	green: 0x73D437,
+	red: 0xE25555,
+	yellow: 0xE2D655,
+	blue: 0x5ABEBC,
 }
 bot.logger = logger
 module.exports = bot
