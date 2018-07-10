@@ -59,8 +59,8 @@ class Bot {
      * @param {string} str The string to be truncated.
      */
     truncate(str) {
-        if (str.length > 1970) {
-            return str.substr(0, 1970) + "\n[...] (output truncated)"
+        if (str.length > 1960) {
+            return str.substr(0, 1960) + "\n[...] (output truncated)"
         } else {
             return str
         }

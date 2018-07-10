@@ -39,7 +39,6 @@ function logMethod(name, callback, color1, color2=chalk.white) {
         }
     }
 }
-
 logMethod("log", console.log, chalk.cyan)
 logMethod("warn", console.warn, chalk.yellow)
 logMethod("error", console.error, chalk.red)
