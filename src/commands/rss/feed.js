@@ -3,7 +3,7 @@ const FeedParser = require("feedparser")
 const request = require("request")
 
 module.exports = (category, bot) => {
-    function checkRSSFeed(feed) {
+    bot.checkRSSFeed = feed => {
         let req = request(feed.url)
         let feedparser = new FeedParser()
 
@@ -58,7 +58,7 @@ module.exports = (category, bot) => {
             }
         })
     }
-    function checkRSSFeeds(msg) {
+    bot.checkRSSFeeds = msg => {
         bot.db.RSSFeed.sync().then(() => {
             let promise
             if (msg) {
@@ -74,7 +74,7 @@ module.exports = (category, bot) => {
                 if (feeds.length > 0) {
                     // Promisify this shit so we can send a message after all the work's been done
                     for (let i = 0; i < feeds.length; i++) {
-                        checkRSSFeed(feeds[i])
+                        bot.checkRSSFeed(feeds[i])
                     }
                 } else if (msg) {
                     msg.error("No feeds to check for this channel!", category.printName)
@@ -105,7 +105,7 @@ module.exports = (category, bot) => {
                         if (created) {
                             msg.success(`This channel is now listening to \`${url}\`.`, category.printName)
 
-                            checkRSSFeed(feed)
+                            bot.checkRSSFeed(feed)
                         } else {
                             msg.error(`This channel is already listening to \`${url}\`!`, category.printName)
                         }
@@ -158,7 +158,7 @@ module.exports = (category, bot) => {
                 })
                 break
             case "check":
-                checkRSSFeeds(msg)
+                bot.checkRSSFeeds(msg)
                 break
             default:
                 msg.error("Invalid action.", category.printName)
@@ -173,8 +173,8 @@ module.exports = (category, bot) => {
     })
 
     bot.client.on("ready", () => {
-        checkRSSFeeds()
+        bot.checkRSSFeeds()
 
-        bot.rssInterval = bot.client.setInterval(checkRSSFeeds, 60 * 5 * 1000)
+        bot.rssInterval = bot.client.setInterval(bot.checkRSSFeeds, 60 * 5 * 1000)
     })
 }
