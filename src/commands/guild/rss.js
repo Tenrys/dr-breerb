@@ -3,6 +3,8 @@ const FeedParser = require("feedparser")
 const request = require("request")
 
 module.exports = (category, bot) => {
+    let title = ":loudspeaker: RSS feeds"
+
     bot.checkRSSFeed = feed => {
         let req = request(feed.url)
         let feedparser = new FeedParser()
@@ -20,7 +22,7 @@ module.exports = (category, bot) => {
             if (err.code === "ENOTFOUND") {
                 feed.destroy().then(() => {
                     let channel = bot.client.channels.get(feed.channel)
-                    channel.error(`Feed with URL \`${feed.url}\` could not be checked. It has been removed.\nError: \`${err.code}\``, category.printName)
+                    channel.error(`Feed with URL \`${feed.url}\` could not be checked. It has been removed.\nError: \`${err.code}\``, title)
                 })
             }
         })
@@ -53,7 +55,7 @@ module.exports = (category, bot) => {
             if (err.message === "Not a feed") {
                 feed.destroy().then(() => {
                     let channel = bot.client.channels.get(feed.channel)
-                    channel.error(`URL \`${feed.url}\` is not a valid RSS feed. It has been removed.`, category.printName)
+                    channel.error(`URL \`${feed.url}\` is not a valid RSS feed. It has been removed.`, title)
                 })
             }
         })
@@ -77,20 +79,20 @@ module.exports = (category, bot) => {
                         bot.checkRSSFeed(feeds[i])
                     }
                 } else if (msg) {
-                    msg.error("No feeds to check for this channel!", category.printName)
+                    msg.error("No feeds to check for this channel!", title)
                 }
             })
         })
     }
 
-    category.addCommand("feed", (msg, line, action, ...str) => {
+    category.addCommand("rss", (msg, line, action, ...str) => {
         action = (action || "").toLowerCase()
 
         switch (action) {
             case "add":
                 let url = str[0].trim()
                 if (!/^https?:\/\//i.test(url)) {
-                    msg.error(`URL needs to begin with \`http://\` or \`https://\`.`, category.printName)
+                    msg.error(`URL needs to begin with \`http://\` or \`https://\`.`, title)
                     return
                 }
 
@@ -103,11 +105,11 @@ module.exports = (category, bot) => {
                         }
                     }).spread((feed, created) => {
                         if (created) {
-                            msg.success(`This channel is now listening to \`${url}\`.`, category.printName)
+                            msg.success(`This channel is now listening to \`${url}\`.`, title)
 
                             bot.checkRSSFeed(feed)
                         } else {
-                            msg.error(`This channel is already listening to \`${url}\`!`, category.printName)
+                            msg.error(`This channel is already listening to \`${url}\`!`, title)
                         }
                     })
                 })
@@ -125,14 +127,14 @@ module.exports = (category, bot) => {
                             let feed = feeds[i]
                             buf += `${i + 1}. \`${feed.url}\`\n`
                         }
-                        msg.result(buf || "None for this channel.", category.printName)
+                        msg.result(buf || "None for this channel.", title)
                     })
                 })
                 break
             case "remove":
                 let choice = parseInt(str[0], 10)
                 if (isNaN(choice)) {
-                    msg.error("Invalid choice.", category.printName)
+                    msg.error("Invalid choice.", title)
                     return
                 }
                 choice = Math.max(0, choice - 1)
@@ -147,12 +149,12 @@ module.exports = (category, bot) => {
                         if (feed) {
                             let url = feed.url
                             feed.destroy().then(() => {
-                                msg.success(`This channel is no longer listening to \`${url}\`.`, category.printName)
+                                msg.success(`This channel is no longer listening to \`${url}\`.`, title)
                             }).catch(err => {
-                                msg.error(err, category.printName)
+                                msg.error(err, title)
                             })
                         } else {
-                            msg.error("Invalid choice. Use `list` to see all feeds and their ID for this channel.", category.printName)
+                            msg.error("Invalid choice. Use `list` to see all feeds and their ID for this channel.", title)
                         }
                     })
                 })
@@ -161,7 +163,7 @@ module.exports = (category, bot) => {
                 bot.checkRSSFeeds(msg)
                 break
             default:
-                msg.error("Invalid action.", category.printName)
+                msg.error("Invalid action.", title)
                 break
         }
     }, {

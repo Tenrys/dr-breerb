@@ -21,8 +21,10 @@ module.exports = (category, bot) => {
         }
     }
 
+    let title = ":paintbrush: Colors"
+
     category.addCommand("color", async (msg, line, r, g, b) => {
-        if (!msg.member) { msg.error("Webhooks are unsupported."); return } // Could also be trying to use userbot as bot, that shit doesn't work for some reason lol
+        if (!msg.member) { msg.error("Webhooks are unsupported.", title); return } // Could also be trying to use userbot as bot, that shit doesn't work for some reason lol
 
         line = line.toLowerCase()
         r = r || line
@@ -54,17 +56,17 @@ module.exports = (category, bot) => {
                     color = Color(parseInt(r, 16))
                 } else { // CLEANUP
                     await cleanColorRoles(msg.member)
-                    msg.success("I reset your color roles.")
+                    msg.success("I reset your color roles.", title)
                     return
                 }
             } catch (err) {
-                msg.error("Invalid color.")
+                msg.error("Invalid color.", title)
                 bot.logger.warn("discord-color-roles", "Color parsing error: " + err.stack || err)
                 return
             }
         }
 
-        if (!color) { msg.error("Invalid color."); return }
+        if (!color) { msg.error("Invalid color.", title); return }
 
         await cleanColorRoles(msg.member)
 
@@ -87,7 +89,7 @@ module.exports = (category, bot) => {
 
         msg.member.roles.add(role)
 
-        msg.success(`<@${msg.author.id}>'s color is now <@&${role.id}>.`, null, color.hex())
+        msg.success(`<@${msg.author.id}>'s color is now <@&${role.id}>.`, title, color.hex())
     }, {
         help: "Set your username color using a role. Supported color formats are Hexadecimal and RGB. Call without arguments to reset your color.\nYou can also use your avatar's dominant color by passing `avatar` as the argument.",
         permissions: {
