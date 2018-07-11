@@ -1,10 +1,15 @@
-cache
+# Modules
 node_modules
+
+# Development
 .vscode
+
+# Tokens
 token
-soundlist.json
-package-lock.json
-yarn.lock
 nono_token
 breerb_token
+
+# Generated
+soundlist.json
 database.sqlite
+cache

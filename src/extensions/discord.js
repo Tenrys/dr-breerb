@@ -9,7 +9,7 @@ function resultMethod(name, emoji, defaultColor) {
         }
 
         let embed = new Discord.MessageEmbed()
-            .setAuthor(this.author.tag, this.author.avatarURL())
+            // .setAuthor(this.author.tag, this.author.avatarURL()) // Apparently the mention actually shows up if using proper bot
             .setColor(color || defaultColor)
             .setDescription(content)
         if (title) embed.setTitle(title)

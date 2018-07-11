@@ -30,7 +30,7 @@ class Command {
         this.ownerOnly = options.ownerOnly || false
         this.aliases = options.aliases || []
         this.postRun = options.postRun
-        this.permissons = options.permissions
+        this.permissions = options.permissions
     }
 }
 
@@ -179,7 +179,7 @@ bot.client.on("message", async msg => {
             args = parse(line)
         } catch (err) {}
 
-        let cmd = bot.commands.get().commands.get(name)
+        let cmd = bot.commands.get(name)
         if (cmd && cmd.callback) {
             // Verify
             if (cmd.guildOnly && !msg.guild) {
@@ -204,7 +204,7 @@ bot.client.on("message", async msg => {
                 if (cmd.permissions.user) {
                     for (const permission of cmd.permissions.user) {
                         if (!msg.member.hasPermission(permission)) {
-                            msg.error(`you do not have the permission to \`${permission}\`.`)
+                            msg.error(`You do not have the permission to \`${permission}\`.`)
                             bot.logger.error(`command-${name}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}) (${permission}).`)
                             return
                         }

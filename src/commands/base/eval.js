@@ -20,7 +20,7 @@ module.exports = (category, bot) => {
 
             if (typeof res !== "string") res = util.inspect(res)
 
-            msg.error(`\`\`\`js\n${bot.truncate(res)}\n\`\`\``, "JavaScript result", bot.colors.yellow)
+            msg.success(`\`\`\`js\n${bot.truncate(res)}\n\`\`\``, "JavaScript result", bot.colors.yellow)
         } catch (err) {
             res = bot.formatErrorToDiscord(err)
 
