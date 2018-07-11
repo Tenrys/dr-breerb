@@ -8,7 +8,7 @@ module.exports = (category, bot) => {
 
         let embed = new Discord.MessageEmbed()
             .setColor(bot.colors.blue)
-            .setAuthor(msg.author.tag, msg.author.avatarURL())
+            // .setAuthor(msg.author.tag, msg.author.avatarURL())
 
         if (res instanceof Command) {
             embed
@@ -30,6 +30,6 @@ module.exports = (category, bot) => {
             })
         }
 
-        msg.channel.send(embed)
+        msg.reply(embed)
     }, { help: "Displays information about commands and their categories." })
 }
