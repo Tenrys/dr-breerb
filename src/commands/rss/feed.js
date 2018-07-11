@@ -147,7 +147,7 @@ module.exports = (category, bot) => {
                         if (feed) {
                             let url = feed.url
                             feed.destroy().then(() => {
-                                msg.success(`This channel is no longer listening \`${url}\`.`, category.printName)
+                                msg.success(`This channel is no longer listening to \`${url}\`.`, category.printName)
                             }).catch(err => {
                                 msg.error(err, category.printName)
                             })
