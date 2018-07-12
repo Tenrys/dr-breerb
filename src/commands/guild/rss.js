@@ -1,8 +1,13 @@
 const Discord = require("discord.js")
-const FeedParser = require("feedparser")
+
 const request = require("request")
+const FeedParser = require("feedparser")
+
 const Entities = require("html-entities").AllHtmlEntities
 const entities = new Entities()
+
+const Turndown = require("turndown")
+const turndown = new Turndown()
 
 module.exports = (category, bot) => {
     let title = ":loudspeaker: RSS feeds"
@@ -67,9 +72,10 @@ module.exports = (category, bot) => {
                         if (item.link) embed.setURL(item.link)
                         if (item.description) {
                             let description = item.description
-                            description = entities.decode(description)
-                            description = description.replace(/(<([^>]+)>)/ig, "")
-                            description = bot.truncate(description)
+                            description = entities.decode(description) // Decode HTML entities
+                            // description = description.replace(/(^[ \t]*\n)/gm, "") // Remove blank lines, unnecessary thanks to turndown
+                            description = turndown.turndown(description) // Turn HTML tags into Markdown
+                            description = bot.truncate(description) // Truncate so stuff isn't too long
                             embed.setDescription(description)
                         }
                         if (meta.description || meta.title) embed.setFooter(meta.description || meta.title, meta.favicon)
