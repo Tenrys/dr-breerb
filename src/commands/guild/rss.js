@@ -56,13 +56,14 @@ module.exports = (category, bot) => {
                         let author
                         if (item.author) author = item.author
                         else if (item["a10:author"]) author = item["a10:author"]["a10:name"]["#"] // gay
+                        else if (item["dc:creator"]) author = item["dc:creator"] // gay
                         if (author) {
                             embed.setAuthor(author)
                             embed.setColor(parseInt("0x" + intToHexRGB(hashCode(author)), 16))
                         }
                         if (item.title) embed.setTitle(item.title)
                         if (item.link) embed.setURL(item.link)
-                        if (item.description) embed.setDescription(item.description)
+                        if (item.description) embed.setDescription(bot.truncate(item.description))
                         if (meta.description || meta.title) embed.setFooter(meta.description || meta.title, meta.favicon)
                         if (meta.image && meta.image.url) embed.setThumbnail(meta.image.url)
                         embed.setTimestamp(item.pubdate)
