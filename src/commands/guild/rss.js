@@ -6,58 +6,67 @@ module.exports = (category, bot) => {
     let title = ":loudspeaker: RSS feeds"
 
     bot.checkRSSFeed = feed => {
-        let req = request(feed.url)
-        let feedparser = new FeedParser()
-
-        req.on("response", res => {
-            if (res.statusCode !== 200) {
-                req.emit("error", new Error("Bad status code"))
+        return new Promise((resolve, reject) => {
+            let req
+            try {
+                req = request(feed.url)
+            } catch (err) {
+                bot.logger.error("rss-feeds", err.stack || err)
+                if (err.message.match(/Invalid URI "(.*)"/gi)) {
+                    feed.destroy().then(() => {
+                        reject("Invalid URL `" + feed.url + "`.")
+                    })
+                }
             }
-            else {
-                req.pipe(feedparser)
-            }
-        })
-        req.on("error", err => {
-            bot.logger.error("rss-feeds", err.stack || err)
-            if (err.code === "ENOTFOUND") {
-                feed.destroy().then(() => {
-                    let channel = bot.client.channels.get(feed.channel)
-                    channel.error(`Feed with URL \`${feed.url}\` could not be checked. It has been removed.\nError: \`${err.code}\``, title)
-                })
-            }
-        })
+            if (!req) return
+            let feedparser = new FeedParser()
 
-        feedparser.on("readable", () => {
-            let meta = feedparser.meta
+            req.on("response", res => {
+                if (res.statusCode !== 200) req.emit("error", new Error("Bad status code"))
+                else req.pipe(feedparser)
+            })
+            req.on("error", err => {
+                bot.logger.error("rss-feeds", err.stack || err)
+                if (err.code === "ENOTFOUND") {
+                    feed.destroy().then(() => {
+                        reject("Feed with URL `" + feed.url + "` could not be checked. It has been removed.\nError: `" + err.code + "`")
+                    })
+                }
+            })
 
-            while (item = feedparser.read()) {
-                if (item.pubdate.getTime() > feed.lastFeedDate.getTime()) {
-                    let embed = new Discord.MessageEmbed()
-                    if (item.author) embed.setAuthor(item.author)
-                    else if (item["a10:author"]) embed.setAuthor(item["a10:author"]["a10:name"]["#"]) // gay
-                    if (item.title) embed.setTitle(item.title)
-                    if (item.link) embed.setURL(item.link)
-                    if (item.description) embed.setDescription(item.description)
-                    if (meta.description || meta.title) embed.setFooter(meta.description || meta.title, meta.favicon)
-                    if (meta.image && meta.image.url) embed.setThumbnail(meta.image.url)
-                    embed.setTimestamp(item.pubdate)
+            feedparser.on("readable", () => {
+                let meta = feedparser.meta
+                if (!(feedparser.meta && feedparser.meta["#type"])) return
 
-                    let channel = bot.client.channels.get(feed.channel)
-                    channel.send(embed)
+                while (item = feedparser.read()) {
+                    if (item.pubdate.getTime() > feed.lastFeedDate.getTime()) {
+                        let embed = new Discord.MessageEmbed()
+                        if (item.author) embed.setAuthor(item.author)
+                        else if (item["a10:author"]) embed.setAuthor(item["a10:author"]["a10:name"]["#"]) // gay
+                        if (item.title) embed.setTitle(item.title)
+                        if (item.link) embed.setURL(item.link)
+                        if (item.description) embed.setDescription(item.description)
+                        if (meta.description || meta.title) embed.setFooter(meta.description || meta.title, meta.favicon)
+                        if (meta.image && meta.image.url) embed.setThumbnail(meta.image.url)
+                        embed.setTimestamp(item.pubdate)
 
-                    feed.lastFeedDate = item.pubdate
-                    feed.save()
-                } else break
-            }
-        })
-        feedparser.on("error", err => {
-            bot.logger.error("rss-feeds", err.stack || err)
-            if (err.message === "Not a feed") {
-                feed.destroy().then(() => {
-                    let channel = bot.client.channels.get(feed.channel)
-                    channel.error(`URL \`${feed.url}\` is not a valid RSS feed. It has been removed.`, title)
-                })
-            }
+                        let channel = bot.client.channels.get(feed.channel)
+                        channel.send(embed)
+
+                        feed.lastFeedDate = item.pubdate
+                        feed.save()
+                    } else break
+                }
+                resolve()
+            })
+            feedparser.on("error", err => {
+                bot.logger.error("rss-feeds", err.stack || err)
+                if (err.message === "Not a feed") {
+                    feed.destroy().then(() => {
+                        reject("URL `" + feed.url + "` is not a valid RSS feed.")
+                    })
+                }
+            })
         })
     }
     bot.checkRSSFeeds = msg => {
@@ -72,12 +81,13 @@ module.exports = (category, bot) => {
             } else {
                 promise = bot.db.RSSFeed.findAll()
             }
-            promise.then(feeds => {
+            promise.then(async feeds => {
                 if (feeds.length > 0) {
                     // Promisify this shit so we can send a message after all the work's been done
                     for (let i = 0; i < feeds.length; i++) {
-                        bot.checkRSSFeed(feeds[i])
+                        await bot.checkRSSFeed(feeds[i])
                     }
+                    if (msg) msg.success("Checked all RSS feeds for this channel.")
                 } else if (msg) {
                     msg.error("No feeds to check for this channel!", title)
                 }
@@ -105,9 +115,11 @@ module.exports = (category, bot) => {
                         }
                     }).spread((feed, created) => {
                         if (created) {
-                            msg.success(`This channel is now listening to \`${url}\`.`, title)
-
-                            bot.checkRSSFeed(feed)
+                            bot.checkRSSFeed(feed).then(() => {
+                                msg.success(`This channel is now listening to \`${url}\`.`, title)
+                            }).catch(err => {
+                                msg.error(err, title)
+                            })
                         } else {
                             msg.error(`This channel is already listening to \`${url}\`!`, title)
                         }
