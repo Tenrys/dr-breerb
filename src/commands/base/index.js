@@ -1,4 +1,4 @@
-const { CommandCategory } = require("../../commands.js")
+const CommandCategory = require("../../classes/CommandCategory.js")
 
 let base = new CommandCategory("base", ":gear: Base", "Basic commands related to the bot and other stuff.")
 

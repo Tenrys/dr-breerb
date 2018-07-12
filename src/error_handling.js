@@ -1,8 +1,7 @@
-const bot = require("./index.js")
-const Discord = require("discord.js")
+const logger = require("./classes/Logger.js")
 
 process.on("uncaughtException", err => {
-    bot.logger.error("critical", `JavaScript unhandled exception: ${err.stack || err}`)
+    logger.error("critical", `JavaScript unhandled exception: ${err.stack || err}`)
 
     /* This does not work, save err stack in a file and send when bot has restarted..?
     try {
@@ -18,6 +17,6 @@ process.on("uncaughtException", err => {
     }
     */
 
-    bot.logger.error("critical", "Quitting to avoid unforeseen consequences.")
+    logger.error("critical", "Quitting to avoid unforeseen consequences.")
     process.exit()
 })

@@ -4,10 +4,9 @@ node_modules
 # Development
 .vscode
 
-# Tokens
-token
-nono_token
-breerb_token
+# Config
+config.json
+tokens
 
 # Generated
 soundlist.json

@@ -8,18 +8,20 @@ module.exports = (category, bot) => {
             options = undefined
         }
 
-        if (!bot.soundListKeys) { msg.reply("sound list hasn't loaded yet."); return }
+        if (!bot.soundListKeys) { msg.error("Sound list hasn't loaded yet.", category.printName); return }
 
         line = line.toLowerCase()
 
         let res = []
-        forin(bot.soundListKeys, name => {
-            if (name.toLowerCase().trim().includes(line)) {
-                res.push(name)
+        for (const name in bot.soundListKeys) {
+            if (bot.soundListKeys.hasOwnProperty(name)) {
+                if (name.toLowerCase().trim().includes(line)) {
+                    res.push(name)
+                }
             }
-        })
+        }
         if (res.length <= 0) {
-            msg.reply("couldn't find any chatsound.")
+            msg.error("Couldn't find any chatsound.", category.printName)
             return null
         }
         res.sort((a, b) => {

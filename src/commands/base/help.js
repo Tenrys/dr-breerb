@@ -1,5 +1,7 @@
+const Command = require("../../classes/Command.js")
+const CommandCategory = require("../../classes/CommandCategory.js")
+
 const Discord = require("discord.js")
-const { Command, CommandCategory } = require("../../commands.js")
 
 module.exports = (category, bot) => {
    category.addCommand("help", (msg, line) => {
@@ -21,13 +23,15 @@ module.exports = (category, bot) => {
                 embed.setDescription("If you want to see all commands at once, run the same command again with the `all` argument.")
             }
 
-            forin(bot.commands, (_, cat) => {
-                if (cat instanceof CommandCategory) {
-                    if ((showAll && cat.name === "all") || (!showAll && cat.name !== "all")) {
-                        embed.addField(cat.printName, cat.description + "\n" + "```" + (cat.commands.map(cmd => cmd.name).join(", ") || "none LOL") + "```")
+            for (const _ in bot.commands) {
+                if (bot.commands.hasOwnProperty(_)) {
+                    let category = bot.commands[_]
+
+                    if (category instanceof CommandCategory && ((showAll && category.name === "all") || (!showAll && category.name !== "all"))) {
+                        embed.addField(category.printName, category.description + "\n" + "```" + (category.commands.map(cmd => cmd.name).join(", ") || "none LOL") + "```")
                     }
                 }
-            })
+            }
         }
 
         msg.reply(embed)

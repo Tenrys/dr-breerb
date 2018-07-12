@@ -1,137 +1,127 @@
 // TODO: Refer to https://github.com/Re-Dream/dreambot_mk2/projects/1 for other todos, basically
-// TODO: Make forin a reusable module instead of polluting global scope..maybe
-
-const logger = require("./logging.js")
-logger.working("status", "Starting...")
-
-// Convenience functions
-Object.defineProperty(Array.prototype, "random", {
-    value() {
-        return this[Math.floor(Math.random() * this.length)]
-    }
-})
-/**
- * Function equivalent of the standard for in loop... Because it takes too much time to write.
- */
-global.forin = (obj, callback) => { // I can't be fucked writing this over and over
-    for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            const value = obj[key]
-            let cont = callback(key, value)
-            if (cont === false) { return }
-        }
-    }
-}
-
-require("./extensions/discord.js")
 
 const Discord = require("discord.js")
+require("./extensions/discord.js")
+
 const fs = require("fs")
 const path = require("path")
 const repl = require("repl")
 
-class Bot {
-    /**
-     * The Discord user ID of the bot's owner.
-     */
-    get ownerId() { return "138685670448168960" }
+module.exports = options => {
 
-    /**
-     * The URL of the project's GitHub repository, determined by the package.json file.
-     */
-    get repositoryURL() { return JSON.parse(fs.readFileSync("./package.json")).repository + "/tree/master" }
+    class Bot {
+        /**
+         * The Discord user ID of the bot's owner.
+         */
+        get ownerId() { return options.ownerId }
 
-    /**
-     * Returns the modified stack trace of an error, stripping the current working directory from file paths and, on Discord, linking to files on the project's GitHub repository at the exact concerned lines.
-     * @param {Error} err
-     */
-    formatErrorToDiscord(err) {
-        if (err.stack) {
-            let trace = err.stack
-            let regex = new RegExp(path.join(process.cwd(), "/").replace(/\\/g, "\\\\") + "(.*\.js):(\\d*):(\\d*)", "gi")
-            trace = trace.replace(regex, `[$1\\:$2\\:$3](${this.repositoryURL}/$1#L$2)`)
-            return trace
-        } else { return err }
-    }
+        /**
+         * The URL of the project's GitHub repository, determined by the package.json file.
+         */
+        get repositoryURL() { return JSON.parse(fs.readFileSync("./package.json")).repository + "/tree/master" }
 
-    /**
-     * Shortens a string to something close to the maximum length Discord accepts for a message.
-     * @param {string} str The string to be truncated.
-     */
-    truncate(str) {
-        if (str.length > 1960) {
-            return str.substr(0, 1960) + "\n[...] (output truncated)"
-        } else {
-            return str
+        /**
+         * Returns the modified stack trace of an error, stripping the current working directory from file paths and, on Discord, linking to files on the project's GitHub repository at the exact concerned lines.
+         * @param {Error} err
+         */
+        formatErrorToDiscord(err) {
+            if (err.stack) {
+                let trace = err.stack
+                let regex = new RegExp(path.join(process.cwd(), "/").replace(/\\/g, "\\\\") + "(.*\.js):(\\d*):(\\d*)", "gi")
+                trace = trace.replace(regex, `[$1\\:$2\\:$3](${this.repositoryURL}/$1#L$2)`)
+                return trace
+            } else { return err }
         }
-    }
 
-    /**
-     * @param {string} token The Discord user token to login with
-     */
-    constructor(token) {
-        let bot = this
+        /**
+         * Shortens a string to something close to the maximum length Discord accepts for a message.
+         * @param {string} str The string to be truncated.
+         */
+        truncate(str) {
+            if (str.length > 1960) {
+                return str.substr(0, 1960) + "\n[...] (output truncated)"
+            } else {
+                return str
+            }
+        }
 
-        let client = new Discord.Client()
+        /**
+         * @param {string} token The Discord user token to login with
+         */
+        constructor(options) {
+            this.logger = require("./classes/Logger.js")
+            if (options.log === false) {
+                for (const k in this.logger) {
+                    if (this.logger.hasOwnProperty(k)) {
+                        const v = this.logger[k]
 
-        client.on("ready", () => {
-            let replServer = repl.start("")
-            replServer.context.Discord = Discord
-            replServer.context.bot = bot
-            replServer.on("exit", () => {
-                process.exit()
+                        if (typeof v == "function") {
+                            this.logger[k] = () => {}
+                        }
+                    }
+                }
+            }
+
+            let client = new Discord.Client()
+            let bot = this
+            client.on("ready", () => {
+                let replServer = repl.start("")
+                replServer.context.Discord = Discord
+                replServer.context.bot = bot
+                replServer.on("exit", () => {
+                    process.exit()
+                })
+                bot.logger.success("repl", "Ready.")
             })
-            logger.success("repl", "Ready.")
-        })
-        client.on("error", ev => {
-            logger.error("discord", "Websocket error: " + ev.message)
-        })
-        client.on("reconnecting", () => {
-            logger.warn("discord", "Websocket reconnecting...")
-        })
-        client.on("resumed", count => {
-            logger.log("discord", `Websocket resumed. (${count} events replayed)`)
-        })
-        client.on("disconnect", ev => {
-            logger.error("discord", `Websocket disconnected: ${ev.reason} (code ${ev.code})`)
-            login() // Not sure if this works, but try starting the bot again if we get disconnected
-        })
-        client.on("warn", ev => {
-            logger.warn("discord", "Websocket warning: " + ev.message)
-        })
+            client.on("error", ev => {
+                bot.logger.error("discord", "Websocket error: " + ev.message)
+            })
+            client.on("reconnecting", () => {
+                bot.logger.warn("discord", "Websocket reconnecting...")
+            })
+            client.on("resumed", count => {
+                bot.logger.log("discord", `Websocket resumed. (${count} events replayed)`)
+            })
+            client.on("disconnect", ev => {
+                bot.logger.error("discord", `Websocket disconnected: ${ev.reason} (code ${ev.code})`)
+                login() // Not sure if this works, but try starting the bot again if we get disconnected
+            })
+            client.on("warn", ev => {
+                bot.logger.warn("discord", "Websocket warning: " + ev.message)
+            })
 
-        this.client = client
-        this.token = token
-    }
+            this.client = client
+            this.token = options.token
+        }
 
-    /**
-     * Attempts to login to Discord with the Bot's token
-     */
-    async login() {
-        if (this.client.status === null || this.client.status == 5) {
-            logger.working("discord", "Logging in...")
+        /**
+         * Attempts to login to Discord with the Bot's token
+         */
+        async login() {
+            if (this.client.status === null || this.client.status == 5) {
+                this.logger.working("discord", "Logging in...")
 
-            await this.client.login(this.token)
-                .then(() => {
-                    logger.success("discord", `Logged in as ${this.client.user.tag}.`)
-                })
-                .catch(err => {
-                    logger.error("discord", "Connection error: " + err.message)
-                })
+                await this.client.login(this.token)
+                    .then(() => {
+                        this.logger.success("discord", `Logged in as ${this.client.user.tag}.`)
+
+                        if (!this.client.user.bot) {
+                            this.logger.warn("discord", "Logged in with non-bot account, unintended (and possibly destructive) behavior is to be expected!")
+                        }
+                    })
+                    .catch(err => {
+                        this.logger.error("discord", "Connection error: " + err.message)
+                    })
+            }
         }
     }
+
+    let bot = new Bot(options)
+    bot.colors = require("./colors.js")
+    require("./sqlite.js")(bot)
+    require("./pages.js")(bot)
+    require("./commands.js")(bot)
+
+    return bot
 }
 
-let bot = new Bot(fs.readFileSync("token", { encoding: "utf-8" }).trim())
-bot.colors = require("./colors.js")
-bot.logger = logger
-module.exports = bot
-
-require("./error_handling.js")
-require("./sqlite.js")
-require("./pages.js")
-require("./commands.js")
-
-bot.login()
-
-bot.logger.success("status", "Started.")

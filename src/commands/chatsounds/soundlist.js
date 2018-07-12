@@ -4,25 +4,32 @@ const path = require("path")
 
 module.exports = (category, bot) => {
     bot.soundListKeys = {}
-    bot.loadSoundlist = err => {
+    bot.loadSoundlist = () => {
         try {
             bot.soundList = JSON.parse(fs.readFileSync("soundlist.json"))
 
-            forin(bot.soundList, (cat, snds) => {
-                forin(snds, (name, _) => {
-                    if (!bot.soundListKeys[name]) { bot.soundListKeys[name] = [] }
+            for (const category in bot.soundList) {
+                if (bot.soundList.hasOwnProperty(category)) {
+                    const sounds = bot.soundList[category]
 
-                    let variants = snds[name]
-                    for (let i = 0; i < variants.length; i++) {
-                        bot.soundListKeys[name].push(variants[i])
+                    for (const name in sounds) {
+                        if (sounds.hasOwnProperty(name)) {
+                            if (!bot.soundListKeys[name]) { bot.soundListKeys[name] = [] }
+
+                            let variants = sounds[name]
+                            for (let i = 0; i < variants.length; i++) {
+                                bot.soundListKeys[name].push(variants[i])
+                            }
+                            bot.soundListKeys[name].sort()
+                        }
                     }
-                    bot.soundListKeys[name].sort()
-                })
-            })
+
+                }
+            }
 
             bot.logger.success("soundlist", "Loaded.")
-        } catch (err2) {
-            bot.logger.error("soundlist", "Loading failed: " + ((err ? err.stack : err) || (err2 ? err2.stack : err2)))
+        } catch (err) {
+            bot.logger.error("soundlist", "Loading failed: " + (err ? err.stack : err))
         }
     }
     bot.downloadSoundlist = () => {
@@ -47,7 +54,7 @@ module.exports = (category, bot) => {
             }
         })
     }
-    bot.downloadSoundlist().then(bot.loadSoundlist, bot.loadSoundlist)
+    bot.downloadSoundlist().then(bot.loadSoundlist)
 
     category.addCommand("reloadsnds", (msg, line) => {
         fs.unlink(path.join(__dirname, "..", "soundlist.json"), () => {

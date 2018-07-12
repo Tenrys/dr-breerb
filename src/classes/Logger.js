@@ -44,5 +44,8 @@ logMethod("warn", console.warn, chalk.yellow)
 logMethod("error", console.error, chalk.red)
 logMethod("success", console.log, chalk.green)
 logMethod("working", console.log, chalk.magenta)
+Logger.detail = function(name, details) {
+    this.log(` ${chalk.magentaBright('*')} ${name}: ${details}`)
+}
 
 module.exports = Logger
