@@ -21,10 +21,8 @@ module.exports = (category, bot) => {
                             channel.send(`Left voice channel \`${vc.name}\` due to inactivity.`)
                         }
                         clearInterval(vc.emptyTimeout)
-                        vc.emptyTimeout = undefined
                     } else if (!vc) {
                         clearInterval(vc.emptyTimeout)
-                        vc.emptyTimeout = undefined
                     }
                 }, 60 * 3 * 1000)
             } else {
