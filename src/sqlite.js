@@ -1,9 +1,10 @@
+const fs = require("fs")
+const path = require("path")
+
+const sequelize = require("sequelize")
+
 module.exports = bot => {
     bot.logger.working("sqlite", "Initializing...")
-
-    const sequelize = require("sequelize")
-    const fs = require("fs")
-    const path = require("path")
 
     bot.db = {
         sequelize: new sequelize({

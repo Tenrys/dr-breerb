@@ -1,6 +1,7 @@
 const fs = require("fs")
-const http = require("http")
 const path = require("path")
+
+const http = require("http")
 
 module.exports = (category, bot) => {
     bot.soundListKeys = {}

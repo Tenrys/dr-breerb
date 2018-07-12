@@ -1,7 +1,8 @@
 const fs = require("fs")
-const https = require("https")
 const path = require("path")
 const shell = require("shelljs")
+
+const https = require("https")
 
 module.exports = (category, bot) => {
     const chatsndsRepositoryURL = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/"

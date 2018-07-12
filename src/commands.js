@@ -1,10 +1,12 @@
 const Command = require("./classes/Command.js")
 const CommandCategory = require("./classes/CommandCategory.js")
 
-const parse = require("./lib/parseargs.js")
 const chalk = require("chalk")
+
 const fs = require("fs")
 const path = require("path")
+
+const parse = require("./lib/parseargs.js")
 
 module.exports = bot => {
     bot.logger.working("commands", "Loading...")

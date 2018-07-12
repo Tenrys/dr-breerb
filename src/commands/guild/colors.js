@@ -1,4 +1,5 @@
 const Discord = require("discord.js")
+
 const Color = require("color")
 const ColorThief = require("color-thief-jimp")
 const Jimp = require("jimp")
