@@ -83,11 +83,10 @@ module.exports = (category, bot) => {
             }
             promise.then(async feeds => {
                 if (feeds.length > 0) {
-                    // Promisify this shit so we can send a message after all the work's been done
                     for (let i = 0; i < feeds.length; i++) {
                         await bot.checkRSSFeed(feeds[i])
                     }
-                    if (msg) msg.success("Checked all RSS feeds for this channel.")
+                    if (msg) msg.success("Checked all RSS feeds for this channel.", title)
                 } else if (msg) {
                     msg.error("No feeds to check for this channel!", title)
                 }
