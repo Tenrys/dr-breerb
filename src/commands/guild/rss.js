@@ -5,6 +5,18 @@ const request = require("request")
 module.exports = (category, bot) => {
     let title = ":loudspeaker: RSS feeds"
 
+    function hashCode(str) {
+        var hash = 0
+        for (var i = 0; i < str.length; i++) {
+           hash = str.charCodeAt(i) + ((hash << 5) - hash)
+        }
+        return hash
+    }
+    function intToHexRGB(i){
+        var c = (i & 0x00FFFFFF).toString(16).toUpperCase()
+        return "00000".substring(0, 6 - c.length) + c
+    }
+
     bot.checkRSSFeed = feed => {
         return new Promise((resolve, reject) => {
             let req
@@ -41,8 +53,13 @@ module.exports = (category, bot) => {
                 while (item = feedparser.read()) {
                     if (item.pubdate.getTime() > feed.lastFeedDate.getTime()) {
                         let embed = new Discord.MessageEmbed()
-                        if (item.author) embed.setAuthor(item.author)
-                        else if (item["a10:author"]) embed.setAuthor(item["a10:author"]["a10:name"]["#"]) // gay
+                        let author
+                        if (item.author) author = item.author
+                        else if (item["a10:author"]) author = item["a10:author"]["a10:name"]["#"] // gay
+                        if (author) {
+                            embed.setAuthor(author)
+                            embed.setColor(parseInt("0x" + intToHexRGB(hashCode(author)), 16))
+                        }
                         if (item.title) embed.setTitle(item.title)
                         if (item.link) embed.setURL(item.link)
                         if (item.description) embed.setDescription(item.description)
@@ -69,26 +86,24 @@ module.exports = (category, bot) => {
             })
         })
     }
-    bot.checkRSSFeeds = msg => {
+    bot.checkRSSFeeds = destination => {
         bot.db.RSSFeed.sync().then(() => {
-            let promise
-            if (msg) {
-                promise = bot.db.RSSFeed.findAll({
+            let options
+            if (destination) {
+                options = {
                     where: {
-                        channel: msg.channel.id
+                        channel: destination instanceof Discord.Message ? destination.channel.id : destination.id
                     }
-                })
-            } else {
-                promise = bot.db.RSSFeed.findAll()
+                }
             }
-            promise.then(async feeds => {
+            bot.db.RSSFeed.findAll(options).then(async feeds => {
                 if (feeds.length > 0) {
                     for (let i = 0; i < feeds.length; i++) {
                         await bot.checkRSSFeed(feeds[i])
                     }
-                    if (msg) msg.success("Checked all RSS feeds for this channel.", title)
-                } else if (msg) {
-                    msg.error("No feeds to check for this channel!", title)
+                    if (destination) destination.success("Checked all RSS feeds for this channel.", title)
+                } else if (chan) {
+                    destination.error("No feeds to check for this channel!", title)
                 }
             })
         })
