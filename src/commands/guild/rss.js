@@ -65,7 +65,7 @@ module.exports = (category, bot) => {
                         else if (item["dc:creator"]) author = item["dc:creator"] // gay
                         if (author) {
                             embed.setAuthor(author)
-                            embed.setColor(hashToIntRGB(hashCode(author))))
+                            embed.setColor(hashToIntRGB(hashCode(author)))
                         }
                         if (item.title) embed.setTitle(item.title)
                         if (item.link) embed.setURL(item.link)
