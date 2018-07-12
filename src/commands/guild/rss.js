@@ -1,6 +1,8 @@
 const Discord = require("discord.js")
 const FeedParser = require("feedparser")
 const request = require("request")
+const Entities = require("html-entities").AllHtmlEntities
+const entities = new Entities()
 
 module.exports = (category, bot) => {
     let title = ":loudspeaker: RSS feeds"
@@ -63,7 +65,13 @@ module.exports = (category, bot) => {
                         }
                         if (item.title) embed.setTitle(item.title)
                         if (item.link) embed.setURL(item.link)
-                        if (item.description) embed.setDescription(bot.truncate(item.description))
+                        if (item.description) {
+                            let description = item.description
+                            description = entities.decode(description)
+                            description = description.replace(/(<([^>]+)>)/ig, "")
+                            description = bot.truncate(description)
+                            embed.setDescription(description)
+                        }
                         if (meta.description || meta.title) embed.setFooter(meta.description || meta.title, meta.favicon)
                         if (meta.image && meta.image.url) embed.setThumbnail(meta.image.url)
                         embed.setTimestamp(item.pubdate)
