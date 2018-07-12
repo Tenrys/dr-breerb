@@ -1,5 +1,5 @@
 module.exports = bot => {
-    bot.logger.working("sqlite", "Loading...")
+    bot.logger.working("sqlite", "Initializing...")
 
     const sequelize = require("sequelize")
     const fs = require("fs")
@@ -22,4 +22,6 @@ module.exports = bot => {
             bot.db[model.name] = model
         }
     })
+
+    bot.logger.success("sqlite", "Ready.")
 }
