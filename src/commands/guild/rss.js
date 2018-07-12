@@ -19,9 +19,8 @@ module.exports = (category, bot) => {
         }
         return hash
     }
-    function intToHexRGB(i){
-        var c = (i & 0x00FFFFFF).toString(16).toUpperCase()
-        return "00000".substring(0, 6 - c.length) + c
+    function hashToIntRGB(i) {
+        return i & 0x00FFFFFF
     }
 
     bot.checkRSSFeed = feed => {
@@ -60,18 +59,18 @@ module.exports = (category, bot) => {
                 while (item = feedparser.read()) {
                     if (item.pubdate.getTime() > feed.lastFeedDate.getTime()) {
                         let embed = new Discord.MessageEmbed()
-                        let author
+                        let author, description
                         if (item.author) author = item.author
                         else if (item["a10:author"]) author = item["a10:author"]["a10:name"]["#"] // gay
                         else if (item["dc:creator"]) author = item["dc:creator"] // gay
                         if (author) {
                             embed.setAuthor(author)
-                            embed.setColor(parseInt("0x" + intToHexRGB(hashCode(author)), 16))
+                            embed.setColor(hashToIntRGB(hashCode(author))))
                         }
                         if (item.title) embed.setTitle(item.title)
                         if (item.link) embed.setURL(item.link)
                         if (item.description) {
-                            let description = item.description
+                            description = item.description
                             description = entities.decode(description) // Decode HTML entities
                             // description = description.replace(/(^[ \t]*\n)/gm, "") // Remove blank lines, unnecessary thanks to turndown
                             description = turndown.turndown(description) // Turn HTML tags into Markdown
