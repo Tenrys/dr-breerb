@@ -1,4 +1,4 @@
-const Discord = require("../../extensions/discord.js")
+const Discord = require.main.require("./src/extensions/discord.js")
 
 const request = require("request")
 const FeedParser = require("feedparser")

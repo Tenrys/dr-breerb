@@ -1,4 +1,4 @@
-const Discord = require("../../extensions/discord.js")
+const Discord = require.main.require("./src/extensions/discord.js")
 
 module.exports = (category, bot) => {
     category.addCommand("search", (msg, line, ...options) => {

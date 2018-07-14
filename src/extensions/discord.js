@@ -1,5 +1,5 @@
 const Discord = require("discord.js")
-const colors = require("../colors.js")
+const colors = require.main.require("./src/colors.js")
 
 function resultMethod(name, emoji, defaultColor) {
     Discord.Message.prototype[name] = function(content, title, color) {
