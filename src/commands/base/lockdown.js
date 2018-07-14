@@ -6,12 +6,12 @@ module.exports = (category, bot) => {
         line = line.toLowerCase()
         id = parseInt(line, 10)
         if (typeof id !== "number" || isNaN(id)) {
-            msg.error("Invalid user ID.")
+            msg.error("Invalid user ID.", category.printName)
             return
         }
 
         bot.ignoreList[line] = true
-        msg.success(`Added \`${line}\` to ignore list.`)
+        msg.success(`Added \`${line}\` to ignore list.`, category.printName)
     }, {
         help: "Adds a Discord user to the list of people that the bot won't react to, using their user ID.",
         ownerOnly: true
@@ -19,12 +19,12 @@ module.exports = (category, bot) => {
     category.addCommand("unignore", (msg, line) => {
         line = line.toLowerCase()
         if (!bot.ignoreList[line]) {
-            msg.error(`\`${line}\` not in ignore list.`)
+            msg.error(`\`${line}\` not in ignore list.`, category.printName)
             return
         }
 
         bot.ignoreList[line] = undefined
-        msg.success(`Removed \`${line}\` from ignore list.`)
+        msg.success(`Removed \`${line}\` from ignore list.`, category.printName)
     }, {
         help: "Removes a Discord user from the list of people that the bot won't react to, using their user ID.",
         ownerOnly: true
@@ -32,7 +32,7 @@ module.exports = (category, bot) => {
 
     category.addCommand("lockdown", (msg, line) => {
         bot.ownerOnly = !bot.ownerOnly
-        msg.success(`Toggled lockdown ${bot.ownerOnly ? 'on' : 'off'}.`)
+        msg.success(`Toggled lockdown ${bot.ownerOnly ? 'on' : 'off'}.`, category.printName)
     }, {
         help: "Makes the bot only react to its owner. This is a toggle command.",
         ownerOnly: true

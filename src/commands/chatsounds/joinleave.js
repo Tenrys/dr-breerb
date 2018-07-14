@@ -1,6 +1,6 @@
 module.exports = (category, bot) => {
     category.addCommand("join", async (msg, line, ...args) => {
-        if (!msg.member) { msg.error("Webhooks are unsupported."); return }
+        if (!msg.member) { msg.error("Webhooks are unsupported.", category.printName); return }
 
         let vc = msg.guild.me.voiceChannel
 
@@ -12,21 +12,21 @@ module.exports = (category, bot) => {
 
                 let guild = msg.guild
                 let channel = msg.channel
-                vc.emptyTimeout = msg.client.setInterval(() => {
+                vc.emptyTimeout = msg.client.setInterval(function() {
                     let vc = guild.me.voiceChannel
 
                     if (vc && vc.members && (vc.members.filter(member => !member.user.bot).array().length) < 1) {
                         vc.leave()
                         if (channel) {
-                            channel.send(`Left voice channel \`${vc.name}\` due to inactivity.`)
+                            channel.result(`Left voice channel \`${vc.name}\` due to inactivity.`, category.printName)
                         }
-                        clearInterval(vc.emptyTimeout)
+                        clearInterval(this)
                     } else if (!vc) {
-                        clearInterval(vc.emptyTimeout)
+                        clearInterval(this)
                     }
                 }, 60 * 3 * 1000)
             } else {
-                msg.error("You aren't in any channel.")
+                msg.error("You aren't in any channel.", category.printName)
             }
         } else {
             if (!vc.connection) {
@@ -48,7 +48,7 @@ module.exports = (category, bot) => {
         if (vc) {
             vc.leave()
         } else {
-            msg.error("I am not in any channel.")
+            msg.error("I am not in any channel.", category.printName)
         }
     }, {
         guildOnly: true,

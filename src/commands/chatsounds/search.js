@@ -39,7 +39,7 @@ module.exports = (category, bot) => {
 
             let embed = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag, msg.author.avatarURL())
-                .setTitle("Chatsound search results")
+                .setTitle(category.printName + ": Search results")
                 .setDescription(bot.truncate(buf))
                 .setFooter(`Page ${this.page}/${this.lastPage} (${this.data.length} entries)`)
 

@@ -61,7 +61,7 @@ module.exports = (category, bot) => {
         fs.unlink(path.join(__dirname, "..", "soundlist.json"), () => {
             bot.downloadSoundlist().then(() => {
                 bot.loadSoundlist()
-                msg.success("Chatsounds list refreshed.")
+                msg.success("Chatsounds list refreshed.", category.printName)
             })
         })
     }, {

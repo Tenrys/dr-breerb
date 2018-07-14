@@ -8,7 +8,7 @@ module.exports = (category, bot) => {
     const chatsndsRepositoryURL = "https://raw.githubusercontent.com/Metastruct/garrysmod-chatsounds/master/sound/"
 
     category.addCommand("play", async (msg, line) => {
-        if (!bot.soundListKeys) { msg.reply("sound list hasn't loaded yet."); return }
+        if (!bot.soundListKeys) { msg.error("Sound list hasn't loaded yet.", category.printName); return }
 
         line = line.toLowerCase()
 
@@ -65,7 +65,7 @@ module.exports = (category, bot) => {
                     resolve()
                 }
             }).then(() => {
-                let audio = vc.connection.play(fs.createReadStream(filePath), { volume: 0.66 })
+                let audio = vc.connection.play(fs.createReadStream(filePath), { volume: vc.guild.volume || 0.66 })
                 audio.on("start", () => bot.logger.log("chatsound", sndPath + ": start"))
                 audio.on("end", () => bot.logger.log("chatsound", sndPath + ": end"))
             })

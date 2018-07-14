@@ -6,14 +6,15 @@ module.exports = (category, bot) => {
             let volume = Math.min(1, Math.max(0, vol))
             let playing = vc.connection.dispatcher
 
-            if (!vol) {
+            if (!vol || isNaN(volume)) {
                 msg.result("Volume: " + playing.volume * 100 + "%.")
             } else {
-                playing.setVolume(volume)
-                msg.success("Changed playing chatsound's volume to " + playing.volume * 100 + "%.")
+                vc.guild.volume = volume
+                playing.setVolume(vc.guild.volume)
+                msg.success("Changed playing chatsound's volume to " + vc.guild.volume * 100 + "%.", category.printName)
             }
         } else {
-            msg.error("I am not in any channel.")
+            msg.error("I am not in any channel.", category.printName)
         }
     }, {
         aliases: [ "vol" ],
