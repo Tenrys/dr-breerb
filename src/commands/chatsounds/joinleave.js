@@ -1,14 +1,15 @@
 module.exports = (category, bot) => {
-    category.addCommand("join", async (msg, line, ...args) => {
+    category.addCommand("join", (msg, line, ...args) => {
         if (!msg.member) { msg.error("Webhooks are unsupported.", category.printName); return }
 
         let vc = msg.guild.me.voiceChannel
 
-        if (!vc) {
-            vc = msg.member.voiceChannel
+        if (vc !== msg.member.voiceChannel) {
+            if (vc) clearInterval(vc.emptyTimeout)
 
-            if (vc) {
-                await vc.join()
+            if (msg.member.voiceChannel) {
+                vc = msg.member.voiceChannel
+                vc.join()
 
                 let guild = msg.guild
                 let channel = msg.channel
@@ -27,12 +28,6 @@ module.exports = (category, bot) => {
                 }, 60 * 3 * 1000)
             } else {
                 msg.error("You aren't in any channel.", category.printName)
-            }
-        } else {
-            if (!vc.connection) {
-                bot.logger.warn("discord-voice", "No connection? What.")
-                await vc.leave()
-                await vc.join()
             }
         }
 
