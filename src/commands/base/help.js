@@ -1,7 +1,7 @@
 const Command = require("../../classes/Command.js")
 const CommandCategory = require("../../classes/CommandCategory.js")
 
-const Discord = require("discord.js")
+const Discord = require("../../extensions/discord.js")
 
 module.exports = (category, bot) => {
    category.addCommand("help", (msg, line) => {

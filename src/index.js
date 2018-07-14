@@ -1,7 +1,6 @@
 // TODO: Refer to https://github.com/Re-Dream/dreambot_mk2/projects/1 for other todos, basically
 
-const Discord = require("discord.js")
-require("./extensions/discord.js")
+const Discord = require("./extensions/discord.js")
 
 const fs = require("fs")
 const path = require("path")
@@ -9,7 +8,6 @@ const path = require("path")
 const repl = require("repl")
 
 module.exports = options => {
-
     class Bot {
         /**
          * The Discord user ID of the bot's owner.

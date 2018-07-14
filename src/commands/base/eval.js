@@ -1,4 +1,4 @@
-const Discord = require("discord.js")
+const Discord = require("../../extensions/discord.js")
 
 const child_process = require("child_process")
 

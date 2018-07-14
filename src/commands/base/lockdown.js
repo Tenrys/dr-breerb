@@ -1,4 +1,4 @@
-const Discord = require("discord.js")
+const Discord = require("../../extensions/discord.js")
 
 module.exports = (category, bot) => {
     bot.ignoreList = {}

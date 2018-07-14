@@ -35,3 +35,5 @@ function resultMethod(name, emoji, defaultColor) {
 resultMethod("result", null, null)
 resultMethod("error", ":interrobang:", colors.red)
 resultMethod("success", ":ballot_box_with_check:", colors.green)
+
+module.exports = Discord
