@@ -14,7 +14,7 @@
     "chalk": "github:chalk/chalk",
     "color": "^3.0.0",
     "color-thief-jimp": "^2.0.2",
-    "discord.js": "github:hydrabolt/discord.js",
+    "discord.js": "github:discordjs/discord.js",
     "erlpack": "discordapp/erlpack",
     "feed-parser": "^1.0.19",
     "feedparser": "^2.2.9",
