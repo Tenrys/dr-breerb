@@ -81,7 +81,7 @@ module.exports = bot => {
     let prefix = "!"
     bot.client.on("message", async msg => {
         if (bot.ignoreList && bot.ignoreList[msg.author.id]) { return }
-        if (bot.ownerOnly && msg.author.id !== bot.ownerId) { return }
+        if (bot.ownerOnly && !bot.ownerId.includes(msg.author.id)) { return }
 
         let match = new RegExp(`^${prefix}([^\\s.]*)\\s?([\\s\\S]*)`, "gmi").exec(msg.content)
         if (match && match[1]) {
@@ -94,7 +94,7 @@ module.exports = bot => {
             if (cmd && cmd.callback) {
                 // Verify
                 if (cmd.guildOnly && !msg.guild) { msg.error("This command can only be used while in a guild."); return }
-                if (cmd.ownerOnly && msg.author.id !== bot.ownerId) {
+                if (cmd.ownerOnly && !bot.ownerId.includes(msg.author.id)) {
                     msg.error("This command can only be used by the bot's owner.")
                     bot.logger.error(`command-${name}`, `Invalid permissions from '${msg.author.tag}' (${msg.author.id}).`)
                     return
