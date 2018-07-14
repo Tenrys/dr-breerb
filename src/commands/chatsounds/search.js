@@ -29,7 +29,7 @@ module.exports = (category, bot) => {
                     a.localeCompare(b)     // sort by dictionary order
         })
 
-        let handler = async function(to) {
+        return bot.pages.add(null, msg, res, async function() {
             let displayCount = this.displayCount || bot.pages.displayCount
             let buf = ""
             for (let i = displayCount * (this.page - 1); i < displayCount * this.page; i++) {
@@ -40,7 +40,7 @@ module.exports = (category, bot) => {
             let embed = new Discord.MessageEmbed()
                 .setAuthor(msg.author.tag, msg.author.avatarURL())
                 .setTitle("Chatsound search results")
-                .setDescription(buf)
+                .setDescription(bot.truncate(buf))
                 .setFooter(`Page ${this.page}/${this.lastPage} (${this.data.length} entries)`)
 
             let res = this.msg
@@ -51,8 +51,7 @@ module.exports = (category, bot) => {
             }
 
             return res
-        }
-        return bot.pages.add(null, msg, res, handler, options ? options.displayCount : null)
+        }, options ? options.displayCount : null)
     }, {
         aliases: [ "find" ],
         help: "Searches chatsounds by name."

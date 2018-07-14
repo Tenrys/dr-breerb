@@ -13,7 +13,7 @@ module.exports = bot => {
                 query: query,
                 data: data,
                 handle(to) {
-                    let displayCount = this.displayCount || pages.displayCount
+                    let displayCount = this.displayCount || bot.pages.displayCount
                     this.lastPage = Math.ceil(this.data.length / displayCount)
                     if (typeof to === "boolean") {
                         this.page = Math.max(1, Math.min(this.page + (to && 1 || -1), this.lastPage))
