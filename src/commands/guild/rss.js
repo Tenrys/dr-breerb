@@ -8,6 +8,7 @@ const entities = new Entities()
 
 const Turndown = require("turndown")
 const turndown = new Turndown()
+turndown.remove("img")
 
 module.exports = (category, bot) => {
     let title = ":loudspeaker: RSS feeds"
