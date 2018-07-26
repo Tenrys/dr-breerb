@@ -26,6 +26,7 @@ module.exports = (category, bot) => {
                 }, 60 * 3 * 1000)
             } else {
                 msg.error("You aren't in any channel.", category.printName)
+                return null
             }
         }
 
