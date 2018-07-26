@@ -63,7 +63,7 @@ module.exports = options => {
 
             let client = new Discord.Client()
             let bot = this
-            client.on("ready", () => {
+            client.on("ready", async () => {
                 let replServer = repl.start("")
                 replServer.context.Discord = Discord
                 replServer.context.bot = bot
@@ -71,6 +71,19 @@ module.exports = options => {
                     process.exit()
                 })
                 bot.logger.success("repl", "Ready.")
+
+                if (fs.existsSync("restart_info.json")) {
+                    try {
+                        let restartInfo = require.main.require("./restart_info.json")
+                        let channel = bot.client.channels.get(restartInfo.channel)
+                        let msg = await channel.messages.fetch(restartInfo.message)
+                        await msg.edit(msg.content, new Discord.MessageEmbed().setDescription("Restarted."))
+                    } catch (err) {
+                        bot.logger.error("restart-info", err)
+                    }
+
+                    fs.unlinkSync("restart_info.json")
+                }
             })
             client.on("error", ev => {
                 bot.logger.error("discord", "Websocket error: " + ev.message)

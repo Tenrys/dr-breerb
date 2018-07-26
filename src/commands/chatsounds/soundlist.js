@@ -43,11 +43,11 @@ module.exports = (category, bot) => {
             let stats, outdated
             try {
                 stats = fs.statSync("soundlist.json")
-                outdated = new Date().getTime() > stats.mtime.getTime() + (86400 * 7)
+                outdated = new Date().getTime() > stats.mtime.getTime() + (1000 * 60 * 60 * 24 * 7) // Check if soundlist is older than a week
             } catch (err) {}
 
             if (!fs.existsSync("soundlist.json") || outdated) {
-                let request = http.get("http://cs.3kv.in/soundlist.json", res => {
+                http.get("http://cs.3kv.in/soundlist.json", res => {
                     let stream = fs.createWriteStream("soundlist.json")
                     stream.on("finish", resolve)
 

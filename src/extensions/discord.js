@@ -17,12 +17,12 @@ function resultMethod(name, emoji, defaultColor) {
         return embed
     }
 
-    Discord.Message.prototype[name] = function(content, title, color) {
-        return this.reply(makeEmbed(content, title, color))
+    Discord.Message.prototype[name] = async function(content, title, color) {
+        return await this.reply(makeEmbed(content, title, color))
     }
 
-    Discord.Channel.prototype[name] = function(content, title, color) {
-        return this.send(makeEmbed(content, title, color))
+    Discord.Channel.prototype[name] = async function(content, title, color) {
+        return await this.send(makeEmbed(content, title, color))
     }
 }
 resultMethod("result", null, null)

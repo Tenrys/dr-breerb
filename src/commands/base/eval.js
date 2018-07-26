@@ -2,6 +2,7 @@ const Discord = require.main.require("./src/extensions/discord.js")
 
 const child_process = require("child_process")
 
+const fs = require("fs")
 const util = require("util")
 
 module.exports = (category, bot) => {
@@ -44,7 +45,6 @@ module.exports = (category, bot) => {
 
             let buf = ""
             function onData(data) {
-                msg.print(data)
                 buf += data
             }
             proc.stdout.on("data", onData)
@@ -59,25 +59,29 @@ module.exports = (category, bot) => {
     }
 
     category.addCommand("exec", async (msg, line) => {
-        await runCommand(msg, line)
+        msg.print(await runCommand(msg, line))
     }, {
         help: "Executes a command from the shell.",
         ownerOnly: true
     })
     category.addCommand("update", async function(msg, line) {
-        msg.result("Updating...\n")
+        this.progressMsg = await msg.result("Updating...\n")
         let result = await runCommand(msg, "git pull")
+        await this.progressMsg.edit(`<@${msg.author.id}>, \`\`\`${result}\`\`\``)
+
         if (/Updating/gi.test(result)) {
             this.doRestart = true
         } else {
             this.doRestart = false
         }
+        this.doRestart = true
     }, {
         help: "Updates the bot to the latest revision from its GitHub repository and quits it.",
         ownerOnly: true,
         async postRun(msg) {
             if (this.doRestart) {
-                await msg.result("Restarting...")
+                await this.progressMsg.edit(this.progressMsg.content, new Discord.MessageEmbed().setDescription("Restarting..."))
+                fs.writeFileSync("restart_info.json", JSON.stringify({ channel: this.progressMsg.channel.id, message: this.progressMsg.id }))
                 process.exit() // Restarting is handled by start.sh
             }
         }
