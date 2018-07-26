@@ -28,7 +28,7 @@ module.exports = (category, bot) => {
                     let category = bot.commands[_]
 
                     if (category instanceof CommandCategory && ((showAll && category.name === "all") || (!showAll && category.name !== "all"))) {
-                        embed.addField(category.printName, category.description + "\n" + "```" + (category.commands.map(cmd => cmd.name).join(", ") || "none LOL") + "```")
+                        embed.addField(category.printName, category.description + "\n" + "```" + (Object.keys(category.commands.get()).join(", ") || "none LOL") + "```")
                     }
                 }
             }
