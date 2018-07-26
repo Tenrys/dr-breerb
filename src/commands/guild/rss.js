@@ -73,7 +73,7 @@ module.exports = (category, bot) => {
                                 embed.setThumbnail(item.image.url)
                             }
                         }
-                        if (item["atom:author"].uri) authorURL = item["atom:author"].uri
+                        if (item["atom:author"].uri) authorURL = item["atom:author"].uri["#"] // GAY
                         if (author) {
                             embed.setAuthor(author, authorAvatar, authorURL)
                             embed.setColor(hashToIntRGB(hashCode(author)))
