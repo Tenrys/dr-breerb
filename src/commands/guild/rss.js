@@ -70,7 +70,7 @@ module.exports = (category, bot) => {
                         }
                         if (item.title) embed.setTitle(item.title)
                         if (item.link) embed.setURL(item.link)
-                        if (item.description) {
+                        if (item.description && item.title !== item.description) {
                             description = item.description
                             description = entities.decode(description) // Decode HTML entities
                             // description = description.replace(/(^[ \t]*\n)/gm, "") // Remove blank lines, unnecessary thanks to turndown
@@ -179,6 +179,7 @@ module.exports = (category, bot) => {
                     return
                 }
                 choice = Math.max(0, choice - 1)
+
                 bot.db.RSSFeed.sync().then(() => {
                     bot.db.RSSFeed.findAll({
                         where: {
