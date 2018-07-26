@@ -31,6 +31,11 @@ module.exports = (category, bot) => {
             bot.logger.success("soundlist", "Loaded.")
         } catch (err) {
             bot.logger.error("soundlist", "Loading failed: " + (err ? err.stack : err))
+            if (err.message.match("Unexpected end of JSON input")) {
+                bot.logger.warn("soundlist", "Error is related to JSON input, maybe it was badly downloaded? Redownloading.")
+                fs.unlinkSync("soundlist.json")
+                bot.downloadSoundlist().then(bot.loadSoundlist)
+            }
         }
     }
     bot.downloadSoundlist = () => {
