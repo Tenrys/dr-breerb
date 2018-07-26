@@ -38,6 +38,7 @@ module.exports = (category, bot) => {
                 }
             }
             if (!req) return
+
             let feedparser = new FeedParser()
 
             req.on("response", res => {
@@ -78,8 +79,12 @@ module.exports = (category, bot) => {
                             description = bot.truncate(description) // Truncate so stuff isn't too long
                             if (item.title !== description) embed.setDescription(description)
                         }
-                        if (meta.description || meta.title) embed.setFooter(meta.description || meta.title, meta.favicon)
-                        if (meta.image && meta.image.url) embed.setThumbnail(meta.image.url)
+                        if (meta.description || meta.title) {
+                            let footerIcon = meta.favicon
+                            if (!footerIcon && meta.image && meta.image.url) footerIcon = meta.image.url
+                            embed.setFooter(meta.description || meta.title, footerIcon)
+                        }
+                        if (item.image && item.image.url) embed.setThumbnail(item.image.url)
                         embed.setTimestamp(item.pubdate)
 
                         let channel = bot.client.channels.get(feed.channel)
