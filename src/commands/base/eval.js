@@ -7,7 +7,7 @@ const util = require("util")
 
 module.exports = (category, bot) => {
     category.addCommand("eval", (msg, line) => {
-        let code = /^```\w*\n([\s\S]*)```$/gim.exec(line) // Test if we put a language after the code blocks first
+        let code = /^```\w*\n([\s\S]*)```$/gim.exec(line) // Test if we put a language after the code block first
         if (code && code[1]) {
             line = code[1]
         } else {
@@ -67,7 +67,7 @@ module.exports = (category, bot) => {
     category.addCommand("update", async function(msg, line) {
         let progressMsg = await msg.result("Updating...\n", category.printName)
         let result = await runCommand(msg, "git pull")
-        await progressMsg.edit(`<@${msg.author.id}>, \`\`\`${result}\`\`\``, Discord.MessageEmbed.success("Updated.", category.printName))
+        await progressMsg.edit(`<@${msg.author.id}>, \`\`\`${result}\`\`\``, Discord.MessageEmbed.success("Done. See results for more information.", category.printName))
 
         if (/Updating/gi.test(result)) {
             progressMsg = await progressMsg.channel.fetch(progressMsg.id) // Hack to make sure we have the right content, idk if this works

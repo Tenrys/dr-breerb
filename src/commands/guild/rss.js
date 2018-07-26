@@ -61,16 +61,27 @@ module.exports = (category, bot) => {
                 while (item = feedparser.read()) {
                     if (item.pubdate.getTime() > feed.lastFeedDate.getTime()) {
                         let embed = new Discord.MessageEmbed()
-                        let author, description
+                        let author, description, author, authorAvatar, authorURL
+
                         if (item.author) author = item.author
                         else if (item["a10:author"]) author = item["a10:author"]["a10:name"]["#"] // gay
                         else if (item["dc:creator"]) author = item["dc:creator"] // gay
+                        if (item.image && item.image.url) {
+                            if (feedparser.meta["#type"] === "atom") {
+                                authorAvatar = item.image.url
+                            } else {
+                                embed.setThumbnail(item.image.url)
+                            }
+                        }
+                        if (item["atom:author"].uri) authorURL = item["atom:author"].uri
                         if (author) {
-                            embed.setAuthor(author)
+                            embed.setAuthor(author, authorAvatar, authorURL)
                             embed.setColor(hashToIntRGB(hashCode(author)))
                         }
+
                         if (item.title) embed.setTitle(item.title)
                         if (item.link) embed.setURL(item.link)
+
                         if (item.description) {
                             description = item.description
                             description = entities.decode(description) // Decode HTML entities
@@ -79,17 +90,11 @@ module.exports = (category, bot) => {
                             description = bot.truncate(description) // Truncate so stuff isn't too long
                             if (item.title !== description) embed.setDescription(description)
                         }
+
                         if (meta.description || meta.title) {
                             let footerIcon = meta.favicon
                             if (!footerIcon && meta.image && meta.image.url) footerIcon = meta.image.url
                             embed.setFooter(meta.description || meta.title, footerIcon)
-                        }
-                        if (item.image && item.image.url) {
-                            if (feedparser.meta["#type"] === "atom") {
-                                embed.setAuthor(author, item.image.url)
-                            } else {
-                                embed.setThumbnail(item.image.url)
-                            }
                         }
                         embed.setTimestamp(item.pubdate)
 
