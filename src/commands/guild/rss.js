@@ -117,7 +117,7 @@ module.exports = (category, bot) => {
                         await bot.checkRSSFeed(feeds[i])
                     }
                     if (destination) destination.success("Checked all RSS feeds for this channel.", title)
-                } else if (chan) {
+                } else if (destination) {
                     destination.error("No feeds to check for this channel!", title)
                 }
             })
