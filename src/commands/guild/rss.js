@@ -61,7 +61,7 @@ module.exports = (category, bot) => {
                 while (item = feedparser.read()) {
                     if (item.pubdate.getTime() > feed.lastFeedDate.getTime()) {
                         let embed = new Discord.MessageEmbed()
-                        let author, description, author, authorAvatar, authorURL
+                        let author, description, authorAvatar, authorURL
 
                         if (item.author) author = item.author
                         else if (item["a10:author"]) author = item["a10:author"]["a10:name"]["#"] // gay
