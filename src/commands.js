@@ -141,7 +141,7 @@ module.exports = bot => {
                     await cmd.callback(msg, line, ...args)
 
                     if (msg.printBuffer) await msg.channel.send(`\`\`\`\n${bot.truncate(msg.printBuffer)}\n\`\`\``)
-                    if (cmd.postRun) cmd.postRun(msg)
+                    if (cmd.postRun) await cmd.postRun(msg)
                 } catch (err) {
                     msg.error(bot.formatErrorToDiscord(err), `JavaScript error: from command '${name}'`)
                     bot.logger.error(`command-${name}`, `Error: ${err.stack || err}`)

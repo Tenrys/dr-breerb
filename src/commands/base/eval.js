@@ -65,25 +65,17 @@ module.exports = (category, bot) => {
         ownerOnly: true
     })
     category.addCommand("update", async function(msg, line) {
-        this.progressMsg = await msg.result("Updating...\n")
+        let progressMsg = await msg.result("Updating...\n")
         let result = await runCommand(msg, "git pull")
-        await this.progressMsg.edit(`<@${msg.author.id}>, \`\`\`${result}\`\`\``)
+        await progressMsg.edit(`<@${msg.author.id}>, \`\`\`${result}\`\`\``)
 
         if (/Updating/gi.test(result)) {
-            this.doRestart = true
-        } else {
-            this.doRestart = false
+            await progressMsg.edit(progressMsg.content, new Discord.MessageEmbed().setDescription("Restarting..."))
+            fs.writeFileSync("restart_info.json", JSON.stringify({ channel: progressMsg.channel.id, message: progressMsg.id }))
+            process.exit() // Restarting is handled by start.sh
         }
-        this.doRestart = true
     }, {
         help: "Updates the bot to the latest revision from its GitHub repository and quits it.",
-        ownerOnly: true,
-        async postRun(msg) {
-            if (this.doRestart) {
-                await this.progressMsg.edit(this.progressMsg.content, new Discord.MessageEmbed().setDescription("Restarting..."))
-                fs.writeFileSync("restart_info.json", JSON.stringify({ channel: this.progressMsg.channel.id, message: this.progressMsg.id }))
-                process.exit() // Restarting is handled by start.sh
-            }
-        }
+        ownerOnly: true
     })
 }
