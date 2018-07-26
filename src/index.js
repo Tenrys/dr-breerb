@@ -77,7 +77,7 @@ module.exports = options => {
                         let restartInfo = require.main.require("./restart_info.json")
                         let channel = bot.client.channels.get(restartInfo.channel)
                         let msg = await channel.messages.fetch(restartInfo.message)
-                        await msg.edit(msg.content, new Discord.MessageEmbed().setDescription("Restarted."))
+                        await msg.edit(msg.content, Discord.MessageEmbed.success("Restarted.", bot.commands.get("base").printName))
                     } catch (err) {
                         bot.logger.error("restart-info", err)
                     }

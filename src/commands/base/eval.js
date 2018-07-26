@@ -65,12 +65,12 @@ module.exports = (category, bot) => {
         ownerOnly: true
     })
     category.addCommand("update", async function(msg, line) {
-        let progressMsg = await msg.result("Updating...\n")
+        let progressMsg = await msg.result("Updating...\n", category.printName)
         let result = await runCommand(msg, "git pull")
-        await progressMsg.edit(`<@${msg.author.id}>, \`\`\`${result}\`\`\``)
+        await progressMsg.edit(`<@${msg.author.id}>, \`\`\`${result}\`\`\``, Discord.MessageEmbed.success("Updated.", category.printName))
 
         if (/Updating/gi.test(result)) {
-            await progressMsg.edit(progressMsg.content, new Discord.MessageEmbed().setDescription("Restarting..."))
+            await progressMsg.edit(progressMsg.content, Discord.MessageEmbed.result("Restarting...", category.printName))
             fs.writeFileSync("restart_info.json", JSON.stringify({ channel: progressMsg.channel.id, message: progressMsg.id }))
             process.exit() // Restarting is handled by start.sh
         }
