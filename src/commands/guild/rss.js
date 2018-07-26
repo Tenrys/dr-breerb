@@ -70,13 +70,13 @@ module.exports = (category, bot) => {
                         }
                         if (item.title) embed.setTitle(item.title)
                         if (item.link) embed.setURL(item.link)
-                        if (item.description && item.title !== item.description) {
+                        if (item.description) {
                             description = item.description
                             description = entities.decode(description) // Decode HTML entities
                             // description = description.replace(/(^[ \t]*\n)/gm, "") // Remove blank lines, unnecessary thanks to turndown
                             description = turndown.turndown(description) // Turn HTML tags into Markdown
                             description = bot.truncate(description) // Truncate so stuff isn't too long
-                            embed.setDescription(description)
+                            if (item.title !== description) embed.setDescription(description)
                         }
                         if (meta.description || meta.title) embed.setFooter(meta.description || meta.title, meta.favicon)
                         if (meta.image && meta.image.url) embed.setThumbnail(meta.image.url)
