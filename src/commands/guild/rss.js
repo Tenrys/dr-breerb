@@ -84,7 +84,13 @@ module.exports = (category, bot) => {
                             if (!footerIcon && meta.image && meta.image.url) footerIcon = meta.image.url
                             embed.setFooter(meta.description || meta.title, footerIcon)
                         }
-                        if (item.image && item.image.url) embed.setThumbnail(item.image.url)
+                        if (item.image && item.image.url) {
+                            if (feedparser.meta["#type"] === "atom") {
+                                embed.setAuthor(author, item.image.url)
+                            } else {
+                                embed.setThumbnail(item.image.url)
+                            }
+                        }
                         embed.setTimestamp(item.pubdate)
 
                         let channel = bot.client.channels.get(feed.channel)
