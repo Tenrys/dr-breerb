@@ -25,9 +25,7 @@ function resultMethod(name, emoji, defaultColor) {
         return await this.send(makeEmbed(content, title, color))
     }
 
-    Discord.MessageEmbed[name] = async function(content, title, color) {
-        return makeEmbed(content, title, color)
-    }
+    Discord.MessageEmbed[name] = makeEmbed
 }
 resultMethod("result", null, null)
 resultMethod("error", ":interrobang:", colors.red)
