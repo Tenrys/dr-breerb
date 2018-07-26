@@ -42,13 +42,18 @@ module.exports = (category, bot) => {
         return new Promise((resolve, reject) => {
             let proc = child_process.spawn(cmd, [], { shell: true })
 
-            proc.stdout.on("data", msg.print)
-            proc.stderr.on("data", msg.print)
+            let buf = ""
+            function onData(data) {
+                msg.print(data)
+                buf += data
+            }
+            proc.stdout.on("data", onData)
+            proc.stderr.on("data", onData)
             proc.on("close", () => {
-                resolve()
+                resolve(buf)
             })
             proc.on("error", err => {
-                reject(err)
+                reject(buf, err)
             })
         })
     }
@@ -59,14 +64,22 @@ module.exports = (category, bot) => {
         help: "Executes a command from the shell.",
         ownerOnly: true
     })
-    category.addCommand("update", async (msg, line) => {
+    category.addCommand("update", async function(msg, line) {
         msg.result("Updating...\n")
-        await runCommand(msg, "git pull origin master")
+        let result = await runCommand(msg, "git pull")
+        if (/Updating/gi.test(result)) {
+            this.doRestart = true
+        } else {
+            this.doRestart = false
+        }
     }, {
         help: "Updates the bot to the latest revision from its GitHub repository and quits it.",
         ownerOnly: true,
-        postRun() {
-            process.exit() // Restarting is handled by start.sh
+        async postRun(msg) {
+            if (this.doRestart) {
+                await msg.result("Restarting...")
+                process.exit() // Restarting is handled by start.sh
+            }
         }
     })
 }

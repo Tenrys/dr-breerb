@@ -41,18 +41,21 @@ module.exports = bot => {
          */
         all: new CommandCategory("all", ":star: All commands", "Every command available.")
     }
-    Object.defineProperty(bot.commands.all, "_commands", { // Quite the hack...
+    Object.defineProperty(bot.commands.all.commands, "_commands", { // Quite the hack...
         get() {
-            let commands = []
+            let commands = {}
 
             for (const name in bot.commands) {
                 if (bot.commands.hasOwnProperty(name)) {
                     const category = bot.commands[name]
 
                     if (name !== "all" && category instanceof CommandCategory) {
-                        category._commands.forEach(command => {
-                            commands.push(command)
-                        })
+                        for (const name in category.commands._commands) {
+                            if (category.commands._commands.hasOwnProperty(name)) {
+                                const command = category.commands._commands[name]
+                                commands[name] = command
+                            }
+                        }
                     }
                 }
             }
@@ -147,7 +150,7 @@ module.exports = bot => {
         }
     })
 
-    let commandAmt = bot.commands.all.commands.length
+    let commandAmt = Object.keys(bot.commands.all.commands._commands).length
     bot.logger.success("commands", `Loaded ${commandAmt} command${commandAmt == 1 ? '' : 's'}.`)
 
     bot.client.on("ready", () => {

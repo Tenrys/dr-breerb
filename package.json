@@ -11,6 +11,7 @@
     "start": "./start.sh"
   },
   "dependencies": {
+    "ffmpeg-binaries": "^4.0.0",
     "chalk": "github:chalk/chalk",
     "color": "^3.0.0",
     "color-thief-jimp": "^2.0.2",
