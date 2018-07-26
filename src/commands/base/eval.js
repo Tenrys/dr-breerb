@@ -70,7 +70,7 @@ module.exports = (category, bot) => {
         await progressMsg.edit(`<@${msg.author.id}>, \`\`\`${result}\`\`\``, Discord.MessageEmbed.success("Done. See results for more information.", category.printName))
 
         if (/Updating/gi.test(result)) {
-            progressMsg = await progressMsg.channel.fetch(progressMsg.id) // Hack to make sure we have the right content, idk if this works
+            progressMsg = await progressMsg.channel.messages.fetch(progressMsg.id) // Hack to make sure we have the right content, idk if this works
             await progressMsg.edit(progressMsg.content, Discord.MessageEmbed.result("Restarting...", category.printName))
             fs.writeFileSync("restart_info.json", JSON.stringify({ channel: progressMsg.channel.id, message: progressMsg.id }))
             process.exit() // Restarting is handled by start.sh
