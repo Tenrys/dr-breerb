@@ -4,7 +4,7 @@ module.exports = (category, bot) => {
 
         let vc = msg.guild.me.voiceChannel
 
-        if (vc !== msg.member.voiceChannel) {
+        if (vc !== msg.member.voiceChannel || !msg.member.voiceChannel) {
             if (msg.member.voiceChannel) {
                 vc = msg.member.voiceChannel
                 vc.join()
