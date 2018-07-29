@@ -69,7 +69,7 @@ module.exports = (category, bot) => {
         let result = await runCommand(msg, "git pull")
         await progressMsg.edit(`<@${msg.author.id}>, \`\`\`${result}\`\`\``, Discord.MessageEmbed.success("Done. See results for more information.", category.printName))
 
-        if (/Updating/gi.test(result)) {
+        if (result.match("Updating") && !result.match("Aborting")) {
             progressMsg = await progressMsg.channel.messages.fetch(progressMsg.id) // Hack to make sure we have the right content, idk if this works
             await progressMsg.edit(progressMsg.content, Discord.MessageEmbed.result("Restarting...", category.printName))
             fs.writeFileSync("restart_info.json", JSON.stringify({ channel: progressMsg.channel.id, message: progressMsg.id }))
