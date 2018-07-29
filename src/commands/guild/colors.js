@@ -46,7 +46,7 @@ module.exports = (category, bot) => {
                     color = Color.rgb(r, g, b)
                 } else if (r !== undefined && (g === undefined || b === undefined)) { // HEX
                     r = /^#?([a-fA-F0-9_]+)/.exec(r)
-                    if (r === null || r === undefined) r = r[1] || r[0]
+                    if (r !== null || r !== undefined) r = r[1] || r[0]
                     else throw new Error("Invalid hex color (" + line + ")")
 
                     color = Color(parseInt(r, 16))
