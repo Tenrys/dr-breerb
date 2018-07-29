@@ -8,7 +8,8 @@ module.exports = (category, bot) => {
         if (vol === undefined || vol === null || isNaN(vol) || isNaN(volume)) msg.result("Volume: " + (guild.volume || 0.66) * 100 + "%.")
         else {
             guild.volume = volume
-            if (vc = guild.me.voiceChannel && vc.connection && vc.connection.dispatcher) vc.connection.dispatcher.setVolume(guild.volume)
+            let vc = guild.me.voiceChannel
+            if (vc && vc.connection && vc.connection.dispatcher) vc.connection.dispatcher.setVolume(guild.volume)
             msg.success("Changed volume to " + guild.volume * 100 + "%.", category.printName)
         }
     }, {
