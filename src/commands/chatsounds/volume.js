@@ -3,6 +3,7 @@ module.exports = (category, bot) => {
         let vc = msg.guild.me.voiceChannel
 
         if (vc && vc.connection && vc.connection.dispatcher) {
+            if (volume > 1 && volume <= 100) volume = volume / 100
             let volume = Math.min(1, Math.max(0, vol))
             let playing = vc.connection.dispatcher
 
@@ -11,7 +12,7 @@ module.exports = (category, bot) => {
             } else {
                 vc.guild.volume = volume
                 playing.setVolume(vc.guild.volume)
-                msg.success("Changed playing chatsound's volume to " + vc.guild.volume * 100 + "%.", category.printName)
+                msg.success("Changed volume to " + vc.guild.volume * 100 + "%.", category.printName)
             }
         } else {
             msg.error("I am not in any channel.", category.printName)
