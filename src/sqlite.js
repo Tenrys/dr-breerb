@@ -18,7 +18,7 @@ module.exports = bot => {
 
     fs.readdirSync(path.join(__dirname, "models")).forEach(file => {
         let filePath = path.join(__dirname, "models", file)
-        if (fs.statSync(filePath).isFile() && path.extname(filePath) == ".js") {
+        if (fs.statSync(filePath).isFile() && path.extname(filePath) === ".js") {
             let model = bot.db.sequelize.import(filePath)
             bot.db[model.name] = model
         }

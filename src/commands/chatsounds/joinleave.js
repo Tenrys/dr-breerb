@@ -16,18 +16,11 @@ module.exports = (category, bot) => {
 
                     if (vc && vc.members && (vc.members.filter(member => !member.user.bot).array().length) < 1) {
                         vc.leave()
-                        if (channel) {
-                            channel.result(`Left voice channel \`${vc.name}\` due to inactivity.`, category.printName)
-                        }
+                        if (channel) channel.result(`Left voice channel \`${vc.name}\` due to inactivity.`, category.printName)
                         clearInterval(this)
-                    } else if (!vc) {
-                        clearInterval(this)
-                    }
+                    } else if (!vc) clearInterval(this)
                 }, 60 * 3 * 1000)
-            } else {
-                msg.error("You aren't in any channel.", category.printName)
-                return null
-            }
+            } else { msg.error("You aren't in any channel.", category.printName); return null }
         }
 
         return vc
@@ -39,11 +32,8 @@ module.exports = (category, bot) => {
     category.addCommand("leave", (msg, line) => {
         let vc = msg.guild.me.voiceChannel
 
-        if (vc) {
-            vc.leave()
-        } else {
-            msg.error("I am not in any channel.", category.printName)
-        }
+        if (vc) vc.leave()
+        else msg.error("I am not in any channel.", category.printName)
     }, {
         guildOnly: true,
         help: "Makes the bot leave the voice channel it's in."

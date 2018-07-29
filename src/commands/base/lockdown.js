@@ -5,10 +5,7 @@ module.exports = (category, bot) => {
     category.addCommand("ignore", (msg, line) => {
         line = line.toLowerCase()
         id = parseInt(line, 10)
-        if (typeof id !== "number" || isNaN(id)) {
-            msg.error("Invalid user ID.", category.printName)
-            return
-        }
+        if (typeof id !== "number" || isNaN(id)) { msg.error("Invalid user ID.", category.printName); return }
 
         bot.ignoreList[line] = true
         msg.success(`Added \`${line}\` to ignore list.`, category.printName)
@@ -18,10 +15,7 @@ module.exports = (category, bot) => {
     })
     category.addCommand("unignore", (msg, line) => {
         line = line.toLowerCase()
-        if (!bot.ignoreList[line]) {
-            msg.error(`\`${line}\` not in ignore list.`, category.printName)
-            return
-        }
+        if (!bot.ignoreList[line]) { msg.error(`\`${line}\` not in ignore list.`, category.printName); return }
 
         bot.ignoreList[line] = undefined
         msg.success(`Removed \`${line}\` from ignore list.`, category.printName)

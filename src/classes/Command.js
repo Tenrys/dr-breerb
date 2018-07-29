@@ -10,10 +10,10 @@ module.exports = class Command {
      * @param {object} [options] Additional variables.
      */
     constructor(name, callback, options) {
-        if (typeof name !== "string") { throw new InvalidArgumentException("name", "string") }
-        if (typeof callback !== "function") { throw new InvalidArgumentException("callback", "function") }
-        if (options !== undefined && typeof options !== "object") { throw new InvalidArgumentException("options", "object") }
-        if (!options) { options = {} }
+        if (typeof name !== "string") throw new InvalidArgumentException("name", "string")
+        if (typeof callback !== "function") throw new InvalidArgumentException("callback", "function")
+        if (options !== undefined && typeof options !== "object") throw new InvalidArgumentException("options", "object")
+        if (!options) options = {}
 
         this.name = name
         this.callback = callback

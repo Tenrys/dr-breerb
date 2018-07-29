@@ -42,7 +42,7 @@ module.exports = (category, bot) => {
             let feedparser = new FeedParser()
 
             req.on("response", res => {
-                if (res.statusCode !== 200) req.emit("error", new Error("Bad status code"))
+                if (res.statusCode != 200) req.emit("error", new Error("Bad status code"))
                 else req.pipe(feedparser)
             })
             req.on("error", err => {
@@ -129,13 +129,9 @@ module.exports = (category, bot) => {
             }
             bot.db.RSSFeed.findAll(options).then(async feeds => {
                 if (feeds.length > 0) {
-                    for (let i = 0; i < feeds.length; i++) {
-                        await bot.checkRSSFeed(feeds[i])
-                    }
+                    for (let i = 0; i < feeds.length; i++) await bot.checkRSSFeed(feeds[i])
                     if (destination) destination.success("Checked all RSS feeds for this channel.", title)
-                } else if (destination) {
-                    destination.error("No feeds to check for this channel!", title)
-                }
+                } else if (destination) destination.error("No feeds to check for this channel!", title)
             })
         })
     }
@@ -146,10 +142,7 @@ module.exports = (category, bot) => {
         switch (action) {
             case "add":
                 let url = str[0].trim()
-                if (!/^https?:\/\//i.test(url)) {
-                    msg.error(`URL needs to begin with \`http://\` or \`https://\`.`, title)
-                    return
-                }
+                if (!/^https?:\/\//i.test(url)) { msg.error(`URL needs to begin with \`http://\` or \`https://\`.`, title); return }
 
                 bot.db.RSSFeed.sync().then(() => {
                     bot.db.RSSFeed.findOrCreate({
@@ -190,10 +183,7 @@ module.exports = (category, bot) => {
                 break
             case "remove":
                 let choice = parseInt(str[0], 10)
-                if (isNaN(choice)) {
-                    msg.error("Invalid choice.", title)
-                    return
-                }
+                if (isNaN(choice)) { msg.error("Invalid choice.", title); return }
                 choice = Math.max(0, choice - 1)
 
                 bot.db.RSSFeed.sync().then(() => {

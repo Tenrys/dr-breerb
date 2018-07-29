@@ -41,23 +41,18 @@ module.exports = (category, bot) => {
                     r = parseInt(r, 10)
                     g = parseInt(g, 10)
                     b = parseInt(b, 10)
-                    if (isNaN(r) || isNaN(g) || isNaN(b)) {
-                        throw new Error("RGB value is NaN")
-                    }
+                    if (isNaN(r) || isNaN(g) || isNaN(b)) throw new Error("RGB value is NaN")
 
                     color = Color.rgb(r, g, b)
                 } else if (r !== undefined && (g === undefined || b === undefined)) { // HEX
                     r = /^#?([a-fA-F0-9_]+)/.exec(r)
-                    if (!r) {
-                        throw new Error("Invalid hex color (" + line + ")")
-                    } else {
-                        r = r[1] || r[0]
-                    }
+                    if (r === null || r === undefined) r = r[1] || r[0]
+                    else throw new Error("Invalid hex color (" + line + ")")
 
                     color = Color(parseInt(r, 16))
                 } else { // CLEANUP
                     await cleanColorRoles(msg.member)
-                    msg.success("I reset your color roles.", title)
+                    msg.success("Color roles reset.", title)
                     return
                 }
             } catch (err) {

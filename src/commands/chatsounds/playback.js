@@ -18,13 +18,13 @@ module.exports = (category, bot) => {
             let snd, sndInfo
 
             // Are we trying to get a random chatsound
-            if (line == "random") {
+            if (line === "random") {
                 snd = bot.soundListKeys[Object.keys(bot.soundListKeys).random()]
                 sndInfo = snd.random()
             } else { // If not
                 // Check if we want a specific chatsound
                 let num = /#(\d+)$/gi.exec(line)
-                if (num) { num = num[1] }
+                if (num) num = num[1]
                 line = line.replace(/#\d+$/gi, "")
 
                 // Get the chatsound and its variants
@@ -77,9 +77,7 @@ module.exports = (category, bot) => {
 
     category.addCommand("stop", (msg, line) => {
         let vc = msg.guild.me.voiceChannel
-        if (vc && vc.connection && vc.connection.dispatcher) {
-            vc.connection.dispatcher.end()
-        }
+        if (vc && vc.connection && vc.connection.dispatcher) vc.connection.dispatcher.end()
     }, {
         aliases: [ "sh" ],
         guildOnly: true,

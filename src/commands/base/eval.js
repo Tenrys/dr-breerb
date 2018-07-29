@@ -8,12 +8,10 @@ const util = require("util")
 module.exports = (category, bot) => {
     category.addCommand("eval", (msg, line) => {
         let code = /^```\w*\n([\s\S]*)```$/gim.exec(line) // Test if we put a language after the code block first
-        if (code && code[1]) {
-            line = code[1]
-        } else {
+        if (code && code[1]) line = code[1]
+        else {
             code = /^```([\s\S]*)```$/gim.exec(line) // If not then treat everything inside as code
-            if (code && code[1])
-                line = code[1]
+            if (code && code[1]) line = code[1]
         }
 
         let res

@@ -15,11 +15,8 @@ module.exports = bot => {
                 handle(to) {
                     let displayCount = this.displayCount || bot.pages.displayCount
                     this.lastPage = Math.ceil(this.data.length / displayCount)
-                    if (typeof to === "boolean") {
-                        this.page = Math.max(1, Math.min(this.page + (to && 1 || -1), this.lastPage))
-                    } else if (typeof to === "number") {
-                        this.page = to
-                    }
+                    if (typeof to === "boolean") this.page = Math.max(1, Math.min(this.page + (to && 1 || -1), this.lastPage))
+                    else if (typeof to === "number") this.page = to
 
                     return handler.call(this, to)
                 },
@@ -27,7 +24,7 @@ module.exports = bot => {
                 displayCount: displayCount
             }
 
-            if (!msg) { msg = await page.handle(null) }
+            if (!msg) msg = await page.handle(null)
             page.msg = msg
 
             this.list[msg.id] = page
@@ -42,33 +39,31 @@ module.exports = bot => {
     }
 
     function onReaction(reaction, user) {
-        if (user.id == bot.client.user.id) { return }
+        if (user.id == bot.client.user.id) return
 
         let page = bot.pages.list[reaction.message.id]
         if (page) {
-            if (user.id != page.query.author.id) { return }
+            if (user.id != page.query.author.id) return
 
             let emoji = reaction.emoji.name
             if (emoji == backEmoji || emoji == nextEmoji) {
                 let fwd = emoji == nextEmoji
                 page.handle(fwd)
-            } else if (emoji == stopEmoji) {
-                page.msg.delete()
             } else if (emoji == numbersEmoji && !page.switching) {
                 page.query.reply("which page do you want to go to?")
-                    .then(msg => {
-                        page.switching = {
-                            msg: msg,
-                            timeout: Date.now() / 1000 + 30
-                        }
-                    })
-            }
+                .then(msg => {
+                    page.switching = {
+                        msg: msg,
+                        timeout: Date.now() / 1000 + 30
+                    }
+                })
+            } else if (emoji == stopEmoji) page.msg.delete()
         }
     }
     bot.client.on("messageReactionAdd", onReaction)
     bot.client.on("messageReactionRemove", onReaction)
     bot.client.on("message", msg => {
-        if (msg.author.id == bot.client.user.id) { return }
+        if (msg.author.id == bot.client.user.id) return
 
         let num = parseInt(msg.content.toLowerCase().trim(), 10)
 
@@ -87,9 +82,7 @@ module.exports = bot => {
                         page.handle(num)
                         page.switching = undefined
                         return false
-                    } else {
-                        page.switching = undefined
-                    }
+                    } else page.switching = undefined
                 }
             }
         }

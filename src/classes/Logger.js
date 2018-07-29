@@ -32,11 +32,8 @@ class Logger {}
 
 function logMethod(name, callback, color1, color2=chalk.white) {
     Logger[name] = (cat, msg, ...args) => {
-        if (msg) {
-            return callback(getCurrentTime(), color1(`[${cat}]:`), color2(msg), ...args)
-        } else {
-            return callback(getCurrentTime(), color2(cat))
-        }
+        if (msg) return callback(getCurrentTime(), color1(`[${cat}]:`), color2(msg), ...args)
+        else return callback(getCurrentTime(), color2(cat))
     }
 }
 logMethod("log", console.log, chalk.cyan)

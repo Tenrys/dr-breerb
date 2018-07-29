@@ -29,7 +29,7 @@ module.exports = options => {
                 let regex = new RegExp(path.join(process.cwd(), "/").replace(/\\/g, "\\\\") + "(.*\.js):(\\d*):(\\d*)", "gi")
                 trace = trace.replace(regex, `[$1\\:$2\\:$3](${this.repositoryURL}/$1#L$2)`)
                 return trace
-            } else { return err }
+            } else return err
         }
 
         /**
@@ -37,11 +37,8 @@ module.exports = options => {
          * @param {string} str The string to be truncated.
          */
         truncate(str) {
-            if (str.length > 1960) {
-                return str.substr(0, 1960) + "\n[...] (output truncated)"
-            } else {
-                return str
-            }
+            if (str.length > 1960) return str.substr(0, 1960) + "\n[...] (output truncated)"
+            else return str
         }
 
         /**

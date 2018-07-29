@@ -2,11 +2,8 @@ const Discord = require.main.require("./src/extensions/discord.js")
 
 module.exports = (category, bot) => {
     category.addCommand("search", (msg, line, ...options) => {
-        if (options && typeof options[0] === "object") {
-            options = options[0]
-        } else {
-            options = undefined
-        }
+        if (options && typeof options[0] === "object") options = options[0]
+        else options = undefined
 
         if (!bot.soundListKeys) { msg.error("Sound list hasn't loaded yet.", category.printName); return }
 
@@ -20,10 +17,7 @@ module.exports = (category, bot) => {
                 }
             }
         }
-        if (res.length <= 0) {
-            msg.error("Couldn't find any chatsound.", category.printName)
-            return null
-        }
+        if (res.length <= 0) { msg.error("Couldn't find any chatsound.", category.printName); return null }
         res.sort((a, b) => {
             return 	a.length - b.length || // sort by length, if equal then
                     a.localeCompare(b)     // sort by dictionary order
@@ -33,7 +27,7 @@ module.exports = (category, bot) => {
             let displayCount = this.displayCount || bot.pages.displayCount
             let buf = ""
             for (let i = displayCount * (this.page - 1); i < displayCount * this.page; i++) {
-                if (!this.data[i]) { break }
+                if (!this.data[i]) break
                 buf = buf + (i + 1) + `. \`${this.data[i]}\`\n`
             }
 
@@ -44,11 +38,8 @@ module.exports = (category, bot) => {
                 .setFooter(`Page ${this.page}/${this.lastPage} (${this.data.length} entries)`)
 
             let res = this.msg
-            if (!res) {
-                res = await msg.channel.send(options ? options.content : "", embed)
-            } else {
-                await this.msg.edit(embed)
-            }
+            if (!res) res = await msg.channel.send(options ? options.content : "", embed)
+            else await this.msg.edit(embed)
 
             return res
         }, options ? options.displayCount : null)

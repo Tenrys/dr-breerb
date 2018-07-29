@@ -22,17 +22,14 @@ module.exports = bot => {
          */
         get(query) {
             // Look for a category first...
-            if (this[query] && this[query] instanceof CommandCategory) {
-                return this[query]
-            } else { // We didn't find one:
+            if (this[query] && this[query] instanceof CommandCategory) return this[query]
+            else { // We didn't find one:
                 // Find a command with the specified name
                 let cmd = this.all.commands.get(query)
                 // If it exists, return it
-                if (cmd && cmd instanceof Command) {
-                    return cmd
-                } else { // Otherwise return the CommandCategory listing all commands.
-                    return this.all
-                }
+                if (cmd && cmd instanceof Command) return cmd
+                // Otherwise return the CommandCategory listing all commands.
+                else return this.all
             }
         },
 
@@ -72,9 +69,7 @@ module.exports = bot => {
             let category = require(dirPath)
             fs.readdirSync(dirPath).forEach(file => {
                 let filePath = path.join(dirPath, file)
-                if (fs.statSync(filePath).isFile() && file !== "index.js") {
-                    require(filePath)(category, bot)
-                }
+                if (fs.statSync(filePath).isFile() && file !== "index.js") require(filePath)(category, bot)
             })
             bot.commands[category.name] = category
         }
@@ -83,8 +78,8 @@ module.exports = bot => {
     // Command handler
     let prefix = "!"
     bot.client.on("message", async msg => {
-        if (bot.ignoreList && bot.ignoreList[msg.author.id]) { return }
-        if (bot.ownerOnly && !bot.ownerId.includes(msg.author.id)) { return }
+        if (bot.ignoreList && bot.ignoreList[msg.author.id]) return
+        if (bot.ownerOnly && !bot.ownerId.includes(msg.author.id)) return
 
         let match = new RegExp(`^${prefix}([^\\s.]*)\\s?([\\s\\S]*)`, "gmi").exec(msg.content)
         if (match && match[1]) {

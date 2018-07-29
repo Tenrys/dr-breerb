@@ -3,13 +3,12 @@ module.exports = (category, bot) => {
         let vc = msg.guild.me.voiceChannel
 
         if (vc && vc.connection && vc.connection.dispatcher) {
-            if (volume > 1 && volume <= 100) volume = volume / 100
+            if (vol > 1 && vol <= 100) vol = vol / 100
             let volume = Math.min(1, Math.max(0, vol))
-            let playing = vc.connection.dispatcher
 
-            if (!vol || isNaN(volume)) {
-                msg.result("Volume: " + playing.volume * 100 + "%.")
-            } else {
+            let playing = vc.connection.dispatcher
+            if (vol === undefined || vol === null || isNaN(vol) || isNaN(volume)) msg.result("Volume: " + playing.volume * 100 + "%.")
+            else {
                 vc.guild.volume = volume
                 playing.setVolume(vc.guild.volume)
                 msg.success("Changed volume to " + vc.guild.volume * 100 + "%.", category.printName)
