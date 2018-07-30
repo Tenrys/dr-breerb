@@ -62,6 +62,8 @@ module.exports = class Bot {
                 this.logger.warn("discord", "Logged in with non-bot account, unintended (and possibly destructive) behavior is to be expected!")
             }
 
+            this.token = undefined
+
             let replServer = repl.start("")
             replServer.context.Discord = Discord
             replServer.context.bot = this
