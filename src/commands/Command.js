@@ -17,7 +17,6 @@ class Command {
     constructor(bot) {
         this.bot = bot
 
-
         this.description = "No information provided."
         this.guildOnly = false
         this.ownerOnly = false
