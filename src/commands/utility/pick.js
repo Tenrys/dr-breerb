@@ -1,4 +1,4 @@
-const Command = require("../Command.js")
+const Command = require("@commands/Command.js")
 
 module.exports = class PickCommand extends Command {
     constructor(bot) {

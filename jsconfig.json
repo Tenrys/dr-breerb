@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "allowSyntheticDefaultImports": true,
+        "module": "commonjs",
+        "target": "es2015",
+        "paths": {
+            "@": [ "./src/*" ],
+            "@/*": [ "./src/*" ],
+
+            "@utils": [ "./src/utils" ],
+            "@utils/*": [ "./src/utils/*" ],
+
+            "@commands": [ "./src/commands" ],
+            "@commands/*": [ "./src/commands/*" ],
+
+            "@models/*": [ "./src/models/*" ],
+        },
+    },
+    "include": [
+        "./src/**/*"
+    ],
+    "exclude": [
+        "./node_modules"
+    ]
+}

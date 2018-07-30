@@ -1,4 +1,4 @@
-const logger = require("classes/Logger.js")
+const logger = require("@utils/classes/Logger.js")
 
 module.exports = bot => {
     process.on("uncaughtException", err => {

@@ -1,4 +1,4 @@
-require("./error_handling.js")()
+require("@/error_handling.js")()
 
 const Discord = require("discord.js")
 
@@ -39,9 +39,9 @@ module.exports = class Bot {
      * @param {string} token The Discord user token to login with
      */
     constructor(options) {
-        this.colors = require("colors.js")
+        this.colors = require("@utils").colors
 
-        this.logger = require("classes/Logger.js")
+        this.logger = require("@utils/classes/Logger.js")
         if (options.log === false) {
             for (const k in this.logger) {
                 if (this.logger.hasOwnProperty(k)) {
@@ -104,9 +104,9 @@ module.exports = class Bot {
         this.token = options.token
         this.ownerId = options.ownerId
 
-        require("./sqlite.js")(this)
-        require("./pages.js")(this)
-        require("./commands")(this)
+        require("@/sqlite.js")(this)
+        require("@/pages.js")(this)
+        require("@commands")(this)
     }
 
     /**

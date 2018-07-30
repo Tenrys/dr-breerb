@@ -1,11 +1,11 @@
-const CommandStore = require("./CommandStore.js")
+const CommandStore = require("@commands/CommandStore.js")
 
 const chalk = require("chalk")
 
 const path = require("path")
 const fs = require("fs")
 
-const parse = require("parseargs.js")
+const parse = require("@utils/parseargs.js")
 
 module.exports = bot => {
     bot.logger.working("commands", "Loading...")

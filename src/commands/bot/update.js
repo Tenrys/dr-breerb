@@ -1,8 +1,6 @@
-const Command = require("../Command.js")
+const Command = require("@commands/Command.js")
 
-const Discord = require("discord.js")
-
-const { runCommand } = require("utils.js")
+const { runCommand } = require("@utils")
 
 const fs = require("fs")
 

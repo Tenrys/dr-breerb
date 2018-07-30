@@ -1,4 +1,4 @@
-const Command = require("../Command.js")
+const Command = require("@commands/Command.js")
 
 const Discord = require("discord.js")
 

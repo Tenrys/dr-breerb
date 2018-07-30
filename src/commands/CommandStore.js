@@ -1,5 +1,5 @@
-const InvalidArgumentException = require("classes/InvalidArgumentException.js")
-const Command = require("./Command.js")
+const InvalidArgumentException = require("@utils/classes/InvalidArgumentException.js")
+const Command = require("@commands/Command.js")
 
 module.exports = class CommandStore {
     add(cmd) {
