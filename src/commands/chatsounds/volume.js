@@ -15,7 +15,7 @@ module.exports = class VolumeCommand extends Command {
         if (vol > 1 && vol <= 100) vol = vol / 100
         let volume = Math.min(1, Math.max(0, vol))
 
-        if (vol === undefined || vol === null || isNaN(vol) || isNaN(volume)) msg.reply(this.result("Volume: " + (guild.volume || 0.66) * 100 + "%."))
+        if (!vol || isNaN(vol) || isNaN(volume)) msg.reply(this.result("Volume: " + (guild.volume || 0.66) * 100 + "%."))
         else {
             guild.volume = volume
             let vc = guild.me.voiceChannel
