@@ -1,8 +1,16 @@
-module.exports = (category, bot) => {
-    category.addCommand("pick", (msg, line, ...str) => { // This is stupidly easy but Kabus wanted it
+const Command = require("../Command.js")
+
+module.exports = class PickCommand extends Command {
+    constructor(bot) {
+        super(bot)
+
+        this.description = "Picks a random argument from the ones you provide."
+    }
+
+    callback(msg, line, ...str) {
         if (!str) return
         if (str.length < 1) return
 
         msg.reply(str.random())
-    }, { help: "Picks a random argument from the ones you provide." })
+    }
 }

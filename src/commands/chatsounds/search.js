@@ -1,30 +1,42 @@
-const Discord = require.main.require("./src/extensions/discord.js")
+const Command = require("../Command.js")
 
-module.exports = (category, bot) => {
-    category.addCommand("search", (msg, line, ...options) => {
+const Discord = require("discord.js")
+
+module.exports = class SearchCommand extends Command {
+    constructor(bot) {
+        super(bot)
+
+        this.description = "Searches chatsounds by name."
+        this.aliases = [ "find" ]
+    }
+
+    callback(query, line, ...options) {
+        let bot = this.bot
+        let categoryName = this.categoryName
+
         if (options && typeof options[0] === "object") options = options[0]
         else options = undefined
 
-        if (!bot.soundListKeys) { msg.error("Sound list hasn't loaded yet.", category.printName); return }
+        if (!this.bot.soundListKeys) { query.reply(this.error("Sound list hasn't loaded yet.")); return }
 
         line = line.toLowerCase()
 
-        let res = []
-        for (const name in bot.soundListKeys) {
-            if (bot.soundListKeys.hasOwnProperty(name)) {
+        let result = []
+        for (const name in this.bot.soundListKeys) {
+            if (this.bot.soundListKeys.hasOwnProperty(name)) {
                 if (name.toLowerCase().trim().includes(line)) {
-                    res.push(name)
+                    result.push(name)
                 }
             }
         }
-        if (res.length <= 0) { msg.error("Couldn't find any chatsound.", category.printName); return null }
-        res.sort((a, b) => {
+        if (result.length <= 0) { query.reply(this.error("Couldn't find any chatsound.")); return null }
+        result.sort((a, b) => {
             return 	a.length - b.length || // sort by length, if equal then
                     a.localeCompare(b)     // sort by dictionary order
         })
 
-        return bot.pages.add(null, msg, res, async function() {
-            let displayCount = this.displayCount || bot.pages.displayCount
+        return this.bot.pages.add(query, result, async function() {
+            let displayCount = this.displayCount || this.bot.pages.displayCount
             let buf = ""
             for (let i = displayCount * (this.page - 1); i < displayCount * this.page; i++) {
                 if (!this.data[i]) break
@@ -32,19 +44,16 @@ module.exports = (category, bot) => {
             }
 
             let embed = new Discord.MessageEmbed()
-                .setAuthor(msg.author.tag, msg.author.avatarURL())
-                .setTitle(category.printName + ": Search results")
+                .setAuthor(query.author.tag, query.author.avatarURL())
+                .setTitle(categoryName + ": Search results")
                 .setDescription(bot.truncate(buf))
                 .setFooter(`Page ${this.page}/${this.lastPage} (${this.data.length} entries)`)
 
-            let res = this.msg
-            if (!res) res = await msg.channel.send(options ? options.content : "", embed)
-            else await this.msg.edit(embed)
+            let result = this.result
+            if (!result) result = await query.channel.send(options ? options.content : "", embed)
+            else await this.result.edit(embed)
 
-            return res
+            return result
         }, options ? options.displayCount : null)
-    }, {
-        aliases: [ "find" ],
-        help: "Searches chatsounds by name."
-    })
+    }
 }
