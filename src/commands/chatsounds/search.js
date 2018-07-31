@@ -54,6 +54,6 @@ module.exports = class SearchCommand extends Command {
             else await this.result.edit(embed)
 
             return result
-        }, options ? options.displayCount : null)
+        }, options)
     }
 }
