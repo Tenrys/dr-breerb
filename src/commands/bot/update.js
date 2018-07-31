@@ -15,7 +15,7 @@ module.exports = class UpdateCommand extends Command {
     async callback(msg, line) {
         let progressMsg = await msg.reply(this.result("Updating..."))
 
-        let result = await runCommandInChannel("git pull & npm i", progressMsg)
+        let result = await runCommandInChannel("git pull & npm i", progressMsg, msg)
 
         await progressMsg.edit("<@" + msg.author.id + ">, ```" + this.bot.truncate(result || "No output.") + "```", this.success("Done. See results for more information."))
 

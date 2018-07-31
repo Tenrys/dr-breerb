@@ -13,7 +13,7 @@ module.exports = class ExecuteCommand extends Command {
     async callback(msg, line) {
         let progressMsg = await msg.reply(this.result("Running..."))
 
-        let result = await runCommandInChannel(line, progressMsg)
+        let result = await runCommandInChannel(line, progressMsg, msg)
 
         await progressMsg.edit("<@" + msg.author.id + ">, ```" + this.bot.truncate(result) + "```", this.success("Done. See results for more information."))
     }

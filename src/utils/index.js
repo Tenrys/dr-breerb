@@ -27,11 +27,11 @@ let utils = {
         blue: 0x5ABEBC,
     }
 }
-utils.runCommandInChannel = function(cmd, msg, onData) {
+utils.runCommandInChannel = function(cmd, progressMsg, msg, onData) {
     let nextEdit = 0
     return utils.runCommand(cmd, (data, buf) => {
         if (nextEdit < Date.now()) {
-            msg.edit("<@" + msg.author.id + ">, ```" + msg.client.bot.truncate(buf) + "```")
+            msg.edit("<@" + progressMsg.author.id + ">, ```" + msg.client.bot.truncate(buf) + "```")
             nextEdit = Date.now() + 2000 // Update every 2 seconds
         }
         if (onData) onData(data, buf)
