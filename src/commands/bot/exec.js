@@ -1,6 +1,6 @@
 const Command = require("@commands/Command.js")
 
-const { runCommand } = require("@utils")
+const { runCommandInChannel } = require("@utils")
 
 module.exports = class ExecuteCommand extends Command {
     constructor(bot) {
@@ -11,6 +11,10 @@ module.exports = class ExecuteCommand extends Command {
     }
 
     async callback(msg, line) {
-        msg.print(await runCommand(line))
+        let progressMsg = await msg.reply(this.result("Running..."))
+
+        let result = await runCommandInChannel(line, progressMsg)
+
+        await progressMsg.edit("<@" + msg.author.id + ">, ```" + this.bot.truncate(result) + "```", this.success("Done. See results for more information."))
     }
 }

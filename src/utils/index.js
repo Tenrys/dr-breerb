@@ -1,14 +1,14 @@
 const child_process = require("child_process")
 
-module.exports = {
+let utils = {
     runCommand(cmd, onData) {
         return new Promise((resolve, reject) => {
             let proc = child_process.spawn(cmd, [], { shell: true })
 
             let buf = ""
             function _onData(data) {
-                if (onData) onData(data)
                 buf += data
+                if (onData) onData(data, buf)
             }
             proc.stdout.on("data", _onData)
             proc.stderr.on("data", _onData)
@@ -27,3 +27,14 @@ module.exports = {
         blue: 0x5ABEBC,
     }
 }
+utils.runCommandInChannel = function(cmd, msg, onData) {
+    let nextEdit = 0
+    return utils.runCommand(cmd, (data, buf) => {
+        if (nextEdit < Date.now()) {
+            msg.edit("<@" + msg.author.id + ">, ```" + msg.client.bot.truncate(buf) + "```")
+            nextEdit = Date.now() + 2000 // Update every 2 seconds
+        }
+        if (onData) onData(data, buf)
+    })
+}
+module.exports = utils

@@ -55,6 +55,7 @@ module.exports = class Bot {
         }
 
         this.client = new Discord.Client()
+        this.client.bot = this
         this.client.on("ready", async () => {
             this.logger.success("discord", `Logged in as ${this.client.user.tag}.`)
 
