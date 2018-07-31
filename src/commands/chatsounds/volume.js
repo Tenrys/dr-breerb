@@ -4,7 +4,7 @@ module.exports = class VolumeCommand extends Command {
     constructor(bot) {
         super(bot)
 
-        this.description = "Changes the volume of the chatsound that's currently playing.\n\nVolume can be between 0 and 1."
+        this.description = "Changes the volume of what I am currently playing.\n\nVolume can be between 0 and 100."
         this.aliases = [ "vol" ]
         this.guildOnly = true
     }

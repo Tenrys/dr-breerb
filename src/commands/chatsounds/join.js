@@ -4,7 +4,7 @@ module.exports = class JoinCommand extends Command {
     constructor(bot) {
         super(bot)
 
-        this.description = "Makes the bot join the voice channel you are currently in."
+        this.description = "Makes me join the voice channel you are currently in."
         this.guildOnly = true
     }
 
@@ -25,7 +25,7 @@ module.exports = class JoinCommand extends Command {
 
                     if (vc && vc.members && (vc.members.filter(member => !member.user.bot).array().length) < 1) {
                         vc.leave()
-                        if (channel) channel.send(this.result(`Left voice channel \`${vc.name}\` due to inactivity.`))
+                        if (channel) channel.send(this.result("Left voice channel `" + vc.name + "` due to inactivity."))
                         clearInterval(this)
                     } else if (!vc) clearInterval(this)
                 }, 60 * 3 * 1000)

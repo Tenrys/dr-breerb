@@ -29,11 +29,11 @@ module.exports = class EvaluateCommand extends Command {
 
             if (typeof res !== "string") res = util.inspect(res)
 
-            msg.reply(this.success(`\`\`\`js\n${bot.truncate(res)}\n\`\`\``, "JavaScript result", bot.colors.yellow))
+            msg.reply(this.success("```js\n" + bot.truncate(res) + "\n```", "JavaScript result", bot.colors.yellow))
         } catch (err) {
             res = this.bot.errorToMarkdown(err)
 
-            msg.reply(this.error(`${bot.truncate(res)}`, "JavaScript error"))
+            msg.reply(this.error(bot.truncate(res), "JavaScript error"))
         }
     }
 }

@@ -4,7 +4,7 @@ module.exports = class StopCommand extends Command {
     constructor(bot) {
         super(bot)
 
-        this.description = "Stops anything playing."
+        this.description = "Stops anything that is playing."
         this.aliases = [ "sh" ]
         this.guildOnly = true
     }

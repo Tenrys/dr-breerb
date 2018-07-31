@@ -28,10 +28,10 @@ module.exports = class RSSCommand extends Command {
         super(bot)
 
         this.description = "Setup RSS feeds.\nAvailable actions are `add, remove, list, check`."
+        this.guildOnly = true
         this.permissions = {
             user: [ "MANAGE_GUILD" ]
         }
-        this.guildOnly = true
 
         bot.rssFeeds = {
             async get(channel, id) {

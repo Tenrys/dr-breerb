@@ -18,7 +18,7 @@ module.exports = class HelpCommand extends Command {
 
         let result = this.bot.commands.get(line)
         if (result instanceof Command) {
-            embed.setTitle(`:information_source: Command help: \`${result.name}\``)
+            embed.setTitle(":information_source: Command help: `" + result.name + "`")
             embed.setDescription(result.description)
         } else {
             embed.setTitle(":tools: Command list")

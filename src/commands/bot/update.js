@@ -8,7 +8,7 @@ module.exports = class UpdateCommand extends Command {
     constructor(bot) {
         super(bot)
 
-        this.description = "Updates the bot to the latest revision from its GitHub repository and quits it."
+        this.description = "Gets me updated to the latest revision from GitHub and lets me restart if there are new changes."
         this.ownerOnly = true
     }
 
@@ -17,7 +17,7 @@ module.exports = class UpdateCommand extends Command {
 
         let result = await runCommand("git pull & npm i")
 
-        await progressMsg.edit(`<@${msg.author.id}>, \`\`\`${this.bot.truncate(result)}\`\`\``, this.success("Done. See results for more information."))
+        await progressMsg.edit("<@${msg.author.id}>, ```" + this.bot.truncate(result) + "```", this.success("Done. See results for more information."))
 
         if (result.match("Updating") && !result.match("Aborting")) {
             progressMsg = await progressMsg.channel.messages.fetch(progressMsg.id) // Hack to make sure we have the right content, idk if this works

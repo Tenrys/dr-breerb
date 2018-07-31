@@ -41,10 +41,9 @@ module.exports = bot => {
             let prefix = bot.prefix
             if (msg.guild) {
                 await bot.db.GuildSettings.sync()
-                bot.db.GuildSettings.findOrCreate({
+                await bot.db.GuildSettings.findOrCreate({
                     where: {
                         guild: msg.guild.id,
-                        prefix
                     }
                 }).spread((settings, created) => {
                     prefix = settings.prefix

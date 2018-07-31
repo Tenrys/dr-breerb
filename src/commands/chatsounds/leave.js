@@ -4,7 +4,7 @@ module.exports = class LeaveCommand extends Command {
     constructor(bot) {
         super(bot)
 
-        this.description = "Makes the bot leave the voice channel it's in."
+        this.description = "Makes me leave the voice channel I am in."
         this.guildOnly = true
     }
 

@@ -4,7 +4,7 @@ module.exports = class PingCommand extends Command {
     constructor(bot) {
         super(bot)
 
-        this.description = "Pings the bot."
+        this.description = "Pings me."
     }
 
     callback(msg) {

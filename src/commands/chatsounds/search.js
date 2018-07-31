@@ -36,11 +36,11 @@ module.exports = class SearchCommand extends Command {
         })
 
         return this.bot.pages.add(query, result, async function() {
-            let displayCount = this.displayCount || this.bot.pages.displayCount
+            let displayCount = this.displayCount
             let buf = ""
             for (let i = displayCount * (this.page - 1); i < displayCount * this.page; i++) {
                 if (!this.data[i]) break
-                buf = buf + (i + 1) + `. \`${this.data[i]}\`\n`
+                buf = buf + (i + 1) + ". `" + this.data[i] + "`\n"
             }
 
             let embed = new Discord.MessageEmbed()
