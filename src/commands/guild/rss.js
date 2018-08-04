@@ -42,9 +42,8 @@ module.exports = class RSSCommand extends Command {
                     where.guild = channel.guild.id
                     where.channel = channel.id
                 }
-                if (typeof id !== "number") {
-                    where.url = id
-                }
+                if (typeof id !== "number") where.url = id
+
                 let feeds = await bot.db.RSSFeed.findAll({ where })
                 return (typeof id === "number") ? feeds[id] : feeds
             },
@@ -56,21 +55,23 @@ module.exports = class RSSCommand extends Command {
                     where.guild = channel.guild.id
                     where.channel = channel.id
                 }
-                if (id) where.id = id
+                if (typeof id !== "number") where.url = id
+
                 let feeds = await bot.db.RSSFeed.findAll({ where })
+                if (typeof id === "number") feeds = [ feeds[id] ]
 
                 let checks = []
                 if (feeds.length > 0) {
                     for (let i = 0; i < feeds.length; i++) {
                         let feed = feeds[i]
-                        checks.push(new Promise(async (resolve, reject) => {
+                        checks.push(new Promise((resolve, reject) => {
                             let req
                             try {
                                 req = request(feed.url)
                             } catch (err) {
                                 bot.logger.error("rss-feeds", err.stack || err)
                                 if (err.message.match(/Invalid URI "(.*)"/gi)) {
-                                    await feed.destroy()
+                                    feed.destroy()
                                     reject("Invalid URL `" + feed.url + "`.")
                                 }
                             }
@@ -82,10 +83,10 @@ module.exports = class RSSCommand extends Command {
                                 if (res.statusCode != 200) req.emit("error", new Error("Bad status code"))
                                 else req.pipe(feedparser)
                             })
-                            req.on("error", async err => {
+                            req.on("error", err => {
                                 bot.logger.error("rss-feeds", err.stack || err)
                                 if (err.code === "ENOTFOUND") {
-                                    await feed.destroy()
+                                    feed.destroy()
                                     reject("Feed with URL `" + feed.url + "` could not be checked. It has been removed.\nError: `" + err.code + "`")
                                 }
                             })
@@ -145,10 +146,10 @@ module.exports = class RSSCommand extends Command {
                                 }
                                 resolve(feed)
                             })
-                            feedparser.on("error", async err => {
+                            feedparser.on("error", err => {
                                 bot.logger.error("rss-feeds", err.stack || err)
                                 if (err.message === "Not a feed" && !feed.valid) {
-                                    await feed.destroy()
+                                    feed.destroy()
                                     reject("URL `" + feed.url + "` is not a valid RSS feed.")
                                 }
                             })
@@ -191,17 +192,11 @@ module.exports = class RSSCommand extends Command {
                     }
                 }).spread(async (feed, created) => {
                     if (created) {
-                        let promises = await this.bot.rssFeeds.check(this.bot.client.channels.get(feed.channel))
+                        let promises = await this.bot.rssFeeds.check(this.bot.client.channels.get(feed.channel), feed.url)
                         promises.forEach(promise => {
-                            promise.then(_feed => {
-                                if (_feed.url == url) {
-                                    msg.reply(this.success(`This channel is now listening to \`${url}\`.`))
-                                }
-                            }).catch((_feed, err) => {
-                                if (_feed.url == url) {
-                                    msg.reply(this.error(err))
-                                }
-                            })
+                            promise
+                                .then(_feed => msg.reply(this.success(`This channel is now listening to \`${url}\`.`)))
+                                .catch(err => msg.reply(this.error(err)))
                         })
                     } else {
                         msg.reply(this.error(`This channel is already listening to \`${url}\`!`))
