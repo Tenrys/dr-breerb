@@ -34,7 +34,7 @@ module.exports = class RSSCommand extends Command {
         }
 
         bot.rssFeeds = {
-            async get(channel, id) {
+            get: async (channel, id) => {
                 await bot.db.RSSFeed.sync()
 
                 let where = {}
@@ -45,7 +45,7 @@ module.exports = class RSSCommand extends Command {
                 let feeds = await bot.db.RSSFeed.findAll({ where })
                 return (id !== null && id !== undefined) ? feeds[id] : feeds
             },
-            async check(channel, id) {
+            check: async (channel, id) => {
                 await bot.db.RSSFeed.sync()
 
                 let where = {}
@@ -136,6 +136,7 @@ module.exports = class RSSCommand extends Command {
                                         channel.send(embed)
 
                                         feed.lastFeedDate = item.pubdate
+                                        feed.valid = true
                                         feed.save()
                                     } else break
                                 }
@@ -143,7 +144,7 @@ module.exports = class RSSCommand extends Command {
                             })
                             feedparser.on("error", async err => {
                                 bot.logger.error("rss-feeds", err.stack || err)
-                                if (err.message === "Not a feed") {
+                                if (err.message === "Not a feed" && !feed.valid) {
                                     await feed.destroy()
                                     reject(feed, "URL `" + feed.url + "` is not a valid RSS feed.")
                                 }
@@ -153,10 +154,11 @@ module.exports = class RSSCommand extends Command {
                 }
                 return checks
             },
-            async checkAll(channel) {
+            checkAll: async channel => {
                 let promises = await bot.rssFeeds.check(channel)
                 promises.forEach(promise => {
                     promise.catch((_feed, err) => {
+                        bot.logger.warn("Feed errored: " + _feed.url + ", " + err)
                         bot.client.channels.get(_feed.channel).send(this.error(err))
                     })
                 })

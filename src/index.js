@@ -71,13 +71,23 @@ module.exports = class Bot {
             replServer.on("exit", process.exit.bind(process))
             this.logger.success("repl", "Ready.")
 
-            if (fs.existsSync("restart_info.json")) {
+            if (fs.existsSync("restart_info.json")) { // Ghetto as heck
                 try {
                     let restartInfo = require("../restart_info.json")
-                    let channel = this.client.channels.get(restartInfo.channel)
-                    let msg = await channel.messages.fetch(restartInfo.message)
-                    let update = this.commands.get("update")
-                    await msg.edit(msg.content, update.success("Restarted."))
+                    switch (restartInfo.type) {
+                        case "updated":
+                            let channel = this.client.channels.get(restartInfo.channel)
+                            let msg = await channel.messages.fetch(restartInfo.message)
+                            let update = this.commands.get("update")
+                            await msg.edit(msg.content, update.success("Restarted."))
+                            break
+                        case "unhandled_exception":
+                            for (const userId of this.ownerId) {
+                                this.client.users.get(userId).send("```\nError: " + restartInfo.error + "\n" + restartInfo.stack + "```")
+                            }
+                            break
+                    }
+
                 } catch (err) {
                     this.logger.error("restart-info", err)
                 }

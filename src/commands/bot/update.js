@@ -23,7 +23,11 @@ module.exports = class UpdateCommand extends Command {
             progressMsg = await progressMsg.channel.messages.fetch(progressMsg.id) // Hack to make sure we have the right content, idk if this works
             await progressMsg.edit(progressMsg.content, this.result("Restarting..."))
 
-            fs.writeFileSync("restart_info.json", JSON.stringify({ channel: progressMsg.channel.id, message: progressMsg.id }))
+            fs.writeFileSync("restart_info.json", JSON.stringify({
+                type: "updated",
+                channel: progressMsg.channel.id,
+                message: progressMsg.id
+            }))
             process.exit() // Restarting is handled by start.sh
         }
     }

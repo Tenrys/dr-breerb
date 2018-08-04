@@ -20,14 +20,14 @@ module.exports = class JoinCommand extends Command {
 
                 let guild = msg.guild
                 let channel = msg.channel
-                guild.emptyLeaveTimeout = this.bot.client.setInterval(function() {
+                guild.emptyLeaveTimeout = this.bot.client.setInterval(() => {
                     let vc = guild.me.voiceChannel
 
                     if (vc && vc.members && (vc.members.filter(member => !member.user.bot).array().length) < 1) {
                         vc.leave()
                         if (channel) channel.send(this.result("Left voice channel `" + vc.name + "` due to inactivity."))
-                        clearInterval(this)
-                    } else if (!vc) clearInterval(this)
+                        clearInterval(guild.emptyLeaveTimeout)
+                    } else if (!vc) clearInterval(guild.emptyLeaveTimeout)
                 }, 60 * 3 * 1000)
             } else { msg.reply(this.error("You aren't in any channel.")); return null }
         }
