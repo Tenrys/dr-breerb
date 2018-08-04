@@ -205,7 +205,7 @@ module.exports = class RSSCommand extends Command {
                 })
                 break
             case "list":
-                let feeds = await this.bot.rssFeeds.get()
+                let feeds = await this.bot.rssFeeds.get(msg.channel)
                 let buf = ""
                 for (let i = 0; i < feeds.length; i++) {
                     let feed = feeds[i]
