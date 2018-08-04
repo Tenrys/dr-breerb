@@ -75,7 +75,7 @@ module.exports = class Bot {
                 try {
                     let restartInfo = require("../restart_info.json")
                     switch (restartInfo.type) {
-                        case "updated":
+                        case "restarted":
                             let channel = this.client.channels.get(restartInfo.channel)
                             let msg = await channel.messages.fetch(restartInfo.message)
                             let update = this.commands.get("update")

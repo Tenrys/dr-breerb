@@ -2,11 +2,11 @@ const Command = require("@commands/Command.js")
 
 const util = require("util")
 
-module.exports = class EvaluateCommand extends Command {
+module.exports = class SQLCommand extends Command {
     constructor(bot) {
         super(bot)
 
-        this.description = "Executes JavaScript code and displays its result."
+        this.description = "Executes a raw SQL query on the SQLite database."
         this.ownerOnly = true
     }
 
@@ -18,18 +18,11 @@ module.exports = class EvaluateCommand extends Command {
             if (code && code[1]) line = code[1]
         }
 
-        let results
-        try {
-            let print = msg.print
-            results = eval(line)
-
+        this.bot.db.sequelize.query(line).spread(results => {
             if (typeof results !== "string") results = util.inspect(results)
-
-            msg.reply(this.success("```js\n" + this.bot.truncate(results) + "\n```", "JavaScript result", this.bot.colors.yellow))
-        } catch (err) {
-            results = this.bot.errorToMarkdown(err)
-
-            msg.reply(this.error(this.bot.truncate(results), "JavaScript error"))
-        }
+            msg.reply(this.success("```js\n" + results + "\n```", "SQL result"))
+        }).catch(err => {
+            msg.reply(this.error("```\n" + err + "\n```", "SQL error"))
+        })
     }
 }
