@@ -42,8 +42,11 @@ module.exports = class RSSCommand extends Command {
                     where.guild = channel.guild.id
                     where.channel = channel.id
                 }
+                if (typeof id !== "number") {
+                    where.url = id
+                }
                 let feeds = await bot.db.RSSFeed.findAll({ where })
-                return (id !== null && id !== undefined) ? feeds[id] : feeds
+                return (typeof id === "number") ? feeds[id] : feeds
             },
             check: async (channel, id) => {
                 await bot.db.RSSFeed.sync()
@@ -68,7 +71,7 @@ module.exports = class RSSCommand extends Command {
                                 bot.logger.error("rss-feeds", err.stack || err)
                                 if (err.message.match(/Invalid URI "(.*)"/gi)) {
                                     await feed.destroy()
-                                    reject(feed, "Invalid URL `" + feed.url + "`.")
+                                    reject("Invalid URL `" + feed.url + "`.")
                                 }
                             }
                             if (!req) return
@@ -83,7 +86,7 @@ module.exports = class RSSCommand extends Command {
                                 bot.logger.error("rss-feeds", err.stack || err)
                                 if (err.code === "ENOTFOUND") {
                                     await feed.destroy()
-                                    reject(feed, "Feed with URL `" + feed.url + "` could not be checked. It has been removed.\nError: `" + err.code + "`")
+                                    reject("Feed with URL `" + feed.url + "` could not be checked. It has been removed.\nError: `" + err.code + "`")
                                 }
                             })
 
@@ -146,7 +149,7 @@ module.exports = class RSSCommand extends Command {
                                 bot.logger.error("rss-feeds", err.stack || err)
                                 if (err.message === "Not a feed" && !feed.valid) {
                                     await feed.destroy()
-                                    reject(feed, "URL `" + feed.url + "` is not a valid RSS feed.")
+                                    reject("URL `" + feed.url + "` is not a valid RSS feed.")
                                 }
                             })
                         }))
@@ -157,9 +160,8 @@ module.exports = class RSSCommand extends Command {
             checkAll: async channel => {
                 let promises = await bot.rssFeeds.check(channel)
                 promises.forEach(promise => {
-                    promise.catch((_feed, err) => {
-                        bot.logger.warn("Feed errored: " + _feed.url + ", " + err)
-                        bot.client.channels.get(_feed.channel).send(this.error(err))
+                    promise.catch(err => {
+                        bot.client.channels.get(channel).send(this.error(err))
                     })
                 })
             }
@@ -171,7 +173,7 @@ module.exports = class RSSCommand extends Command {
         })
     }
 
-    async callback(msg, line, action, ...str) {
+    async callback(msg, _, action, ...str) {
         action = (action || "").toLowerCase()
 
         switch (action) {
