@@ -20,6 +20,7 @@ module.exports = class EvaluateCommand extends Command {
 
         let results
         try {
+            let bot = this.bot
             let print = msg.print
             results = eval(line)
 

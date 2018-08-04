@@ -42,10 +42,10 @@ module.exports = class RSSCommand extends Command {
                     where.guild = channel.guild.id
                     where.channel = channel.id
                 }
-                if (typeof id !== "number") where.url = id
+                if (isNaN(id) && typeof id === "string") where.url = id
 
                 let feeds = await bot.db.RSSFeed.findAll({ where })
-                return (typeof id === "number") ? feeds[id] : feeds
+                return (!isNaN(id)) ? feeds[id] : feeds
             },
             check: async (channel, id) => {
                 await bot.db.RSSFeed.sync()
@@ -55,10 +55,10 @@ module.exports = class RSSCommand extends Command {
                     where.guild = channel.guild.id
                     where.channel = channel.id
                 }
-                if (typeof id !== "number") where.url = id
+                if (isNaN(id) && typeof id === "string") where.url = id
 
                 let feeds = await bot.db.RSSFeed.findAll({ where })
-                if (typeof id === "number") feeds = [ feeds[id] ]
+                if (!isNaN(id)) feeds = [ feeds[id] ]
 
                 let checks = []
                 if (feeds.length > 0) {
