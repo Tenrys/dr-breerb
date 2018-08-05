@@ -15,7 +15,7 @@ module.exports = class RestartCommand extends Command {
 
         fs.writeFileSync("restart_info.json", JSON.stringify({
             type: "restarted",
-            user: restartMsg.author.id,
+            user: msg.author.id,
             channel: restartMsg.channel.id,
             message: restartMsg.id
         }))

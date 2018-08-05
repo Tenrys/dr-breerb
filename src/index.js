@@ -77,6 +77,7 @@ module.exports = class Bot {
                     switch (restartInfo.type) {
                         case "restarted":
                             let channel = await this.client.channels.resolve(restartInfo.channel)
+                            if (!channel) channel = await this.client.users.fetch(restartInfo.user).then(user => user.createDM())
                             let msg = await channel.messages.fetch(restartInfo.message)
                             let update = this.commands.get("update")
                             await msg.edit(msg.content, update.success("Restarted."))
@@ -89,7 +90,7 @@ module.exports = class Bot {
                     }
 
                 } catch (err) {
-                    this.logger.error("restart-info", err)
+                    this.logger.error("restart-info", err.stack || err)
                 }
 
                 fs.unlinkSync("restart_info.json")

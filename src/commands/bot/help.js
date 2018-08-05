@@ -32,6 +32,8 @@ module.exports = class HelpCommand extends Command {
                 if (this.bot.commands.hasOwnProperty(_)) {
                     const cmd = this.bot.commands[_]
                     if (cmd instanceof Command) {
+                        if (cmd.guildOnly && !msg.guild) continue
+
                         let category = showAll ? "commands" : cmd.category
                         categories[category] = categories[category] || []
                         categories[category].push("`" + cmd.name + "`")
