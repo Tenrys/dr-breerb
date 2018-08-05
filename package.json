@@ -13,7 +13,6 @@
   "dependencies": {
     "chalk": "^2.4.1",
     "color": "^3.0.0",
-    "color-thief-jimp": "^2.0.2",
     "discord.js": "discordjs/discord.js#master",
     "erlpack": "discordapp/erlpack",
     "feedparser": "^2.2.9",
@@ -22,6 +21,7 @@
     "jimp": "^0.2.28",
     "module-alias": "^2.1.0",
     "node-opus": "^0.2.9",
+    "node-vibrant": "^3.0.0",
     "request": "^2.87.0",
     "sequelize": "^4.38.0",
     "serp": "^2.0.2",

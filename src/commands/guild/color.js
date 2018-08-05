@@ -3,8 +3,7 @@ const Command = require("@commands/Command.js")
 const Discord = require("discord.js")
 
 const Color = require("color")
-const ColorThief = require("color-thief-jimp")
-const Jimp = require("jimp")
+const Vibrant = require("node-vibrant")
 
 module.exports = class ColorCommand extends Command {
     constructor(bot) {
@@ -53,8 +52,13 @@ module.exports = class ColorCommand extends Command {
 
         let color
         if (line === "avatar") {
-            let img = await Jimp.read(msg.author.avatarURL({ format: "png" }))
-            let dominant = ColorThief.getColor(img)
+            let palette = await Vibrant.from(msg.author.avatarURL({ format: "png" })).getPalette()
+            let dominant =  palette.Vibrant ||
+                            palette.LightVibrant ||
+                            palette.LightMuted ||
+                            palette.DarkVibrant ||
+                            palette.DarkMuted ||
+                            palette.Muted
             color = Color({ r: dominant[0], g: dominant[1], b: dominant[2] })
         } else if (line.trim() === "") { // CLEANUP
             await this.bot.cleanColorRoles(msg.member)
