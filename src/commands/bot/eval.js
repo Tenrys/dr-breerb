@@ -24,7 +24,8 @@ module.exports = class EvaluateCommand extends Command {
             let print = msg.print
             results = eval(line)
 
-            if (typeof results !== "string") results = util.inspect(results)
+            if (typeof results !== "string") results = util.inspect(results, { depth: 1 })
+            results = results.replace(this.bot.client.token, "[REDACTED]")
 
             msg.reply(this.success("```js\n" + this.bot.truncate(results) + "\n```", "JavaScript result", this.bot.colors.yellow))
         } catch (err) {
