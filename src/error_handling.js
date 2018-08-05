@@ -1,5 +1,7 @@
 const logger = require("@utils/classes/Logger.js")
 
+const fs = require("fs")
+
 module.exports = bot => {
     process.on("uncaughtException", err => {
         logger.error("critical", `JavaScript unhandled exception: ${err.stack || err}`)
