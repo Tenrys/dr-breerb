@@ -8,8 +8,7 @@ module.exports = bot => {
 
         fs.writeFileSync("restart_info.json", JSON.stringify({
             type: "unhandled_exception",
-            error: err.message,
-            stack: err.stack
+            error: err.stack
         }))
 
         logger.error("critical", "Quitting to avoid unforeseen consequences.")
