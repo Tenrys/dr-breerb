@@ -59,7 +59,7 @@ module.exports = class ColorCommand extends Command {
                             palette.DarkVibrant ||
                             palette.DarkMuted ||
                             palette.Muted
-            color = Color({ r: dominant[0], g: dominant[1], b: dominant[2] })
+            color = Color(dominant.getHex())
         } else if (line.trim() === "") { // CLEANUP
             await this.bot.cleanColorRoles(msg.member)
             msg.reply(this.success("Color roles reset."))
