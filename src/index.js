@@ -83,7 +83,7 @@ module.exports = class Bot {
                             break
                         case "unhandled_exception":
                             for (const userId of this.ownerId) {
-                                this.client.users.get(userId).send("```\n" + restartInfo.error + "```")
+                                this.client.users.get(userId).send(":warning: Bot restarted after a crash, here is what happened:\n\n```\n" + restartInfo.error + "```")
                             }
                             break
                     }
