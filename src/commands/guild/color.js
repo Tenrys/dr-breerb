@@ -20,13 +20,13 @@ module.exports = class ColorCommand extends Command {
          * Otherwise, will clean every guild's roles with name starting with "#" if they have no members.
          * @param {Discord.Member} [member]
          */
-        bot.cleanColorRoles = async member => {
+        bot.cleanColorRoles = async function(member) {
             if (member) {
                 if (member.guild.me.hasPermission("MANAGE_ROLES")) {
                     await member.roles.filter(role => role.name.match("^#")).every(role => member.roles.remove(role))
                 }
             } else {
-                await bot.client.guilds.filter(guild => guild.me.hasPermission("MANAGE_ROLES")).every(guild => {
+                await this.client.guilds.filter(guild => guild.me.hasPermission("MANAGE_ROLES")).every(guild => {
                     guild.roles.filter(role => role.name.match("^#") && role.members.array().length < 1).every(role => role.delete())
                 })
             }
