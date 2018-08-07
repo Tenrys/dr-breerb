@@ -32,6 +32,7 @@ module.exports = bot => {
     // Command handler
     bot.prefix = "!"
     bot.client.on("message", async msg => {
+        if (msg.webhookID) return
         if (bot.ignoreList && bot.ignoreList[msg.author.id]) return
         if (bot.ownerOnly && !bot.ownerId.includes(msg.author.id)) return
 
