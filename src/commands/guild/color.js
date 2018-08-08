@@ -40,7 +40,7 @@ module.exports = class ColorCommand extends Command {
 
             bot.cleanColorRoles()
 
-            bot.client.setInterval(bot.cleanColorRoles, 60 * 60 * 1000)
+            bot.client.setInterval(bot.cleanColorRoles.bind(bot), 60 * 60 * 1000)
         })
     }
 
