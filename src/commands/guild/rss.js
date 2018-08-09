@@ -147,10 +147,12 @@ module.exports = class RSSCommand extends Command {
                                 resolve(feed)
                             })
                             feedparser.on("error", err => {
-                                bot.logger.error("rss-feeds", err.stack || err)
                                 if (err.message === "Not a feed" && !feed.valid) {
+                                    bot.logger.error("rss-feeds", "Error: " + err.message + " (" + feed.url + ")" )
                                     feed.destroy()
                                     reject("URL `" + feed.url + "` is not a valid RSS feed.")
+                                } else {
+                                    bot.logger.error("rss-feeds", err.stack || err)
                                 }
                             })
                         }))
