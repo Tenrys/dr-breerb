@@ -9,8 +9,6 @@ module.exports = class JoinCommand extends Command {
     }
 
     callback(msg) {
-        if (!msg.member) { msg.reply(this.error("Webhooks are unsupported.")); return }
-
         let vc = msg.guild.me.voiceChannel
 
         if (vc !== msg.member.voiceChannel || !msg.member.voiceChannel) {

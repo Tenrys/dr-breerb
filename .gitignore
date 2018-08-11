@@ -12,3 +12,4 @@ tokens
 soundlist.json
 database.sqlite
 cache
+restart_info.json

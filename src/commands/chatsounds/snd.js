@@ -63,7 +63,7 @@ module.exports = class SoundCommand extends Command {
                     let dir = /(.*)\/.*$/gi.exec(sndPath)
                     shell.mkdir("-p", path.join("cache", dir[1]))
 
-                    let req = https.get(chatsndsRepositoryURL + encodeURI(sndPath), res => {
+                    https.get(chatsndsRepositoryURL + encodeURI(sndPath), res => {
                         if (res.statusCode == 200) {
                             let writeFile = fs.createWriteStream(filePath)
                             writeFile.on("finish", resolve)

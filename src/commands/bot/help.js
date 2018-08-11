@@ -1,6 +1,6 @@
 const Command = require("@commands/Command.js")
 
-const Discord = require("discord.js")
+const Discord = require("@extensions/discord.js")
 
 module.exports = class HelpCommand extends Command {
     constructor(bot) {

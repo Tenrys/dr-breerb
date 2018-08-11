@@ -1,6 +1,6 @@
 const Command = require("@commands/Command.js")
 
-const Discord = require("discord.js")
+const Discord = require("@extensions/discord.js")
 
 const request = require("request")
 const FeedParser = require("feedparser")

@@ -1,6 +1,6 @@
 require("@/error_handling.js")()
 
-const Discord = require("discord.js")
+const Discord = require("@extensions/discord.js")
 
 const fs = require("fs")
 const path = require("path")

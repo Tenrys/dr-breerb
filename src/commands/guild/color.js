@@ -1,6 +1,6 @@
 const Command = require("@commands/Command.js")
 
-const Discord = require("discord.js")
+const Discord = require("@extensions/discord.js")
 
 const Color = require("color")
 const Vibrant = require("node-vibrant")
@@ -45,8 +45,6 @@ module.exports = class ColorCommand extends Command {
     }
 
     async callback(msg, line, r, g, b) {
-        if (!msg.member) { msg.reply(this.error("Webhooks are unsupported.")); return } // Could also be trying to use userbot as bot, that shit doesn't work for some reason lol
-
         line = line.toLowerCase()
         r = r || line
 

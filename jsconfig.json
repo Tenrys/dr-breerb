@@ -6,15 +6,10 @@
         "target": "es2015",
         "paths": {
             "@": [ "./src/*" ],
-            "@/*": [ "./src/*" ],
-
             "@utils": [ "./src/utils" ],
-            "@utils/*": [ "./src/utils/*" ],
-
             "@commands": [ "./src/commands" ],
-            "@commands/*": [ "./src/commands/*" ],
-
-            "@models/*": [ "./src/models/*" ],
+            "@extensions": [ "./src/extensions" ],
+            "@models": [ "./src/models" ],
         },
     },
     "include": [

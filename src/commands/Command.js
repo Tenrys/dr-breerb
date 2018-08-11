@@ -1,6 +1,6 @@
 const InvalidArgumentException = require("@utils/classes/InvalidArgumentException.js")
 
-const Discord = require("discord.js")
+const Discord = require("@extensions/discord.js")
 
 const { colors } = require("@utils")
 
