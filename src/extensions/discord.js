@@ -6,4 +6,12 @@ Object.defineProperty(Discord.GuildMember.prototype, "voiceChannel", {
     }
 })
 
+Object.defineProperty(Discord.VoiceChannel.prototype, "members", {
+    get() {
+        return new Collection(this.guild.voiceStates
+            .filter(state => state.channelID === this.id && state.member)
+            .map(state => [state.id, state.member]))
+    }
+})
+
 module.exports = Discord
