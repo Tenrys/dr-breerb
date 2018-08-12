@@ -14,14 +14,18 @@ module.exports = class JoinCommand extends Command {
         if (vc !== msg.member.voiceChannel || !msg.member.voiceChannel) {
             if (msg.member.voiceChannel) {
                 vc = msg.member.voiceChannel
-                vc.join().then(connection => {
-                    connection.on("error", reason => {
+                vc.join()
+                    .then(connection => {
+                        connection.on("error", reason => {
+                            msg.reply(this.error(reason))
+                        })
+                        connection.on("failed", reason => {
+                            msg.reply(this.error(reason))
+                        })
+                    })
+                    .catch(reason => {
                         msg.reply(this.error(reason))
                     })
-                    connection.on("failed", reason => {
-                        msg.reply(this.error(reason))
-                    })
-                })
 
                 let guild = msg.guild
                 let channel = msg.channel
