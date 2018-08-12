@@ -33,6 +33,27 @@ module.exports = class HelpCommand extends Command {
                     const cmd = this.bot.commands[_]
                     if (cmd instanceof Command) {
                         if (cmd.guildOnly && !msg.guild) continue
+                        if (cmd.ownerOnly && !this.bot.ownerId.includes(msg.author.id)) continue
+                        let cont = true
+                        if (cmd.permissions) {
+                            if (cmd.permissions.bot) {
+                                for (const permission of cmd.permissions.bot) {
+                                    if (!msg.guild.me.hasPermission(permission)) {
+                                        cont = false
+                                        break
+                                    }
+                                }
+                            }
+                            if (cont && cmd.permissions.user) {
+                                for (const permission of cmd.permissions.user) {
+                                    if (!msg.member.hasPermission(permission)) {
+                                        cont = false
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                        if (!cont) continue
 
                         let category = showAll ? "commands" : cmd.category
                         categories[category] = categories[category] || []
