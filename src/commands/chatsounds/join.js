@@ -1,5 +1,7 @@
 const Command = require("@commands/Command.js")
 
+const util = require("util")
+
 module.exports = class JoinCommand extends Command {
     constructor(bot) {
         super(bot)
@@ -17,14 +19,14 @@ module.exports = class JoinCommand extends Command {
                 vc.join()
                     .then(connection => {
                         connection.on("error", reason => {
-                            msg.reply(this.error(reason))
+                            msg.reply(this.error(util.inspect(reason)))
                         })
                         connection.on("failed", reason => {
-                            msg.reply(this.error(reason))
+                            msg.reply(this.error(util.inspect(reason)))
                         })
                     })
                     .catch(reason => {
-                        msg.reply(this.error(reason))
+                        msg.reply(this.error(util.inspect(reason)))
                     })
 
                 let guild = msg.guild
