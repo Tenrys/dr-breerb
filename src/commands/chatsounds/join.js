@@ -15,6 +15,9 @@ module.exports = class JoinCommand extends Command {
             if (msg.member.voiceChannel) {
                 vc = msg.member.voiceChannel
                 vc.join()
+                    .catch(reason => {
+                        msg.reply(this.error(this.bot.inspectCodeBlock(reason, true)))
+                    })
                     .then(connection => {
                         connection.on("error", reason => {
                             msg.reply(this.error(this.bot.inspectCodeBlock(reason, true)))
@@ -22,9 +25,6 @@ module.exports = class JoinCommand extends Command {
                         connection.on("failed", reason => {
                             msg.reply(this.error(this.bot.inspectCodeBlock(reason, true)))
                         })
-                    })
-                    .catch(reason => {
-                        msg.reply(this.error(this.bot.inspectCodeBlock(reason, true)))
                     })
 
                 let guild = msg.guild
