@@ -12,13 +12,13 @@ function padNum(input, width) {
  */
 function getCurrentTime() {
     let date = new Date()
-    let y = date.getFullYear(),
-        M = padNum(date.getMonth(), 2),
-        d = padNum(date.getDay(), 2),
-        h = padNum(date.getHours(), 2),
-        m = padNum(date.getMinutes(), 2),
-        s = padNum(date.getSeconds(), 2)
-        ms = padNum(date.getMilliseconds(), 2)
+    let y = date.getUTCFullYear(),
+        M = padNum(date.getUTCMonth() + 1, 2),
+        d = padNum(date.getUTCDate(), 2),
+        h = padNum(date.getUTCHours(), 2),
+        m = padNum(date.getUTCMinutes(), 2),
+        s = padNum(date.getUTCSeconds(), 2)
+        ms = padNum(date.getUTCMilliseconds(), 2)
 
     let formatted = `${y}-${M}-${d} ${h}:${m}:${s}.${ms}`
     return formatted
