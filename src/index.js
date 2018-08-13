@@ -5,6 +5,7 @@ const Discord = require("@extensions/discord.js")
 const fs = require("fs")
 const path = require("path")
 
+const util = require("util")
 const repl = require("repl")
 
 module.exports = class Bot {
@@ -33,6 +34,11 @@ module.exports = class Bot {
     truncate(str) {
         if (str.length > 1960) return str.substr(0, 1960) + "\n[...] (output truncated)"
         else return str
+    }
+
+    inspectCodeBlock(obj, isJS) {
+        if (typeof obj !== "string") obj = util.inspect(obj, { depth: 1 })
+        return "```" + (isJS ? "js" : "") + "\n" + this.bot.truncate(obj) + "\n```"
     }
 
     /**

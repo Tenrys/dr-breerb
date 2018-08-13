@@ -1,7 +1,5 @@
 const Command = require("@commands/Command.js")
 
-const util = require("util")
-
 module.exports = class EvaluateCommand extends Command {
     constructor(bot) {
         super(bot)
@@ -22,12 +20,11 @@ module.exports = class EvaluateCommand extends Command {
         try {
             let bot = this.bot
             let print = msg.print
-            results = eval(line)
+            results = this.bot.inspectCodeBlock(eval(line), true)
 
-            if (typeof results !== "string") results = util.inspect(results, { depth: 1 })
             results = results.replace(this.bot.client.token, "[REDACTED]")
 
-            msg.reply(this.success("```js\n" + this.bot.truncate(results) + "\n```", "JavaScript result", this.bot.colors.yellow))
+            msg.reply(this.success(results, "JavaScript result", this.bot.colors.yellow))
         } catch (err) {
             results = this.bot.errorToMarkdown(err)
 

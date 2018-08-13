@@ -31,7 +31,7 @@ utils.runCommandInChannel = function(cmd, progressMsg, msg, onData) {
     let nextEdit = 0
     return utils.runCommand(cmd, (data, buf) => {
         if (nextEdit < Date.now()) {
-            progressMsg.edit("<@" + msg.author.id + ">, ```" + progressMsg.client.bot.truncate(buf) + "```")
+            progressMsg.edit("<@" + msg.author.id + ">, " + progressMsg.client.bot.inspectCodeBlock(buf))
             nextEdit = Date.now() + 2000 // Update every 2 seconds
         }
         if (onData) onData(data, buf)

@@ -1,7 +1,5 @@
 const Command = require("@commands/Command.js")
 
-const util = require("util")
-
 module.exports = class SQLCommand extends Command {
     constructor(bot) {
         super(bot)
@@ -19,10 +17,9 @@ module.exports = class SQLCommand extends Command {
         }
 
         this.bot.db.sequelize.query(line).spread(results => {
-            if (typeof results !== "string") results = util.inspect(results)
-            msg.reply(this.success("```js\n" + results + "\n```", "SQL result"))
+            msg.reply(this.success(this.bot.inspectCodeBlock(results, true), "SQL result"))
         }).catch(err => {
-            msg.reply(this.error("```\n" + err + "\n```", "SQL error"))
+            msg.reply(this.error(this.bot.inspectCodeBlock(err, true), "SQL error"))
         })
     }
 }

@@ -33,7 +33,7 @@ module.exports = class PrefixCommand extends Command {
                 settings.prefix = prefix
                 settings.save()
             })
-            msg.reply(this.success("Prefix changed to ```'" + prefix + "'```."))
+            msg.reply(this.success("Prefix changed to ```'" + prefix + "'```"))
         } else {
             msg.reply(this.error("The new prefix cannot be over 5 characters!"))
         }

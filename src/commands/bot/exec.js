@@ -15,6 +15,6 @@ module.exports = class ExecuteCommand extends Command {
 
         let result = await runCommandInChannel(line, progressMsg, msg)
 
-        await progressMsg.edit("<@" + msg.author.id + ">, ```" + this.bot.truncate(result) + "```", this.success("Done. See results for more information."))
+        await progressMsg.edit("<@" + msg.author.id + ">, " + this.bot.inspectCodeBlock(result), this.success("Done. See results for more information."))
     }
 }
