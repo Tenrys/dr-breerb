@@ -25,6 +25,8 @@ module.exports = class JoinCommand extends Command {
                     connection.on("failed", reason => {
                         msg.reply(this.error(this.bot.inspectCodeBlock(reason, true)))
                     })
+                }).catch(reason => {
+                    msg.reply(this.error(this.bot.inspectCodeBlock(reason, true)))
                 })
 
                 let guild = msg.guild
