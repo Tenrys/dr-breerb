@@ -38,7 +38,7 @@ module.exports = class Bot {
 
     inspectCodeBlock(obj, isJS) {
         if (typeof obj !== "string") obj = util.inspect(obj, { depth: 1 })
-        return "```" + (isJS ? "js" : "") + "\n" + this.bot.truncate(obj) + "\n```"
+        return "```" + (isJS ? "js" : "") + "\n" + this.truncate(obj) + "\n```"
     }
 
     /**
