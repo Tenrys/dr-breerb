@@ -17,11 +17,13 @@ module.exports = class SnipeCommand extends Command {
 
     async callback(msg) {
         if (msg.channel.lastDeletes && msg.channel.lastDeletes.length > 0) {
-            msg.reply(this.result(
+            msg.reply(this.success(
                 msg.channel.lastDeletes.map((msg, k) =>
                     `${k + 1}. \`${msg.content}\` - **${msg.author.tag}** (${msg.author.id}`
                 ).join("\n"), ":wastebasket: Last deleted messages in this channel")
             )
+        } else {
+            msg.reply(this.error("Haven't noticed any message being deleted here yet."))
         }
     }
 }
