@@ -7,7 +7,7 @@ module.exports = class SnipeCommand extends Command {
         this.description = "Check the last 3 deleted messages in a channel."
         this.guildOnly = true
 
-        bot.on("messageDelete", (msg) => {
+        bot.client.on("messageDelete", (msg) => {
             if (!msg.channel.lastDeletes) msg.channel.lastDeletes = []
 
             msg.channel.lastDeletes.unshift(msg)
