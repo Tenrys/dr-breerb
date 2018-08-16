@@ -19,8 +19,8 @@ module.exports = class SnipeCommand extends Command {
         if (msg.channel.lastDeletes && msg.channel.lastDeletes.length > 0) {
             msg.reply(this.result(
                 msg.channel.lastDeletes.map((msg, k) =>
-                    (k + 1) + ". `" + msg.content + "` from **" + msg.author.tag + "**" ).join("\n")
-                )
+                    `${k + 1}. \`${msg.content}\` - **${msg.author.tag}** (${msg.author.id}`
+                ).join("\n"))
             )
         }
     }
