@@ -20,7 +20,7 @@ module.exports = class SnipeCommand extends Command {
             msg.reply(this.result(
                 msg.channel.lastDeletes.map((msg, k) =>
                     `${k + 1}. \`${msg.content}\` - **${msg.author.tag}** (${msg.author.id}`
-                ).join("\n"))
+                ).join("\n"), ":wastebasket: Last deleted messages in this channel")
             )
         }
     }
