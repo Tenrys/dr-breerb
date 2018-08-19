@@ -22,7 +22,7 @@ module.exports = class AboutCommand extends Command {
             .addField(":tools: Using", `Discord.js \`${Discord.version}\`\nNode.js \`${process.version}\`` , false)
 
             .addField(":desktop: RAM usage", prettyBytes(process.memoryUsage().rss), true)
-            .addField(":arrow_up: Uptime", humanizeDuration(process.uptime(), { round: true }), true)
+            .addField(":arrow_up: Uptime", humanizeDuration(process.uptime() * 1000, { round: true }), true)
 
         msg.reply(embed)
     }
