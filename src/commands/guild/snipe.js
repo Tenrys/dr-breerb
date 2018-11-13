@@ -8,7 +8,7 @@ module.exports = class SnipeCommand extends Command {
         this.guildOnly = true
 
         bot.client.on("messageDelete", (msg) => {
-            if (msg.author.bot) return
+            if (msg.author.id === bot.client.user.id) return
             if (!msg.channel.lastDeletes) msg.channel.lastDeletes = []
 
             msg.channel.lastDeletes.unshift(msg)
