@@ -101,7 +101,7 @@ module.exports = bot => {
                     msg.printBuffer = ""
                     msg.print = (...args) => {
                         args.forEach(val => {
-                            msg.printBuffer = msg.printBuffer + this.bot.inspectCodeBlock(val, true) + "\n"
+                            msg.printBuffer = msg.printBuffer + bot.inspectCodeBlock(val, true) + "\n"
                         })
                     }
 
