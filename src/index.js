@@ -132,7 +132,7 @@ module.exports = class Bot {
      * Attempts to login to Discord with the Bot's token
      */
     async login() {
-        if (this.client.status === null || this.client.status == 5) {
+        if (this.client.status == null || this.client.status == 5) {
             this.logger.working("discord", "Logging in...")
 
             await this.client.login(this.token).catch(err => {
