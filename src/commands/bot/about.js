@@ -17,9 +17,8 @@ module.exports = class AboutCommand extends Command {
 
         let embed = this.result("Here's everything you need to know about me.")
             .addField(":star: Owner" + (owners.length == 1 ? "" : "s"), owners.join("\n"), true)
+            .addField(":tools: Using", `Discord.js \`${Discord.version}\`\nNode.js \`${process.version}\`` , true)
             .addField(":link: Links", `[GitHub repository](${this.bot.repositoryURL})`, true)
-
-            .addField(":tools: Using", `Discord.js \`${Discord.version}\`\nNode.js \`${process.version}\`` , false)
 
             .addField(":desktop: RAM usage", prettyBytes(process.memoryUsage().rss), true)
             .addField(":arrow_up: Uptime", humanizeDuration(process.uptime() * 1000, { round: true }), true)
