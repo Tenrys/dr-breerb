@@ -41,6 +41,12 @@ module.exports = class Bot {
         return "```" + (isJS ? "js" : "") + "\n" + this.truncate(obj) + "\n```"
     }
 
+    dmOwners(...args) {
+        for (const userId of this.ownerId) { // TODO:
+            this.client.users.get(userId).send(...args)
+        }
+    }
+
     /**
      * @param {string} token The Discord user token to login with
      */
@@ -90,9 +96,7 @@ module.exports = class Bot {
                             await msg.edit(msg.content, update.success("Restarted."))
                             break
                         case "unhandled_exception":
-                            for (const userId of this.ownerId) {
-                                this.client.users.get(userId).send(":warning: Restarted after a crash, here is what happened:\n```\n" + restartInfo.error + "```")
-                            }
+                            this.dmOwners(":warning: Restarted after a crash, here is what happened:\n```\n" + restartInfo.error + "```")
                             break
                     }
 
@@ -123,6 +127,7 @@ module.exports = class Bot {
         this.token = options.token
         this.ownerId = options.ownerId
 
+        require("@/sbox_beta.js")(this)
         require("@/sqlite.js")(this)
         require("@/pages.js")(this)
         require("@commands")(this)
