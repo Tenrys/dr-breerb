@@ -64,6 +64,10 @@ module.exports = class RSSCommand extends Command {
                 if (feeds.length > 0) {
                     for (let i = 0; i < feeds.length; i++) {
                         let feed = feeds[i]
+                        let channel = bot.client.channels.get(feed.channel)
+
+                        if (!channel) continue
+
                         checks.push(new Promise((resolve, reject) => {
                             let req
                             try {
@@ -136,7 +140,6 @@ module.exports = class RSSCommand extends Command {
                                         }
                                         embed.setTimestamp(item.pubdate)
 
-                                        let channel = bot.client.channels.get(feed.channel)
                                         channel.send(embed)
 
                                         feed.lastFeedDate = item.pubdate
